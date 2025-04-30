@@ -80,14 +80,14 @@ def obtener_hogares():
                 return hogares
 
 #Lee el archivo de individuos y devuelve la lista de registros
-def porcentaje_universitarios_por_aglomerado():
+def porcentaje_universitarios_por_aglomerado(individuos):
     individuos = obtener_individuos()
     porcentajes = calcular_porcentajes_por_aglomerado(individuos, NOMBRES,0)
     
     imprimir_porcentajes_por_aglomerado(porcentajes,"personas, por aglomerado, que cursaron al menos un nivel universitario.")
 
 #Calcula e imprime el porcentaje de jubilados en hogares con condición insuficiente
-def porcentaje_jubilados_condicion_insuficiente():
+def porcentaje_jubilados_condicion_insuficiente(individuos):
     hogares = obtener_hogares()
     individuos = obtener_individuos()
     #Obtenemos el último trimestre del ultimo anio
