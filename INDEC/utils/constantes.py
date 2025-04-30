@@ -1,0 +1,13 @@
+NOMBRES_AGLOMERADOS = {"2": "Gran La Plata", "3": "Bahía Blanca - Cerri", "4": "Gran Rosario", 
+                    "5": "Gran Santa Fé", "06": "Gran Paraná", "7": "Posadas", 
+                    "8": "Gran Resistencia", "9": "Comodoro Rivadavia - Rada Tilly", 
+                    "10": "Gran Mendoza", "12": "Corrientes", "13": "Gran Córdoba", 
+                    "14": "Concordia", "15": "Formosa", "17": "Neuquén - Plottier", 
+                    "18": "Santiago del Estero - La Banda", "19": "Jujuy - Palpalá", 
+                    "20": "Río Gallegos", "22": "Gran Catamarca", "23": "Gran Salta", 
+                    "25": "La Rioja", "26": "Gran San Luis", "27": "Gran San Juan", 
+                    "29": "Gran Tucumán - Tafí Viejo", "30": "Santa Rosa - Toay", 
+                    "31": "Ushuaia - Río Grande", "32": "Ciudad Autonoma de Buenos Aires", 
+                    "33": "Partidos del GBA", "34": "Mar del Plata", "36": "Río Cuarto", 
+                    "38": "San Nicolás - Villa Constitución", "91": "Rawson - Trelew", 
+                    "93": "Viedma - Carmen de Patagones"}
