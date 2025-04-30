@@ -1,28 +1,41 @@
 from pathlib import Path
 import csv
 
+LUGAR_NACIMIENTO = 'CH15'
+NIVEL_EDUCACION = 'CH12'
+
 def porcentaje_extranjeros_universitarios():
     
+    #Define la ruta al archivo de individuos
     ruta_individuos = Path(__file__).resolve().parent.parent / "utils" / "IndividuosTotal.csv"
     
+    #En el caso de que no se construyo correctamente la ruta
     if ruta_individuos is None:
-        ruta_individuos = Path("../utils/IndividuosTotal.csv")  # ruta relativa si no se pasa una
+        ruta_individuos = Path("../utils/IndividuosTotal.csv")  #ruta relativa si no se pasa una
 
+    #Para que no se genere un error en caso de no existir el archivo
     if not ruta_individuos.exists():
         print(f"No se encontró el archivo en: {ruta_individuos.resolve()}")
         return
     
+    #Solicita al usuario el año y trimestre que desea analizar
     year = input("Ingrese el año(YYYY): ")
     quarter = input("Ingrese el trimeste (1, 2, 3 o 4): ") 
-    total = 0
-    pers = 0
     
+    total = 0  #Total de personas en el período seleccionado
+    pers = 0   #Total de personas extranjeras con nivel universitario o superior
+    
+    #Se abre el archivo csv y recorremos 1 por 1 a los individuos
     with open(ruta_individuos, mode='r', encoding='utf-8') as individuos_file:
-        individuos = list(csv.DictReader(individuos_file, delimiter=";"))
-        print(individuos[0])
+        individuos = csv.DictReader(individuos_file, delimiter=";")
+        #Itero sobre cada individuo
         for i in individuos:
+            #Filtrar por año y trimestre indicados por el usuario
             if i['ANO4'] == year and i['TRIMESTRE'] == quarter:
                 total += 1
-                if i['CH15'] in ('4', '5') and i['CH12'] in ('6', '7', '8'):
+                #Si la persona no nació en Argentina y tiene nivel universitario o superior
+                if i[LUGAR_NACIMIENTO] in ('4', '5') and i[NIVEL_EDUCACION] in ('6', '7', '8'):
                     pers += 1
+    
+    #Imprime el resultado y verifica que no se divida por 0 para no generar un error
     print(f"El porcentaje de personas no nacidas en Argentina con nivel universitario o superior es: { (round(pers/total * 100, 2) )if total != 0 else 'N/A'}%")
