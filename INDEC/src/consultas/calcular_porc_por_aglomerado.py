@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 import csv
-from constantes import NOMBRE_AGLOMERADOS as NOMBRES
+from utils.constantes import NOMBRE_AGLOMERADOS as NOMBRES
 
 #Calcula los porcentajes por aglomerado según el tipo de individuo que se pase
 def calcular_porcentajes_por_aglomerado(individuos,NOMBRES_AGLOMERADOS, tipo_individuo, hogares = None):
