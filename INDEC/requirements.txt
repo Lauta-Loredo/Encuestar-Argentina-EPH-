@@ -1,2 +1,2 @@
-jupyter==7.4
+jupyter==1.1.1
 streamlit==1.45.0
