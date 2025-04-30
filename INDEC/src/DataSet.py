@@ -70,6 +70,3 @@ def guardar_como_csv(nombre_archivo, lista_diccionarios, delimitador = ";"):
         writer.writerows(lista_diccionarios)
 
     print(f"✅ Archivo {nombre_archivo} guardado en: {ruta_archivo}")
-
-    #guardar_como_csv ('IndividuosTotal',individuos)
-    #guardar_como_csv ('HogaresTotal',hogares)
