@@ -1,2 +1,2 @@
-jupyter==1.0.0
-streamlit==1.32.0
+jupyter==7.4
+streamlit==1.45.0
