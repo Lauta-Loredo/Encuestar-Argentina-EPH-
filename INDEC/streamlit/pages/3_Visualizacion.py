@@ -1,5 +1,5 @@
 import streamlit as st
 
 st.set_page_config(layout='wide')
-st.title("📊 Visualizació")
+st.title("📊 Visualización")
 st.error("Pagina en construcción")
