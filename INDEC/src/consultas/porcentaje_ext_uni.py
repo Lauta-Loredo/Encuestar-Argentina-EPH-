@@ -30,7 +30,7 @@ def porcentaje_extranjeros_universitarios():
             if i['ANO4'] == year and i['TRIMESTRE'] == quarter:
                 total += 1
                 #Si la persona no nació en Argentina y tiene nivel universitario o superior
-                if i['CH15'] in ('4', '5') and i['CH12'] in ('6', '7', '8'):
+                if i[LUGAR_NACIMIENTO] in ('4', '5') and i[NIVEL_EDUCACION] in ('6', '7', '8'):
                     pers += 1
     
     #Imprime el resultado y verifica que no se divida por 0 para no generar un error
