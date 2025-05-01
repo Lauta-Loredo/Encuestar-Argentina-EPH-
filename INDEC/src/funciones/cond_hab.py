@@ -1,11 +1,11 @@
-def renombrar_claves(h):
-    h["TIPO_PISO"] = h.pop("IV3")
-    h["HAY_AGUA"] = h.pop("IV6")
-    h["ORIGEN_AGUA"] = h.pop("IV7")
-    h["TIENE_BANIO"] = h.pop("IV8")
-    h["UBICACION_BANIO"] = h.pop("IV9")
-    h["TIPO_BANIO"] = h.pop("IV10")
-    h["DESAGUE"] = h.pop("IV11")
+#Renombro las variables con un nombre mas significativo
+TIPO_PISO = "IV3"
+HAY_AGUA = "IV6"
+ORIGEN_AGUA = "IV7"
+TIENE_BANIO = "IV8"
+UBICACION_BANIO = "IV9"
+TIPO_BANIO = "IV10"
+DESAGUE = "IV11"
 
 
 def condicion_de_habitabilidad(hogares):
@@ -13,30 +13,27 @@ def condicion_de_habitabilidad(hogares):
     # Inicializa puntaje
     points = 0
     for h in hogares: 
-        
-        #Renombro las variables con un nombre mas significativo
-        renombrar_claves(h)
         # Condición inmediata de habitabilidad insuficiente
         # Si no hay baño o agua
-        if (h["TIENE_BANIO"] == '1' or h["HAY_AGUA"] == '3'):
+        if (h[TIENE_BANIO] == '1' or h[HAY_AGUA] == '3'):
             h["CONDICION_DE_HABITABILIDAD"] = "Insuficiente"
         else:
             # Condiciones estructurales básicas del hogar
 
             # Tipo de vivienda (mejor cuanto menor el número)
-            match h["TIPO_PISO"] :
+            match h[TIPO_PISO] :
                 case "2":
                     points += 1
                 case "1":
                     points += 2
             # Tipo de baño
-            match h["HAY_AGUA"] :
+            match h[HAY_AGUA] :
                 case "2":
                     points += 1
                 case "1":
                     points += 2
             # Tipo de agua
-            match h["ORIGEN_AGUA"] :
+            match h[ORIGEN_AGUA] :
                 case "3":
                     points += 1
                 case "2":
@@ -44,19 +41,19 @@ def condicion_de_habitabilidad(hogares):
                 case "1":
                     points += 3
             # Tipo de desagüe
-            match h["UBICACION_BANIO"] :
+            match h[UBICACION_BANIO] :
                 case "2":
                     points += 1
                 case "1":
                     points += 3
             #Tipo baño
-            match h["TIPO_BANIO"] :
+            match h[TIPO_BANIO] :
                 case "2":
                     points += 1
                 case "1":
                     points += 2
             #Manejo de desague
-            match h["DESAGUE"] :
+            match h[DESAGUE] :
                 case "2":
                     points += 2
                 case "1":
