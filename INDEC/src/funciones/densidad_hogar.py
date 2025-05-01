@@ -26,5 +26,3 @@ def key_densidad_hogar(info_hogares):
             people = hog["IX_TOT"]
             valor = function_value(spaces, people)
         hog["DENSIDAD_HOGAR"] = valor
-
-    return info_hogares
