@@ -28,4 +28,3 @@ def key_nivel_ed_str (info_individuos):
         else:
             individuos["NIVEL_ED_str"] = None
 
-    return (info_individuos)
