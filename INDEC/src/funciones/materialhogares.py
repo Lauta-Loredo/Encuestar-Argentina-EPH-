@@ -24,4 +24,3 @@ def MATERIAL_TECHUMBRE(list_dic_hogar):
             dic['MATERIAL_TECHUMBRE'] = 'No aplica'
         else:                                       # Si hay valores distintos del 1 al 7 y el 9.
             dic['MATERIAL_TECHUMBRE'] = 'Sin Datos'
-    return list_dic_hogar

@@ -1,7 +1,8 @@
 import os
 import zipfile
 import csv
-from pathlib import Path
+from pathlib import Path 
+
 def dataset_individuals(zip_folder):
     """Leo todos los archivos individuos.txt dentro de los zips por cada año-trimestre
         para luego guardarlos en la lista de diccionarios.
