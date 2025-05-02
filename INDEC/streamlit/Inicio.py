@@ -3,8 +3,8 @@ from pathlib import Path
 
 PAGES_DIR = Path("pages")  #Ruta relativa 
 
-st.set_page_config(page_title='EncuestAR', layout='wide')
-st.title("EncuestAR")
+st.set_page_config(page_title='EPH Insight', layout='wide')
+st.title("EPH Insight")
 
 def main(): 
     st.info("""
