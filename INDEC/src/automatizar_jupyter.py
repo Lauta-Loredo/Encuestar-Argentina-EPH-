@@ -41,5 +41,10 @@ def ejecutar_notebook(ruta_notebook, tiempo_espera=600, kernel_name='python3'):
         print(f"Error al ejecutar el notebook: {str(e)}")
         raise
 
-ruta_archivo = Path(__file__).resolve().parent.parent / "notebooks" / "individuos.ipynb"
-ejecutar_notebook(ruta_archivo)
+def rutas ():
+    ruta_archivo = Path(__file__).resolve().parent.parent / "notebooks" / "individuos.ipynb"
+    ruta_archivo2 = Path(__file__).resolve().parent.parent / "notebooks" / "hogares.ipynb"
+    ejecutar_notebook(ruta_archivo)
+    ejecutar_notebook(ruta_archivo2)
+
+rutas()

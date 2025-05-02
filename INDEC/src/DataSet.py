@@ -76,8 +76,8 @@ def max_min_año_trimestre():
     """Encuentra el año y trimestre maximo y minimo en el archivo de hogares e individuos.
     Retorna: una tupla(año, trimestre) maximos y minimos para individuos y hogares"""
 
-    ruta_individuos = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
-    ruta_hogares = Path(__file__).resolve().parent.parent.parent / "utils" / "HogaresTotal.csv"
+    ruta_individuos = Path(__file__).resolve().parent.parent / "utils" / "IndividuosTotal.csv"
+    ruta_hogares = Path(__file__).resolve().parent.parent / "utils" / "HogaresTotal.csv"
 
     max_año_hogar = 0
     max_año_individuos = 0
