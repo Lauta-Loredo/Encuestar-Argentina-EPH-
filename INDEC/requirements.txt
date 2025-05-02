@@ -1,2 +1,4 @@
 jupyter==1.1.1
 streamlit==1.45.0
+nbformat==5.10.4
+nbconvert==7.16.6
