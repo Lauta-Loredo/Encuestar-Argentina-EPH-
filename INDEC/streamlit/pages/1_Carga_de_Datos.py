@@ -14,7 +14,7 @@ st.set_page_config(layout='wide')
 st.title("⬆️ Carga de Datos")
 
 st.write(
-'El sistema contiene informacion desde {} hasta {}.'.format(str(min_trimestre_hogar) + '/' + str(min_año_hogar), str(max_trimestre_hogar) + '/' + str(max_año_hogar))
+'El sistema contiene informacion desde el trimestre {} hasta el trimestre {}.'.format(str(min_trimestre_hogar) + '/' + str(min_año_hogar), str(max_trimestre_hogar) + '/' + str(max_año_hogar))
 )
 
-st.button('Actualizacion de datos', on_click=rutas())
+st.button('Actualizacion de datos', on_click=rutas)
