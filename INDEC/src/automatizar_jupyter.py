@@ -2,6 +2,7 @@ import nbformat
 from nbconvert.preprocessors import ExecutePreprocessor
 import os
 from pathlib import Path
+import DataSet
 
 def ejecutar_notebook(ruta_notebook, tiempo_espera=600, kernel_name='python3'):
     """
@@ -46,3 +47,8 @@ def rutas ():
     ruta_archivo2 = Path(__file__).resolve().parent.parent / "notebooks" / "hogares.ipynb"
     ejecutar_notebook(ruta_archivo)
     ejecutar_notebook(ruta_archivo2)
+    hola = DataSet.max_min_año_trimestre()
+    print (hola)
+    return hola
+
+rutas()
