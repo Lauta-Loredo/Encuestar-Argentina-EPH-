@@ -71,3 +71,50 @@ def guardar_como_csv(nombre_archivo, lista_diccionarios, delimitador = ";"):
         writer.writerows(lista_diccionarios)
 
     print(f"✅ Archivo {nombre_archivo} guardado en: {ruta_archivo}")
+
+def max_min_año_trimestre():
+    """Encuentra el año y trimestre maximo y minimo en el archivo de hogares e individuos.
+    Retorna: una tupla(año, trimestre) maximos y minimos para individuos y hogares"""
+
+    ruta_individuos = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
+    ruta_hogares = Path(__file__).resolve().parent.parent.parent / "utils" / "HogaresTotal.csv"
+
+    max_año_hogar = 0
+    max_año_individuos = 0
+    max_trimestre_hogar = 0
+    max_trimestre_individuos = 0
+    min_año_hogar = 10000
+    min_año_individuos = 10000
+    min_trimestre_hogar = 5
+    min_trimestre_individuos = 5
+    
+    with open(ruta_hogares, mode='r', encoding='utf-8') as file:
+        reader = csv.DictReader(file, delimiter=';')
+        for r in reader:
+            año = int(r['ANO4'])
+            trimestre = int(r['TRIMESTRE'])
+            
+            #Actualiza máximo y minimo año y trimestre para hogares
+            if año > max_año_hogar or (año == max_año_hogar and trimestre > max_trimestre_hogar):
+                max_año_hogar, max_trimestre_hogar = año, trimestre
+            if año < min_año_hogar or (año == min_año_hogar and trimestre < min_trimestre_hogar):
+                min_año_hogar, min_trimestre_hogar == año, trimestre
+    
+    with open(ruta_individuos, mode='r', encoding='utf-8') as file:
+        reader = csv.DictReader(file, delimiter=';')
+        for r in reader:
+            año = int(r['ANO4'])
+            trimestre = int(r['TRIMESTRE'])
+            
+            #Actualiza minimo y maximo año y trimestre para individuos
+            if año > max_año_individuos or (año == max_año_individuos and trimestre > max_trimestre_individuos):
+                max_año_individuos, max_trimestre_individuos = año, trimestre
+            if año < min_año_individuos or (año == min_año_individuos and trimestre < min_trimestre_individuos):
+                min_año_individuos, min_trimestre_individuos == año, trimestre
+    
+    
+    print(f"El año seleccionado fue {max_año_hogar} y el trimestre fue {max_trimestre_hogar}")
+    print(f"El año seleccionado fue {min_año_hogar} y el trimestre fue {min_trimestre_hogar}")
+    print(f"El año seleccionado fue {max_año_individuos} y el trimestre fue {max_trimestre_individuos}")
+    print(f"El año seleccionado fue {min_año_individuos} y el trimestre fue {min_trimestre_individuos}")
+    return max_año_hogar, max_trimestre_hogar, min_año_hogar, min_trimestre_hogar, max_año_individuos, max_trimestre_individuos, min_año_individuos, min_trimestre_individuos
