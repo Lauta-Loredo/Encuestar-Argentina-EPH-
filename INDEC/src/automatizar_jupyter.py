@@ -43,12 +43,9 @@ def ejecutar_notebook(ruta_notebook, tiempo_espera=600, kernel_name='python3'):
         raise
 
 def rutas ():
+    """Funcion principal para resetear los csv en base a los archivos disponibles"""
+
     ruta_archivo = Path(__file__).resolve().parent.parent / "notebooks" / "individuos.ipynb"
     ruta_archivo2 = Path(__file__).resolve().parent.parent / "notebooks" / "hogares.ipynb"
     ejecutar_notebook(ruta_archivo)
     ejecutar_notebook(ruta_archivo2)
-    hola = DataSet.max_min_año_trimestre()
-    print (hola)
-    return hola
-
-rutas()
