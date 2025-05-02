@@ -98,7 +98,7 @@ def max_min_año_trimestre():
             if año > max_año_hogar or (año == max_año_hogar and trimestre > max_trimestre_hogar):
                 max_año_hogar, max_trimestre_hogar = año, trimestre
             if año < min_año_hogar or (año == min_año_hogar and trimestre < min_trimestre_hogar):
-                min_año_hogar, min_trimestre_hogar == año, trimestre
+                min_año_hogar, min_trimestre_hogar = año, trimestre
     
     with open(ruta_individuos, mode='r', encoding='utf-8') as file:
         reader = csv.DictReader(file, delimiter=';')
@@ -110,11 +110,6 @@ def max_min_año_trimestre():
             if año > max_año_individuos or (año == max_año_individuos and trimestre > max_trimestre_individuos):
                 max_año_individuos, max_trimestre_individuos = año, trimestre
             if año < min_año_individuos or (año == min_año_individuos and trimestre < min_trimestre_individuos):
-                min_año_individuos, min_trimestre_individuos == año, trimestre
+                min_año_individuos, min_trimestre_individuos = año, trimestre
     
-    
-    print(f"El año seleccionado fue {max_año_hogar} y el trimestre fue {max_trimestre_hogar}")
-    print(f"El año seleccionado fue {min_año_hogar} y el trimestre fue {min_trimestre_hogar}")
-    print(f"El año seleccionado fue {max_año_individuos} y el trimestre fue {max_trimestre_individuos}")
-    print(f"El año seleccionado fue {min_año_individuos} y el trimestre fue {min_trimestre_individuos}")
     return max_año_hogar, max_trimestre_hogar, min_año_hogar, min_trimestre_hogar, max_año_individuos, max_trimestre_individuos, min_año_individuos, min_trimestre_individuos
