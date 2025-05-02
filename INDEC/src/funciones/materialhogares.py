@@ -1,4 +1,4 @@
-def MATERIAL_TECHUMBRE(list_dic_hogar):
+def material_techumbre(list_dic_hogar):
     """
     Traducir los valores de IV4 de integer a strings:
         - Valor de 1 a 4 => 'Material durable'

@@ -74,7 +74,7 @@ def precarious_percentage():
     aglomerado_max, cont_max, aglomerado_min, cont_min = cant_precarius(year, list_dic_dataset)
     aglomerados = aglomerados_map()    
 
-    print(f'📈 El código de aglomerado con mayor porcentaje de viviendas con materiales precarios es {aglomerados[aglomerado_max]} con un {cont_max}%')
-    print(f'📉 El código de aglomerado con menor porcentaje de viviendas con materiales precarios es {aglomerados[aglomerado_min]} con un {cont_min}%')
+    print(f'📈 El aglomerado con mayor porcentaje de viviendas con materiales precarios es {aglomerados[aglomerado_max]} con un {cont_max}%')
+    print(f'📉 El aglomerado con menor porcentaje de viviendas con materiales precarios es {aglomerados[aglomerado_min]} con un {cont_min}%')
 
 
