@@ -1,8 +1,7 @@
-import nbformat
-from nbconvert.preprocessors import ExecutePreprocessor
+import nbformat #Permite leer y escribir archivos Jupyter Notebook
+from nbconvert.preprocessors import ExecutePreprocessor #Proporciona una clase que permite ejecutar todas las celdas de un notebook
 import os
 from pathlib import Path
-from src import DataSet
 
 def ejecutar_notebook(ruta_notebook, tiempo_espera=600, kernel_name='python3'):
     """
@@ -10,37 +9,26 @@ def ejecutar_notebook(ruta_notebook, tiempo_espera=600, kernel_name='python3'):
     
     Parámetros:
     -----------
-    ruta_notebook : str
-        Ruta completa al archivo .ipynb que se desea ejecutar
-    tiempo_espera : int, opcional
-        Tiempo máximo de espera por cada celda (en segundos, default 600)
-    kernel_name : str, opcional
-        Nombre del kernel a utilizar (default 'python3')
-    
-    Retorna:
-    --------
-    None
+    ruta_notebook : Ruta completa al archivo .ipynb que se desea ejecutar
+    tiempo_espera : Tiempo máximo de espera por cada celda (en segundos, default 600)
+    kernel_name : Nombre del kernel a utilizar (default 'python3')
     """
     try:
-        # Cargar el notebook
+        # Se lee el notebook y se convierte a estructura de datos Python que representa el notebook (f contiene texto JSON)
         with open(ruta_notebook, 'r', encoding='utf-8') as f:
-            nb = nbformat.read(f, as_version=4)
+            nb = nbformat.read(f, as_version=4) #as_version=4 es la version estandar actual utilizada para la interpretacion del notebook
         
-        # Configurar el preprocesador de ejecución
+        # Se crea un objeto para usar en la ejecucion de las celdas del notebook
         ep = ExecutePreprocessor(timeout=tiempo_espera, kernel_name=kernel_name)
         
-        # Ejecutar todas las celdas
+        # Ejecutar todas las celdas cargadas en la variable nb
         ep.preprocess(nb, {'metadata': {'path': os.path.dirname(ruta_notebook)}})
-        
-        # Guardar el notebook ejecutado (opcional)
-        with open(ruta_notebook, 'w', encoding='utf-8') as f:
-            nbformat.write(nb, f)
             
         print(f"Notebook {os.path.basename(ruta_notebook)} ejecutado exitosamente!")
     
     except Exception as e:
         print(f"Error al ejecutar el notebook: {str(e)}")
-        raise
+        raise #sirve para relanzar la excepción que fue capturada
 
 def rutas ():
     """Funcion principal para resetear los csv en base a los archivos disponibles"""
