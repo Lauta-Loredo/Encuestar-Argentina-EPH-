@@ -7,7 +7,7 @@ import csv
 
 
 def porcentaje_inqui():
-    ruta_hogares = Path(__file__).resolve().parent.parent / "utils" / "HogaresTotal.csv"
+    ruta_hogares = Path(__file__).resolve().parent.parent.parent / "utils" / "HogaresTotal.csv"
 
     region_totales = {}
 

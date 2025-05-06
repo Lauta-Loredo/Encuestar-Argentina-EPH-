@@ -24,4 +24,4 @@ with c1:
 with c2:
     st.page_link(str(PAGES_DIR / '2_Busqueda_por_Temas.py'), label= 'Busqueda por Temas',icon='🔎')
 with c3:
-    st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Carga de Datos',icon='📊')
+    st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='📊')

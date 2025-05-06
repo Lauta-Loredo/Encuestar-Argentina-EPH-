@@ -9,7 +9,7 @@ from src.DataSet import max_min_año_trimestre
 from src.automatizar_jupyter import rutas
 
 max_año_hogar, max_trimestre_hogar, min_año_hogar, min_trimestre_hogar, max_año_individuos, max_trimestre_individuos, min_año_individuos, min_trimestre_individuos = max_min_año_trimestre()
-()
+
 st.set_page_config(layout='wide')
 st.title("⬆️ Carga de Datos")
 

@@ -8,10 +8,10 @@ import csv
 import sys
 import os
 import importlib
-import condicion_habitalidad_copia
-import funcion_materialhogares
-importlib.reload(condicion_habitalidad_copia)
-importlib.reload(funcion_materialhogares)
+import cond_hab
+import materialhogares
+importlib.reload(cond_hab)
+importlib.reload(materialhogares)
 
 
 sys.path.append(os.path.abspath("../src"))
@@ -25,8 +25,8 @@ def funciones_hogares():
     headers = lector.fieldnames
     cond = "CONDICION_DE_HABITABILIDAD"
     if not cond in headers:
-        funcion_materialhogares.MATERIAL_TECHUMBRE(hogares)
-        condicion_habitalidad_copia.condicion_de_habitabilidad(hogares)
+        materialhogares.material_techumbre(hogares)
+        cond_hab.condicion_de_habitabilidad(hogares)
     return hogares
 
 hogares = funciones_hogares()
@@ -36,7 +36,7 @@ anio_usuario = input('Ingrese el año a buscar.')
 
 def hog_insu():
     hogares_insuficientes = {}
-    ruta_individuos = Path(__file__).resolve().parent.parent / "utils" / "IndividuosTotal.csv"
+    ruta_individuos = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
 
     # Primero detectar el trimestre más alto disponible
     trimestres = set()
@@ -58,7 +58,7 @@ def hog_insu():
     with open(ruta_individuos, mode='r', encoding='utf-8') as archivo:
         lector = csv.DictReader(archivo, delimiter=";")
         for persona in lector:
-            if persona['ANO4'] == anio_usuario and persona['TRIMESTRE'] == '4':
+            if persona['ANO4'] == anio_usuario and persona['TRIMESTRE'] == ultimo_trimestre:
                 clave = (persona['CODUSU'], persona['NRO_HOGAR'])
                 if clave in hogares_insuficientes and persona['CH12'] >= 7:
                     contador +=1

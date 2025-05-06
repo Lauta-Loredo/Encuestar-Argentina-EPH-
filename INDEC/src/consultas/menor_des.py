@@ -6,7 +6,7 @@ from pathlib import Path
 def menor_des():
     desocupacion = {}
 
-    ruta_individuos = Path(__file__).resolve().parent.parent / "utils" / "IndividuosTotal.csv"
+    ruta_individuos = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
 
     with open(ruta_individuos, mode='r', encoding='utf-8') as archivo:
         lector = csv.DictReader(archivo, delimiter=";")
