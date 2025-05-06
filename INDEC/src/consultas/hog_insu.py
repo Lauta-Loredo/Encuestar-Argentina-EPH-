@@ -51,16 +51,16 @@ def hog_insu():
     ultimo_trimestre = max(trimestres)
 
     for hogar in hogares:
-        if hogar['ANO4'] == anio_usuario and hogar['TRIMESTRE'] == ultimo_trimestre and hogar['CONDICION_DE_HABITABILIDAD'] == 'Insuficiente':
+        if hogar['ANO4'] == anio_usuario and hogar['TRIMESTRE'] == str(ultimo_trimestre) and hogar['CONDICION_DE_HABITABILIDAD'] == 'Insuficiente':
             clave = (hogar['CODUSU'], hogar['NRO_HOGAR'])
             hogares_insuficientes[clave] = True
     contador = 0
     with open(ruta_individuos, mode='r', encoding='utf-8') as archivo:
         lector = csv.DictReader(archivo, delimiter=";")
         for persona in lector:
-            if persona['ANO4'] == anio_usuario and persona['TRIMESTRE'] == ultimo_trimestre:
+            if persona['ANO4'] == anio_usuario and persona['TRIMESTRE'] == str(ultimo_trimestre):
                 clave = (persona['CODUSU'], persona['NRO_HOGAR'])
-                if clave in hogares_insuficientes and persona['CH12'] >= 7:
+                if clave in hogares_insuficientes and persona['CH12'] >= '7':
                     contador +=1
 
     print(f"Cantidad de personas en viviendas con condición insuficiente y nivel universitario o superior: {contador}")
