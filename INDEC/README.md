@@ -68,19 +68,23 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 
 ## 👥 Integrantes
 
-- Legajo 18143/6: [Lucentini Joaquin]
-- Legajo 18137/7: [Loredo Lautaro]
-- Legajo 18304/4: [Rodriguez Ulises]
-- Legajo 18212/1: [Morano Axel Martin]
-- Legajo 25550: [Carlos Martínez]
+- Lucentini Joaquin --> Legajo 18143/6
+- Loredo Lautaro --> Legajo 18137/7
+- Rodriguez Ulises --> Legajo 18304/4
+- Morano Axel Martin --> Legajo 18212/1
+- Arrechea Diego --> Legajo 17821/7
 
 --------------------------------------------------------------------
 
 ## 🌳 Estructura del Proyecto
 
 **Como es la estructura?**
-- La carpeta notebooks se encuentran la seccion A (individuos y hogares) y la seccion B (consultas) donde se encuentran separados cada uno de los puntos para ejecutar por separado
-- La carpeta src tiene 1_ La funcion que me permite unir todos los DataSet de individuos y hogares (por separado), 2_ La funcion para poner ejecutar los Jupyter de la seccion A y B de forma automatizada, 3_ Una carpeta funciones con todas las funciones necesarias para la seccion A y 4_ Una carpeta consultas con todas las funciones necesarias para la seccion B
+- En la carpeta notebooks se encuentran la seccion A (individuos y hogares) y la seccion B (consultas) donde se encuentran separados cada uno de los puntos para ejecutar por separado
+- La carpeta src tiene: 
+    1. La funcion que me permite unir todos los DataSet de individuos y hogares (por separado)
+    2. La funcion para poner ejecutar los Jupyter de la seccion A y B de forma automatizada
+    3. Una carpeta funciones con todas las funciones necesarias para la seccion A
+    4. Una carpeta consultas con todas las funciones necesarias para la seccion B
 - La carpeta streamlit contiene el codigo y paginas necesarias para la resolucion de los puntos especificados para el mismo
 - La carpeta Utils va a contener los csv cuando se generen con todos los DataSets y sus datos nuevos. Ademas va a contener una carpeta data donde contendra los archivos .zip del EPH suministrado por la pagina oficial del INDEC
 
