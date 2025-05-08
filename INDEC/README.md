@@ -78,13 +78,13 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 
 ## 🌳 Estructura del Proyecto
 
-    # Como es la estructura?
+**Como es la estructura?**
 - La carpeta notebooks se encuentran la seccion A (individuos y hogares) y la seccion B (consultas) donde se encuentran separados cada uno de los puntos para ejecutar por separado
 - La carpeta src tiene 1_ La funcion que me permite unir todos los DataSet de individuos y hogares (por separado), 2_ La funcion para poner ejecutar los Jupyter de la seccion A y B de forma automatizada, 3_ Una carpeta funciones con todas las funciones necesarias para la seccion A y 4_ Una carpeta consultas con todas las funciones necesarias para la seccion B
 - La carpeta streamlit contiene el codigo y paginas necesarias para la resolucion de los puntos especificados para el mismo
 - La carpeta Utils va a contener los csv cuando se generen con todos los DataSets y sus datos nuevos. Ademas va a contener una carpeta data donde contendra los archivos .zip del EPH suministrado por la pagina oficial del INDEC
 
-# Tree
+**Tree**
 
 ```bash
 INDEC/
