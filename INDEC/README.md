@@ -42,15 +42,11 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 3. **Crear y activar el entorno virtual**:
     **Windows**
 
-    python -m venv venv
-
-    .\venv\Scripts\activate
+    python -m venv venv  ----------  .\venv\Scripts\activate
 
     **Linux/Mac**
 
-    python3 -m venv venv
-
-    source venv/bin/activate
+    python3 -m venv venv  ---------  source venv/bin/activate
 
 4. **Instala el requirements**:
 
@@ -91,25 +87,24 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 # Tree
 
 ```bash
-
-├── INDEC
-│   ├── notebooks                           
-│   │   ├── consultas.ipynb                 
-│   │   ├── hogares.ipynb
-│   │   └── individuos.ipynb
-│   ├── src
-│   │   ├── automatizar_jupyter.py
-│   │   ├── consultas   #Carpeta con las funciones para la seccion B
-│   │   ├── DataSet.py
-│   │   ├── funciones   #Carpeta con las funciones para la seccion A
-│   │   ├── __init__.py
-│   ├── streamlit
-│   │   ├── Inicio.py
-│   │   └── pages               #Carpeta con paginas de Streamlit
-│   ├── utils
-│   │   ├── constantes.py
-│   │   ├── data                #Carpeta con la data del EPH
-│   │   └── __init__.py
-│   ├── README.md
-│   ├── requirements.txt
-├── Python - Trabajo Integrador Parte 1.pdf
+INDEC/
+├── notebooks/
+│   ├── consultas.ipynb
+│   ├── hogares.ipynb
+│   └── individuos.ipynb
+├── src/
+│   ├── automatizar_jupyter.py
+│   ├── consultas/          # Funciones para la sección B
+│   ├── DataSet.py
+│   ├── funciones/          # Funciones para la sección A
+│   ├── __init__.py
+│   └── streamlit/
+│       ├── inicio.py
+│       └── pages/          # Páginas de Streamlit
+├── utils/
+│   ├── constantes.py
+│   ├── data/               # Carpeta con la data del EPH
+│   └── __init__.py
+├── README.md
+└── requirements.txt
+```
