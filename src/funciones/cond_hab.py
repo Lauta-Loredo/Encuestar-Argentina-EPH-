@@ -15,7 +15,7 @@ def condicion_de_habitabilidad(hogares):
     for h in hogares: 
         # Condición inmediata de habitabilidad insuficiente
         # Si no hay baño o agua
-        if (h[TIENE_BANIO] == '1' or h[HAY_AGUA] == '3'):
+        if (h[TIENE_BANIO] == '2' or h[HAY_AGUA] == '3'):
             h["CONDICION_DE_HABITABILIDAD"] = "Insuficiente"
         else:
             # Condiciones estructurales básicas del hogar

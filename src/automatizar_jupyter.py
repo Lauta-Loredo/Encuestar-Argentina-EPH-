@@ -37,3 +37,6 @@ def rutas ():
     ruta_archivo2 = Path(__file__).resolve().parent.parent / "notebooks" / "hogares.ipynb"
     ejecutar_notebook(ruta_archivo)
     ejecutar_notebook(ruta_archivo2)
+
+
+rutas()

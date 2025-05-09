@@ -27,14 +27,12 @@ def funciones_hogares():
     if not cond in headers:
         materialhogares.material_techumbre(hogares)
         cond_hab.condicion_de_habitabilidad(hogares)
-    return hogares
-
-hogares = funciones_hogares()
-
-anio_usuario = input('Ingrese el año a buscar.')    
+    return hogares  
 
 
 def hog_insu():
+    hogares = funciones_hogares()
+    anio_usuario = input("Ingrese el año a buscar.")
     hogares_insuficientes = {}
     ruta_individuos = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
 
