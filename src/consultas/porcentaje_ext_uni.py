@@ -34,4 +34,4 @@ def porcentaje_extranjeros_universitarios():
                     pers += 1
     
     #Imprime el resultado y verifica que no se divida por 0 para no generar un error
-    print(f"El porcentaje de personas no nacidas en Argentina con nivel universitario o superior es: { (round(pers/total * 100, 2) )if total != 0 else 'N/A'}%")
+    print(f"El porcentaje de personas no nacidas en Argentina con nivel universitario o superior es: {round(pers/total * 100, 2)}%") if total != 0 else print("No hay datos disponibles para el período seleccionado.")
