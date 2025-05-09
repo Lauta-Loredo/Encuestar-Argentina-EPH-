@@ -7,13 +7,6 @@ import csv
 ruta_const = Path(__file__).resolve().parents[2] / "utils"
 sys.path.append(str(ruta_const))
 
-'''
-# Agregar la ruta absoluta de 'utils' al sys.path
-ruta_utils = Path(__file__).resolve().parents[2] / "utils"
-if str(ruta_utils) not in sys.path:
-    sys.path.append(str(ruta_utils))
-'''
-
 # Importar la constante de nombres de aglomerados
 from constantes import NOMBRES_AGLOMERADOS as NOMBRES
 
