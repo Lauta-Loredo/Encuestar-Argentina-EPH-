@@ -7,9 +7,15 @@ import csv
 ruta_const = Path(__file__).resolve().parents[2] / "utils"
 sys.path.append(str(ruta_const))
 
-#Importo la constante de nombres de aglomerados
-from constantes import NOMBRES_AGLOMERADOS as NOMBRES
+'''
+# Agregar la ruta absoluta de 'utils' al sys.path
+ruta_utils = Path(__file__).resolve().parents[2] / "utils"
+if str(ruta_utils) not in sys.path:
+    sys.path.append(str(ruta_utils))
+'''
 
+# Importar la constante de nombres de aglomerados
+from constantes import NOMBRES_AGLOMERADOS as NOMBRES
 
 #Calcula los porcentajes por aglomerado según el tipo de individuo que se pase
 def calcular_porcentajes_por_aglomerado(individuos,NOMBRES_AGLOMERADOS, tipo_individuo, hogares = None):
@@ -20,24 +26,28 @@ def calcular_porcentajes_por_aglomerado(individuos,NOMBRES_AGLOMERADOS, tipo_ind
             if hogar["CODUSU"] == cod_usu and hogar["CONDICION_DE_HABITABILIDAD"] == "Insuficiente":
                 return True
         return False
-    #Inicialización de contadores por aglomerado
-    total_por_aglomerado = {}
-    cumplen_por_aglomerado = {}
-    
-    for p in individuos:
-        aglo = p["AGLOMERADO"]
-        total_por_aglomerado[aglo] = total_por_aglomerado.get(aglo, 0) + 1
+    #Analizo si tengo individuos para analizar
+    if individuos is None:
+        print("No hay individuos para analizar.")
+    else:
+        #Inicialización de contadores por aglomerado
+        total_por_aglomerado = {}
+        cumplen_por_aglomerado = {}
+        
+        for p in individuos:
+            aglo = p["AGLOMERADO"]
+            total_por_aglomerado[aglo] = total_por_aglomerado.get(aglo, 0) + 1
 
-        #Tipo de individuo 0 personas que cursaron universidad
-        if tipo_individuo == 0:
-            if p.get("CH12") in ("6", "7", "8"):
-                cumplen_por_aglomerado[aglo] = cumplen_por_aglomerado.get(aglo, 0) + 1
+            #Tipo de individuo 0 personas que cursaron universidad
+            if tipo_individuo == 0:
+                if p.get("CH12") in ("6", "7", "8"):
+                    cumplen_por_aglomerado[aglo] = cumplen_por_aglomerado.get(aglo, 0) + 1
 
-        #Tipo de individuo 1 jubilados en hogares con habitabilidad insuficiente
-        elif tipo_individuo == 1 and hogares is not None:
-            if p["CAT_INAC"] == "1" and tiene_habitabilidad_insuficiente(p["CODUSU"]):
-                cumplen_por_aglomerado[aglo] = cumplen_por_aglomerado.get(aglo, 0) + 1
-    
+            #Tipo de individuo 1 jubilados en hogares con habitabilidad insuficiente
+            elif tipo_individuo == 1 and hogares is not None:
+                if p["CAT_INAC"] == "1" and tiene_habitabilidad_insuficiente(p["CODUSU"]):
+                    cumplen_por_aglomerado[aglo] = cumplen_por_aglomerado.get(aglo, 0) + 1
+        
     #Cálculo de porcentajes finales
     porcentajes = {}
     for aglo in total_por_aglomerado:
@@ -69,7 +79,7 @@ def obtener_individuos():
 
         if not ruta_individuos.exists():
             print(f" No se encontró el archivo en: {ruta_individuos.resolve()}")
-            return
+            return 
         else:
             with open(ruta_individuos, mode='r', encoding='utf-8') as individuos_file:
                 individuos = list(csv.DictReader(individuos_file, delimiter=";"))
@@ -78,10 +88,10 @@ def obtener_individuos():
 #Lee el archivo de hogares y devuelve la lista de diccionarios
 def obtener_hogares():
         ruta_hogares = Path(__file__).resolve().parent.parent.parent / "utils" / "HogaresTotal.csv"
-
+        
         if not ruta_hogares.exists():
             print(f" No se encontró el archivo en: {ruta_hogares.resolve()}")
-            return
+            return 
         else:
             with open(ruta_hogares, mode='r', encoding='utf-8') as individuos_file:
                 hogares = list(csv.DictReader(individuos_file, delimiter=";"))
@@ -103,4 +113,4 @@ def porcentaje_jubilados_condicion_insuficiente(individuos):
 
     porcentajes = calcular_porcentajes_por_aglomerado(personas_ultimo_trimestre,NOMBRES,1,hogares)
     
-    imprimir_porcentajes_por_aglomerado(porcentajes, "jubilados en el ultimo trimestre, por aglomerado, que se encueuntran en condicion de habitabilidad insuficiente")
+    imprimir_porcentajes_por_aglomerado(porcentajes, "jubilados en el ultimo trimestre, por aglomerado, que se encuentran en condicion de habitabilidad insuficiente")
