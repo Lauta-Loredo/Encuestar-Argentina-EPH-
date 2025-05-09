@@ -3,21 +3,13 @@ import sys
 from pathlib import Path
 import csv
 
-#from utils.constantes import NOMBRES_AGLOMERADOS as NOMBRES
+#Obtengo ruta absoluta de utils
+ruta_const = Path(__file__).resolve().parents[2] / "utils"
+sys.path.append(str(ruta_const))
 
-NOMBRES_AGLOMERADOS = {"2": "Gran La Plata", "3": "Bahía Blanca - Cerri", "4": "Gran Rosario", 
-                    "5": "Gran Santa Fé", "06": "Gran Paraná", "7": "Posadas", 
-                    "8": "Gran Resistencia", "9": "Comodoro Rivadavia - Rada Tilly", 
-                    "10": "Gran Mendoza", "12": "Corrientes", "13": "Gran Córdoba", 
-                    "14": "Concordia", "15": "Formosa", "17": "Neuquén - Plottier", 
-                    "18": "Santiago del Estero - La Banda", "19": "Jujuy - Palpalá", 
-                    "20": "Río Gallegos", "22": "Gran Catamarca", "23": "Gran Salta", 
-                    "25": "La Rioja", "26": "Gran San Luis", "27": "Gran San Juan", 
-                    "29": "Gran Tucumán - Tafí Viejo", "30": "Santa Rosa - Toay", 
-                    "31": "Ushuaia - Río Grande", "32": "Ciudad Autonoma de Buenos Aires", 
-                    "33": "Partidos del GBA", "34": "Mar del Plata", "36": "Río Cuarto", 
-                    "38": "San Nicolás - Villa Constitución", "91": "Rawson - Trelew", 
-                    "93": "Viedma - Carmen de Patagones"}
+#Importo la constante de nombres de aglomerados
+from constantes import NOMBRES_AGLOMERADOS as NOMBRES
+
 
 #Calcula los porcentajes por aglomerado según el tipo de individuo que se pase
 def calcular_porcentajes_por_aglomerado(individuos,NOMBRES_AGLOMERADOS, tipo_individuo, hogares = None):
@@ -97,7 +89,7 @@ def obtener_hogares():
 
 #Lee el archivo de individuos y devuelve la lista de registros
 def porcentaje_universitarios_por_aglomerado(individuos):
-    porcentajes = calcular_porcentajes_por_aglomerado(individuos, NOMBRES_AGLOMERADOS,0)
+    porcentajes = calcular_porcentajes_por_aglomerado(individuos, NOMBRES,0)
     
     imprimir_porcentajes_por_aglomerado(porcentajes,"personas, por aglomerado, que cursaron al menos un nivel universitario.")
 
@@ -109,6 +101,6 @@ def porcentaje_jubilados_condicion_insuficiente(individuos):
     #Filtramos las personas del último trimestre del ultimo anio
     personas_ultimo_trimestre = [p for p in individuos if p["ANO4"] == ult_anio and p["TRIMESTRE"] == ult_trim]
 
-    porcentajes = calcular_porcentajes_por_aglomerado(personas_ultimo_trimestre,NOMBRES_AGLOMERADOS,1,hogares)
+    porcentajes = calcular_porcentajes_por_aglomerado(personas_ultimo_trimestre,NOMBRES,1,hogares)
     
     imprimir_porcentajes_por_aglomerado(porcentajes, "jubilados en el ultimo trimestre, por aglomerado, que se encueuntran en condicion de habitabilidad insuficiente")
