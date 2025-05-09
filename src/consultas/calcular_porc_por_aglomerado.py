@@ -8,7 +8,7 @@ ruta_const = Path(__file__).resolve().parents[2] / "utils"
 sys.path.append(str(ruta_const))
 
 # Importar la constante de nombres de aglomerados
-from constantes import NOMBRES_AGLOMERADOS as NOMBRES
+from constantes import NOMBRES_AGLOMERADOS
 
 #Calcula los porcentajes por aglomerado según el tipo de individuo que se pase
 def calcular_porcentajes_por_aglomerado(individuos,NOMBRES_AGLOMERADOS, tipo_individuo, hogares = None):
@@ -92,7 +92,7 @@ def obtener_hogares():
 
 #Lee el archivo de individuos y devuelve la lista de registros
 def porcentaje_universitarios_por_aglomerado(individuos):
-    porcentajes = calcular_porcentajes_por_aglomerado(individuos, NOMBRES,0)
+    porcentajes = calcular_porcentajes_por_aglomerado(individuos, NOMBRES_AGLOMERADOS,0)
     
     imprimir_porcentajes_por_aglomerado(porcentajes,"personas, por aglomerado, que cursaron al menos un nivel universitario.")
 
@@ -104,6 +104,6 @@ def porcentaje_jubilados_condicion_insuficiente(individuos):
     #Filtramos las personas del último trimestre del ultimo anio
     personas_ultimo_trimestre = [p for p in individuos if p["ANO4"] == ult_anio and p["TRIMESTRE"] == ult_trim]
 
-    porcentajes = calcular_porcentajes_por_aglomerado(personas_ultimo_trimestre,NOMBRES,1,hogares)
+    porcentajes = calcular_porcentajes_por_aglomerado(personas_ultimo_trimestre,NOMBRES_AGLOMERADOS,1,hogares)
     
     imprimir_porcentajes_por_aglomerado(porcentajes, "jubilados en el ultimo trimestre, por aglomerado, que se encuentran en condicion de habitabilidad insuficiente")
