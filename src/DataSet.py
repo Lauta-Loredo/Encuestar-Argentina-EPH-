@@ -95,7 +95,6 @@ def max_min_año_trimestre():
     Retorna: una tupla(año, trimestre) maximos y minimos para individuos y hogares"""
 
     ruta_hogares = Path(__file__).resolve().parent.parent / "utils" / "HogaresTotal.csv"
-    print(ruta_hogares)
     if not os.path.exists(ruta_hogares):
         return False
     else:
