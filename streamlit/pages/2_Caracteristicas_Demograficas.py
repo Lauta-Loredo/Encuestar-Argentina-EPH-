@@ -39,11 +39,19 @@ if df_filtrado.empty:
     st.warning("No hay datos disponibles para ese año y trimestre")
     st.stop
 
-#Creacion de los grupos de edad de 10 en 10
+#Creacion de los grupos de edad de 10 en 10:
+
+#Creo una lista que va desde el 0 al 100 pero de 10 en 10
 bins = list(range(0,101,10))
+
+#Creo lista con etiquetas en formato str --> "i-i+9", para cada numero i en bins
 labels = [f"{i}-{i+9}" for i in bins [:-1]]
+
+#Creo columna en df llamada "grupo_edad", con .cut asigno un grupo de edad a cada persona
 df_filtrado["grupo_edad"] = pd.cut(df_filtrado["CH06"], bins=bins, labels=labels, right=False)
 
+#Agrupo el df por combinacion de grupo de edad y sexo ,y con
+#.size() convierto el resultado de agrupacionen una columna nueva llamada cantidad
 df_agrupado = df_filtrado.groupby(["grupo_edad","CH04_str"]).size().reset_index(name="cantidad")
 
 #Definir para que cada sexo sea una columna
@@ -53,4 +61,6 @@ df_pivot = df_agrupado.pivot(index="grupo_edad",columns="CH04_str", values="cant
 
 st.subheader(f"Cantidad de personas por grupo de edad (de a 10 años) y sexo ({anios}-T{trimestre})")
 st.bar_chart(df_pivot)
+
+st.divider()
 
