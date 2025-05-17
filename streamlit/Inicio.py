@@ -17,11 +17,18 @@ if __name__ == '__main__':
 
 st.divider()
 
-c1,c2,c3 = st.columns(3)
+c1,c2,c3,c4,c5,c6,c7 = st.columns(7)
 
 with c1:
     st.page_link(str(PAGES_DIR / '1_Carga_de_Datos.py'), label= 'Carga de Datos',icon='⬆️')
 with c2:
-    st.page_link(str(PAGES_DIR / '2_Busqueda_por_Temas.py'), label= 'Busqueda por Temas',icon='🔎')
-with c3:
-    st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='📊')
+    st.page_link(str(PAGES_DIR / '2_Caracteristicas_Demograficas.py'), label= 'Caracteristicas Demográficas',icon="📊")
+# with c3:
+#     st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='')
+# with c4:
+#     st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='')
+# with c5:
+#     st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='')
+# with c6:
+#     st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='')
+# with c7:
