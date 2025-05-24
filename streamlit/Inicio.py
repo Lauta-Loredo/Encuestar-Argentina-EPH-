@@ -25,8 +25,8 @@ with c2:
     st.page_link(str(PAGES_DIR / '2_Caracteristicas_Demograficas.py'), label= 'Caracteristicas Demográficas',icon="📊")
 # with c3:
 #     st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='')
-# with c4:
-#     st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='')
+with c4:
+    st.page_link(str(PAGES_DIR / '4_Características_de_la_Vivienda.py'), label= 'Características de la Vivienda',icon='🏘️')
 # with c5:
 #     st.page_link(str(PAGES_DIR / '3_Visualizacion.py'), label= 'Visualización de datos',icon='')
 # with c6:
