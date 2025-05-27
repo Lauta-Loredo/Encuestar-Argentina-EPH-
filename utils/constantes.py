@@ -11,3 +11,30 @@ NOMBRES_AGLOMERADOS = {"2": "Gran La Plata", "3": "Bahía Blanca - Cerri", "4": 
                     "33": "Partidos del GBA", "34": "Mar del Plata", "36": "Río Cuarto", 
                     "38": "San Nicolás - Villa Constitución", "91": "Rawson - Trelew", 
                     "93": "Viedma - Carmen de Patagones"}
+
+TIPOS_VIVIENDAS = {1 : 'Casa' , 
+                2 : 'Departamento', 
+                3 : 'Pieza en inquilinato',
+                4 : 'Pieza en hotel/pensión',
+                5 : 'Local no construido para habitación',
+                6: 'Otros'
+}
+
+TIPOS_PISOS = {1 : 'mosaico/baldosa/madera/cerámica/alfombra',
+        2 : 'cemento/ladrillo fijo',
+        3 : 'ladrillo suelto/tierra'    
+}
+
+UBICACION_BANIOS = {1 : 'Dentro de la vivienda',
+        2 : 'Fuera de la vivienda pero dentro del terreno',
+        3 : 'Fuera del terreno'
+}
+DERECHO_PROPIEDAD = {1 : 'Propietario de la vivienda y el terreno',
+                2 : 'Propietario de la vivienda solamente',
+                3 : 'Inquilino/arrendatario de la vivienda',
+                4 : 'Ocupante por pago de impuestos/expensas',
+                5 : 'Ocupante en relación de dependencia',
+                6 : 'Ocupante gratuito (con permiso)',
+                7 : 'Ocupante de hecho (sin permiso)',
+                8 : 'Está en sucesión'
+}
