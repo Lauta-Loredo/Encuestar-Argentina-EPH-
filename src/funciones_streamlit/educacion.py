@@ -2,20 +2,24 @@ import pandas as pd
 from pathlib import Path
 import streamlit as st
 
+
 @st.cache_data
 def carga_df ():
 
     ruta_csv_individuos = Path(__file__).parent.parent.parent / "utils" / "IndividuosTotal.csv"
     
-    columnas_necesarias = ["ANO4", "TRIMESTRE", "NIVEL_ED_str", "PONDERA"]
+    columnas_necesarias = ["ANO4", "TRIMESTRE", "CH06","NIVEL_ED_str", "PONDERA", "CODUSU", "NRO_HOGAR", "COMPONENTE"]
     df = pd.read_csv(ruta_csv_individuos, delimiter=";", usecols=columnas_necesarias)
     
     # Chequeo que las columnas esten
-    columnas = ["ANO4", "TRIMESTRE",  "NIVEL_ED_str", "PONDERA"]
-    if not set(columnas).issubset(df.columns):
+    if not set(columnas_necesarias).issubset(df.columns):
         st.error("El archivo no contiene las columnas necesarias")
         st.stop()
-    return df
+    
+    # Elimino duplicados
+    subset_cols = ["ANO4", "CODUSU", "NRO_HOGAR", "COMPONENTE"]
+    df_sin_duplicados = df.drop_duplicates(subset=subset_cols)
+    return df_sin_duplicados
 
 def anio_trimestre (df):
     
@@ -45,16 +49,19 @@ def personalizacion_datos(df):
     anio, trimestre = anio_trimestre(df)
 
     df = df[(df["ANO4"] == anio) & (df["TRIMESTRE"] == trimestre)]
-    
+    df_por_anio = df[(df["ANO4"] == anio)]
     # Agrupo y sumo Ponderaciones
     df_resumen = (df.groupby('NIVEL_ED_str')['PONDERA'].sum().reset_index())
     # Ordeno
     df_resumen = df_resumen.sort_values(by='PONDERA', ascending=True)   
     #Elimino dato no relevante     
-    df_resumen = df_resumen[df_resumen["NIVEL_ED_str"] != "Sin informacion"]\
+    df_resumen = df_resumen[df_resumen["NIVEL_ED_str"] != "Sin informacion"]
     # Cambios nombres de las columnas 
     cambios_nom_columns = {'NIVEL_ED_str':'Niveles Educativos', 'PONDERA' : 'Cantidad Maxima'}
     df_final = df_resumen.rename(columns = cambios_nom_columns)
     
-    return df_final
+    return df_final,df_por_anio
     
+def agrupamiento (df):
+    
+    df_mascomun = (df.groupby('NIVEL_ED_str')['PONDERA'].sum().reset_index())
