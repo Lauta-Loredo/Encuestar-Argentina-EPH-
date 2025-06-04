@@ -1,6 +1,8 @@
 import pandas as pd
 from pathlib import Path
 import streamlit as st
+import plotly.express as px
+
 
 
 @st.cache_data
@@ -62,6 +64,59 @@ def personalizacion_datos(df):
     
     return df_final,df_por_anio
     
-def agrupamiento (df):
+def agrupamiento (df_por_anio, opciones):
     
-    df_mascomun = (df.groupby('NIVEL_ED_str')['PONDERA'].sum().reset_index())
+    df_filtrado = df_por_anio[df_por_anio['CH06'] >= 20]
+
+    # Agrupar por año, nivel educacional y edad
+    df_mascomun = df_filtrado.groupby(['ANO4', 'NIVEL_ED_str', 'CH06'])['PONDERA'].sum().reset_index()
+
+    resultados_por_grupos = {}
+
+    for rango in opciones:
+        if rango == '+60':
+            df_rango = df_mascomun[df_mascomun['CH06'] >= 60]
+        else:
+            limite_inferior, limite_superior = map(int, rango.split('-'))
+            df_rango = df_mascomun[(df_mascomun['CH06'] >= limite_inferior) & (df_mascomun['CH06'] <= limite_superior)]
+
+        # Agrupar por nivel educacional para encontrar el más común en este rango
+        df_nivel = df_rango.groupby('NIVEL_ED_str')['PONDERA'].sum().reset_index()
+        if not df_nivel.empty:
+            nivel_mas_comun = df_nivel.loc[df_nivel['PONDERA'].idxmax()]
+            resultados_por_grupos[rango] = (nivel_mas_comun['NIVEL_ED_str'], nivel_mas_comun['PONDERA'])
+    return resultados_por_grupos
+
+def grafico_barras (resultados_por_grupos, orden_etario):
+    
+     # Creo un dataframe a partir del resultados_por_grupos
+        df_grafico = pd.DataFrame([{'Grupo Etario': r, 'Nivel Educativo': n, 'PONDERA': p}
+            for r, (n, p) in resultados_por_grupos.items()])
+
+        # Esto lo uso para que las barras a la hora de ser visualizadas por el usuario esten ordenadas 
+        # sin importar el orden de seleccion
+        df_grafico["Grupo Etario"] = pd.Categorical(
+        df_grafico["Grupo Etario"],
+        categories=orden_etario,
+        ordered=True
+    )
+
+        # Ordenar el DataFrame según ese orden
+        df_grafico = df_grafico.sort_values("Grupo Etario")
+
+        # Creo el Grafico 
+        st.subheader("Visualización gráfica del nivel educativo más común por grupo etario")
+
+        fig = px.bar(
+            df_grafico,
+            x='Grupo Etario',
+            y='PONDERA',
+            color='Nivel Educativo',
+            title="Nivel educativo más común por grupo etario",
+            labels={'PONDERA': 'Total ponderado'},
+            height=500
+        )
+        fig.update_traces(textposition='outside', width = 0.35)
+        fig.update_layout(xaxis_title="Grupo Etario", yaxis_title="PONDERA", legend_title="Nivel Educativo")
+
+        return fig    
