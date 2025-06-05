@@ -2,8 +2,12 @@ import pandas as pd
 from pathlib import Path
 import streamlit as st
 import plotly.express as px
+import matplotlib.pyplot as plt
 
 
+#---------------------------------------------------------------------------------------------------------------------
+    #LAS SIGIENTES FUNCIONES SON PARA LA CARGA DE DATOS Y LA FILTRACION DE LAS COLUMNAAS QUE PRECISO
+#---------------------------------------------------------------------------------------------------------------------
 
 @st.cache_data
 def carga_df ():
@@ -63,7 +67,10 @@ def personalizacion_datos(df):
     df_final = df_resumen.rename(columns = cambios_nom_columns)
     
     return df_final,df_por_anio
-    
+
+#---------------------------------------------------------------------------------------------------------------------
+        #LAS SIGIENTES FUNCIONES SON PARA EL PUNTO 1.6.2
+#---------------------------------------------------------------------------------------------------------------------
 def agrupamiento (df_por_anio, opciones):
     
     df_filtrado = df_por_anio[df_por_anio['CH06'] >= 20]
@@ -119,4 +126,60 @@ def grafico_barras (resultados_por_grupos, orden_etario):
         fig.update_traces(textposition='outside', width = 0.35)
         fig.update_layout(xaxis_title="Grupo Etario", yaxis_title="PONDERA", legend_title="Nivel Educativo")
 
-        return fig    
+        return fig   
+
+#---------------------------------------------------------------------------------------------------------------------
+        #LAS SIGIENTES FUNCIONES SON PARA EL PUNTO 1.6.3    
+#---------------------------------------------------------------------------------------------------------------------
+import json
+arc_json = Path(__file__).resolve().parent.parent.parent / "utils" / "data"/ "aglomerados_coordenadas.json"
+
+def exportar_csv (data):
+    
+    # utilizo el archivo "aglomerados_coordenadas" para extraer los nombres de los aglomerdos
+
+    with open(arc_json, encoding='utf-8') as f:
+        aglo_data = json.load(f)
+    
+    
+    # cambio el codigo de aglomerado por su nombre
+    ranking_con_nombres = {}
+    for cod, datos in data.items():
+        # cod.zfill tuve que agregarlo por que me generaba error los codigos con un solo digito
+        # en el diccionario por que el el json tenia un 0 delaten del digito EJ: 02
+        nombre = aglo_data.get(cod.zfill(2), {}).get('nombre', f'Aglomerado {cod}')
+        ranking_con_nombres[nombre] = datos
+
+    # convierto el diccionario en dataframe
+    df = pd.DataFrame.from_dict(ranking_con_nombres, orient='index')
+    
+    # convierto ranking 5 en CSV
+    csv = df.to_csv(index=True)
+    
+    return csv
+
+#---------------------------------------------------------------------------------------------------------------------
+        #LAS SIGIENTES FUNCIONES SON PARA EL PUNTO 1.6.4 
+#---------------------------------------------------------------------------------------------------------------------
+
+import altair as alt
+
+def grafica_porcentajes_lectura(años, porcentajes_sabe, porcentajes_nosabe):
+    df = pd.DataFrame({
+        'Año': años * 2,
+        'Porcentaje': porcentajes_sabe + porcentajes_nosabe,
+        'Lectura': ['Sabe leer'] * len(años) + ['No sabe leer'] * len(años)
+    })
+
+    chart = alt.Chart(df).mark_line(point=True).encode(
+        x=alt.X('Año:Q', axis=alt.Axis(title='Año', format='d')),
+        y=alt.Y('Porcentaje:Q', title='Porcentaje (%)'),
+        color='Lectura:N',
+        tooltip=['Año', 'Lectura', 'Porcentaje']
+    ).properties(
+        title='Porcentaje de personas que saben/no saben leer por año',
+        width=700,
+        height=400
+    ).interactive()
+
+    return chart
