@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
 
-from src.funciones_streamlit import page_2 as ats
+from src.funciones_streamlit import demografia as ats
 from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obtener los aglomerados
 
 st.title("📈 Caracteristicas Demográficas")
