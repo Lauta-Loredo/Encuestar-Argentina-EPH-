@@ -4,9 +4,11 @@ from pathlib import Path
 import sys
 import matplotlib.pyplot as plt
 
+#Agrego direccion raiz del proyecto al sys.path
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
 
+#Importo algunas funciones
 from src.funciones_streamlit import demografia as ats
 from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obtener los aglomerados
 
@@ -22,30 +24,33 @@ st.warning("Selecciona el subtitulo que deseas visualizar, para asi poder ver su
 # Distribución de la población por grupos y sexo cada 10 años
 st.divider()
 with st.expander("Distribución de la población por grupos y sexo cada 10 años", expanded=False):
-    df = ats.cargo_valido_columnas()
+    df = ats.cargo_valido_columnas() #Cargo el DF con columnas que voy a usar
 
     if df is None:
         st.error('Ocurrió un Error Imprevisto')
-        st.stop()
+        st.stop() #Si ocurre algo detego la app
 
+    #Un selectbox para la seleccion de año y trimestre
     anios_disponibles = sorted(df["ANO4"].unique())
     anios = st.selectbox("Seleccione un año: ", anios_disponibles)
     tri_disponible = sorted(df[df["ANO4"] == anios]["TRIMESTRE"].unique())
     trimestre = st.selectbox("Seleccione un trimestre: ", tri_disponible)
 
+    #Filtro los datos segun el año y trimestre seleccionados
     df_filtrado = df[(df["ANO4"] == anios) & (df["TRIMESTRE"] == trimestre)]
 
     if df_filtrado.empty:
         st.warning("No hay datos disponibles para ese año y trimestre")
         st.stop()
 
+    #Creo un grafico de barras por grupos de edad y sexo
     grafico = ats.grafico_barras_grup_edad(df_filtrado, anios, trimestre)
 
     if grafico is None:
         st.error('Ocurrió un error al configurar el gráfico')
         st.stop()
 
-    st.pyplot(grafico)
+    st.pyplot(grafico) #Si el grafico se creo correctamente, se muestra
 
 # Edad promedio por aglomerado
 with st.expander("Edad promedio de personas por aglomerado", expanded=False):
