@@ -8,6 +8,7 @@
 - [Instalación](#-instalación)
 - [Integrantes](#-integrantes)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
+- [Licencia MIT](#-licencia-mit)
 
 --------------------------------------------------------------------
 
@@ -54,7 +55,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 
 4. **Agregar archivos EPH**:
 
-    1. Descarga archivos .zip de la Encuesta Permanente de Hogares (EPH) de la página oficial del INDEC
+    1. Descarga archivos .zip de la Encuesta Permanente de Hogares (EPH) de la [página oficial del INDEC](https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos)
     2. Descarga valores de la canasta basica de alimentos [aqui](https://drive.google.com/file/d/1VmucuJHJZCWVnqWy7eoyt1euOsBm8krT/view?usp=sharing)
     2. Colocarlos en la carpeta /utils/data
         **Estructura final:**
@@ -87,8 +88,8 @@ Sigue estos pasos para configurar el entorno de desarrollo:
     2. La funcion para poner ejecutar los Jupyter de la seccion A y B de forma automatizada
     3. Una carpeta funciones con todas las funciones necesarias para la seccion A
     4. Una carpeta consultas con todas las funciones necesarias para la seccion B
-- La carpeta streamlit contiene el codigo y paginas necesarias para la resolucion de los puntos especificados para el mismo
-- La carpeta Utils va a contener los csv cuando se generen con todos los DataSets y sus datos nuevos. Ademas va a contener una carpeta data donde contendra los archivos .zip del EPH suministrado por la pagina oficial del INDEC
+- La carpeta streamlit contiene la pagina principal y una carpeta con el orden de las demas paginas donde se resuelven los ejercicios mencionados en la parte 2 de la entrega del TP Integrador
+- La carpeta Utils va a contener los csv cuando se generen con todos los DataSets y sus datos nuevos. Ademas va a contener una carpeta data donde contendra los archivos .zip del EPH suministrado por la pagina oficial del INDEC, coordenadas de los aglomerados y un archivo .csv con los valores de la canasta basica de alimentos
 
 **Tree**
 
@@ -100,19 +101,35 @@ INDEC/
 │   └── individuos.ipynb
 ├── src/
 │   ├── automatizar_jupyter.py
-│   ├── consultas/          # Funciones para la sección B
+│   ├── consultas/          
 │   ├── DataSet.py
-│   ├── funciones/          # Funciones para la sección A
+│   ├── funciones/          
 │   ├── __init__.py
-│   └── streamlit/
-│       ├── inicio.py
-│       └── pages/          # Páginas de Streamlit
+│   └── funciones_streamlit/ 
+├── streamlit/          
+│   ├── pages/
+│   ├── Inicio.py
 ├── utils/
 │   ├── constantes.py
-│   ├── data/               # Carpeta con la data del EPH
+│   ├── data/               
 │   └── __init__.py
 ├── README.md
 └── requirements.txt
+├── license.txt
+└── .gitignore
 ```
 
-PONER LICENCIAS
+--------------------------------------------------------------------
+
+<sub>
+
+### 📝 Licencia MIT
+
+Copyright (c) 2025 [Grupo 26]  
+Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados, para utilizar el Software sin restricciones, incluyendo, sin limitación, los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del Software, y a permitir a las personas a quienes se les proporcione el Software hacerlo, sujeto a las siguientes condiciones:
+
+El aviso de copyright anterior y este aviso de permiso deberán incluirse en todas las copias o partes sustanciales del Software.
+
+EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITÁNDOSE A LAS GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS AUTORES O LOS TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑO O OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN CONTRACTUAL, AGRAVIO O DE OTRO TIPO, QUE SURJA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTROS TRATOS EN EL SOFTWARE.
+
+</sub>
