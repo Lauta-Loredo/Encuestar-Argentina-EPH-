@@ -55,6 +55,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 4. **Agregar archivos EPH**:
 
     1. Descarga archivos .zip de la Encuesta Permanente de Hogares (EPH) de la página oficial del INDEC
+    2. Descarga valores de la canasta basica de alimentos [aqui](https://drive.google.com/file/d/1VmucuJHJZCWVnqWy7eoyt1euOsBm8krT/view?usp=sharing)
     2. Colocarlos en la carpeta /utils/data
         **Estructura final:**
 
@@ -63,6 +64,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
             │         ├── data                 
             │               ├── data_2_2019.zip
             |               ├── data_1_2020.zip
+            |               ├── valores-canasta-basica-alimentos-canasta-basica-total-mensual-2016.csv
 
 --------------------------------------------------------------------
 
