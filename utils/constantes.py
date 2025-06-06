@@ -40,12 +40,12 @@ DERECHO_PROPIEDAD = {1 : 'Propietario de la vivienda y el terreno',
 }
 
 NIVEL_EDUCATIVO = {
-    1 : 'Primario incompleto',
-2 : 'Primario completo',
-3 : 'Secundario incompleto',
-4 : 'Secundario completo',
-5 : 'Superior universitario incompleto',
-6 : 'Superior universitario completo',
-7 : 'Sin instrucción',
-9 : 'Ns/Nr',
+        1 : 'Primario incompleto',
+        2 : 'Primario completo',
+        3 : 'Secundario incompleto',
+        4 : 'Secundario completo',
+        5 : 'Superior universitario incompleto',
+        6 : 'Superior universitario completo',
+        7 : 'Sin instrucción',
+        9 : 'Ns/Nr',
 }
