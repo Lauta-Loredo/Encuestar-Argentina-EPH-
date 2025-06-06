@@ -62,6 +62,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
             │               ├── data_2_2019.zip
             |               ├── data_1_2020.zip
             |               ├── valores-canasta-basica-alimentos-canasta-basica-total-mensual-2016.csv
+            |               ├── aglomerados_coordenadas.json
 
 --------------------------------------------------------------------
 ## 👥 Integrantes
