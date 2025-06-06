@@ -10,12 +10,10 @@
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 
 --------------------------------------------------------------------
-
 ## 🌟 Acerca del Proyecto
 "Programa diseñado para, en base a los EPH de diferentes años y trimestres, generar nuevos datos (columnas), csv con estos nuevos datos y los viejos y consultar sobre estos. Por otro lado tambien esta el diseño de una pagina en Streamlit donde se pueden visualizar e interactuar con diferentes tareas"
 
 --------------------------------------------------------------------
-
 ## 🌳 Requisitos
 
 - **Python 3**
@@ -23,7 +21,6 @@
 - **Terminal/Consola**
 
 --------------------------------------------------------------------
-
 ## 🛠️ Instalación
 
 Sigue estos pasos para configurar el entorno de desarrollo:
@@ -67,7 +64,6 @@ Sigue estos pasos para configurar el entorno de desarrollo:
             |               ├── valores-canasta-basica-alimentos-canasta-basica-total-mensual-2016.csv
 
 --------------------------------------------------------------------
-
 ## 👥 Integrantes
 
 - Lucentini Joaquin --> Legajo 18143/6
@@ -77,7 +73,6 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 - Arrechea Diego --> Legajo 17821/7
 
 --------------------------------------------------------------------
-
 ## 🌳 Estructura del Proyecto
 
 **Como es la estructura?**
@@ -119,7 +114,6 @@ INDEC/
 ```
 
 --------------------------------------------------------------------
-
 <details>
 <summary>📝 Licencia MIT</summary>
 
