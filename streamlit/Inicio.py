@@ -8,7 +8,7 @@ st.title("EPH Insight")
 
 def main(): 
     st.info("""
-    Esta aplicación va permitir explorar y analizar los datos provenientes de la Encuesta Permanente de Hogares (EPH) de Argentina, una operación estadística continua realizada por el INDEC.  
+    Esta aplicación permite explorar y analizar los datos provenientes de la Encuesta Permanente de Hogares (EPH) de Argentina, una operación estadística continua realizada por el INDEC.  
     La EPH recopila información socioeconómica de los hogares urbanos en Argentina, datos como: empleo, ingresos, educación, características del hogar, integrantes, entre muchos más.
     """) 
 
@@ -34,26 +34,32 @@ for i, (icono, texto, archivo) in enumerate(secciones):
         st.markdown(f"### {icono} {texto}")
         st.page_link(str(PAGES_DIR / archivo), label="Acceder")
 
-
-st.markdown("---")
-st.markdown("<p style='text-align: center;'>Desarrollado por Diego Arrechea, Ulises Rodriguez, Axel Morano, Lautaro Loredo y Lucentini Joaquin · 2025</p>", unsafe_allow_html=True)
-
 st.markdown("""<hr style="margin-top: 50px;">""", unsafe_allow_html=True)
 
 st.markdown("""
-<div style='font-size: 10pt; text-align: justify; color: gray;'>
-<h4 style='font-size: 11pt;'>Licencia MIT</h4>
+<div style='
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 10pt; 
+    text-align: justify; 
+    color: #333;
+'>
+<h4 style='font-size: 11pt; color: #222;'>Licencia MIT</h4>
 <p>
 Copyright (c) 2025 <strong>Grupo 26</strong>
 </p>
 <p>
 Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados, para utilizar el Software sin restricciones, incluyendo, sin limitación, los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del Software, y a permitir a las personas a quienes se les proporcione el Software hacerlo, sujeto a las siguientes condiciones:
 </p>
-<p>
-El aviso de copyright anterior y este aviso de permiso deberán incluirse en todas las copias o partes sustanciales del Software.
-</p>
-<p>
-EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O IMPLÍCITA, INCLUYENDO PERO NO LIMITÁNDOSE A LAS GARANTÍAS DE COMERCIALIZACIÓN, IDONEIDAD PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS AUTORES O LOS TITULARES DEL COPYRIGHT SERÁN RESPONSABLES DE NINGUNA RECLAMACIÓN, DAÑO O OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN CONTRACTUAL, AGRAVIO O DE OTRO TIPO, QUE SURJA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTROS TRATOS EN EL SOFTWARE.
+<p style='
+    text-align: center; 
+    background-color: #e9e9e9;
+    padding: 10px;
+    border-radius: 3px;
+    margin-top: 15px;
+'>
+Desarrollado por Diego Arrechea, Ulises Rodriguez, Axel Morano, Lautaro Loredo y Lucentini Joaquin · UNLP · 2025
 </p>
 </div>
 """, unsafe_allow_html=True)
