@@ -1,8 +1,9 @@
 from pathlib import Path
 import csv
 
-def aglomerados_map ():
-    """Retorna un diccionario con todos los englomerados"""
+
+def aglomerados_map():
+    """Retorna un diccionario con todos los aglomerados disponibles."""
     return {
         '2': 'Gran La Plata',
         '3': 'Bahía Blanca - Cerri',
@@ -29,7 +30,7 @@ def aglomerados_map ():
         '29': 'Gran Tucumán - Tafí Viejo',
         '30': 'Santa Rosa - Toay',
         '31': 'Ushuaia - Río Grande',
-        '32': 'Ciudad Autonoma de Buenos Aires',
+        '32': 'Ciudad Autónoma de Buenos Aires',
         '33': 'Partidos del GBA',
         '34': 'Mar del Plata',
         '36': 'Río Cuarto',
@@ -38,71 +39,76 @@ def aglomerados_map ():
         '93': 'Viedma - Carmen de Patagones'
     }
 
-def planilla_mas18_conAglomerado ():
-    
-    """Carga e imprime una planilla donde se ven la sumatoria de los mayores de edad segun
-    nivel de educacion para el englomerado que se selecciona"""
-    
-    #Creo el diccionario para almacenar los datos
+
+def planilla_mas18_con_aglomerado():
+    """
+    Carga e imprime una planilla con la suma ponderada de mayores de edad
+    según nivel educativo por aglomerado seleccionado.
+    """
     planilla = {}
-
-    #defino la ruta para el archivo csv de individuos
     ruta_individuos = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
-
-    #guardo los englomerados
     mapa_aglomerados = aglomerados_map()
 
-    #Muestra los aglomerados disponibles con formato "Código - Nombre"
     print("Aglomerados disponibles:")
     for codigo, nombre in sorted(mapa_aglomerados.items(), key=lambda x: int(x[0])):
         print(f"{codigo} - {nombre}")
 
-    #Solicita aglomerado (solo el número)
-    seleccion_aglomerado = input('Seleccione el número de aglomerado: ').strip()
-    
-    #Validar que el numero sea valido sea válida
-    while seleccion_aglomerado not in mapa_aglomerados:
+    seleccion = input('Seleccione el número de aglomerado: ').strip()
+    while seleccion not in mapa_aglomerados:
         print("Código inválido. Intente nuevamente.")
-        seleccion_aglomerado = input('Seleccione el número de aglomerado: \n').strip()
+        seleccion = input('Seleccione el número de aglomerado: ').strip()
 
-    #Procesar el csv filtrando por el aglomerado seleccionado
-    with open(ruta_individuos, mode='r', encoding='utf-8') as individuos_file:
-        individuos_reader = csv.DictReader(individuos_file, delimiter=";")
-        for ind in individuos_reader:
+    try:
+        with open(ruta_individuos, mode='r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter=";")
+            for ind in reader:
+                try:
+                    if ind.get('AGLOMERADO') != seleccion:
+                        continue
 
-            #Filtra por aglomerado seleccionado
-            if ind.get('AGLOMERADO') == seleccion_aglomerado:
-                año = ind['ANO4']
-                trimestre = ind['TRIMESTRE']
-                clave = f'{año} - T {trimestre}'
+                    edad = int(ind.get('CH06', 0))
+                    if edad < 18:
+                        continue
 
-                #Crea las claves de la planilla si no estan creados
-                if clave not in planilla:
-                    planilla[clave] = {
-                        'Primario incompleto': 0,
-                        'Primario completo': 0,
-                        'Secundario incompleto': 0,
-                        'Secundario completo': 0,
-                        'Superior o universitario': 0
-                    }
-                
-                #Suma al nivel educativo correspondiente
-                nivel_ed = ind.get('NIVEL_ED_str', '')
-                if nivel_ed in planilla[clave]:
-                    planilla[clave][nivel_ed] += 1
-    
+                    anio = ind['ANO4']
+                    trimestre = ind['TRIMESTRE']
+                    clave = f'{anio} - T {trimestre}'
+                    pondera = float(ind.get('PONDERA', '1'))
+                    nivel_ed = ind.get('NIVEL_ED_str', '')
+
+                    if clave not in planilla:
+                        planilla[clave] = {
+                            'Primario incompleto': 0.0,
+                            'Primario completo': 0.0,
+                            'Secundario incompleto': 0.0,
+                            'Secundario completo': 0.0,
+                            'Superior o universitario': 0.0
+                        }
+
+                    if nivel_ed in planilla[clave]:
+                        planilla[clave][nivel_ed] += pondera
+
+                except ValueError:
+                    continue
+
+    except FileNotFoundError:
+        print(f"No se encontró el archivo: {ruta_individuos}")
+        return
+    except Exception as e:
+        print(f"Error al procesar el archivo: {e}")
+        return
+
     if planilla:
-        #Se imprime la planilla si tiene datos
-        print(f"\nPlanilla de personas +18 según su nivel de estudios para el aglomerado de {mapa_aglomerados[seleccion_aglomerado]}:\n")
+        print(f"\nPlanilla de personas +18 según su nivel de estudios para el aglomerado de {mapa_aglomerados[seleccion]}:\n")
         print("{:<20} {:<20} {:<20} {:<20} {:<20} {:<20}".format(
-            'Año-trimestre', 'Primario inc.', 'Primario comp.', 
+            'Año-trimestre', 'Primario inc.', 'Primario comp.',
             'Secundario inc.', 'Secundario comp.', 'Superior'))
         print("-" * 120)
-        
-        for año_trimestre in sorted(planilla.keys()):
-            datos = planilla[año_trimestre]
-            print("{:<20} {:<20} {:<20} {:<20} {:<20} {:<20}".format(
-                año_trimestre,
+
+        for clave in sorted(planilla):
+            datos = planilla[clave]
+            print("{:<20} {:<20.2f} {:<20.2f} {:<20.2f} {:<20.2f} {:<20.2f}".format(
+                clave,
                 datos['Primario incompleto'],
                 datos['Primario completo'],
                 datos['Secundario incompleto'],
@@ -110,4 +116,3 @@ def planilla_mas18_conAglomerado ():
                 datos['Superior o universitario']))
     else:
         print("No hay datos para el aglomerado seleccionado.")
-

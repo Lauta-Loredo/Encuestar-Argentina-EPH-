@@ -2,121 +2,127 @@ from pathlib import Path
 import csv
 from collections import defaultdict
 
-def max_año_trimestre(ruta_hogares):
-    """Encuentra el año y trimestre más reciente en el archivo de hogares.
-    Recibe: la ruta de el archivo CSV de hogares
-    Retorna: una tupla(año, trimestre) más recientes"""
-    max_año = 0
+
+def max_ano_trimestre(ruta_hogares):
+    """
+    Encuentra el año y trimestre más reciente en el archivo de hogares.
+    """
+    max_ano = 0
     max_trimestre = 0
-    
-    with open(ruta_hogares, mode='r', encoding='utf-8') as file:
-        reader = csv.DictReader(file, delimiter=';')
-        for r in reader:
-            año = int(r['ANO4'])
-            trimestre = int(r['TRIMESTRE'])
-            
-            #Actualiza máximo año y trimestre en una sola comparación
-            if año > max_año or (año == max_año and trimestre > max_trimestre):
-                max_año, max_trimestre = año, trimestre
-    
-    print(f"El año seleccionado fue {max_año} y el trimestre fue {max_trimestre}")
-    return max_año, max_trimestre
 
-def cargar_individuos(ruta_individuos, año, trimestre):
-    """ Carga los datos de individuos en un diccionario para acceso rápido.
-    Recibe: ruta al archivo csv de individuos, año y trimestre recientes
-    Retorna: diccionario con {CODUSU: cantidad con educación superior} """
+    try:
+        with open(ruta_hogares, mode='r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter=';')
+            for r in reader:
+                try:
+                    ano = int(r['ANO4'])
+                    trimestre = int(r['TRIMESTRE'])
 
-    #Usamos defaultdict para evitar comprobar si la clave existe
-    individuos_dict = defaultdict(int)
-    
-    with open(ruta_individuos, mode='r', encoding='utf-8') as file:
-        reader = csv.DictReader(file, delimiter=';')
-        for ind in reader:
+                    if ano > max_ano or (ano == max_ano and trimestre > max_trimestre):
+                        max_ano, max_trimestre = ano, trimestre
+                except ValueError:
+                    continue
+    except FileNotFoundError:
+        raise FileNotFoundError(f"No se encontró el archivo: {ruta_hogares}")
+    except Exception as e:
+        raise RuntimeError(f"Error al leer el archivo de hogares: {e}")
 
-            #Filtra por año, trimestre y nivel educativo en una sola pasada
-            if (int(ind['ANO4']) == año and 
-                int(ind['TRIMESTRE']) == trimestre and 
-                ind.get('NIVEL_ED_str') == 'Superior o universitario'):
-                
-                #Incrementa el contador para este CODUSU
-                individuos_dict[ind['CODUSU']] += 1
-    
+    print(f"El año seleccionado fue {max_ano} y el trimestre fue {max_trimestre}")
+    return max_ano, max_trimestre
+
+
+def cargar_individuos(ruta_individuos, ano, trimestre):
+    """
+    Carga los datos de individuos ponderando según PONDERA.
+    """
+    individuos_dict = defaultdict(float)
+
+    try:
+        with open(ruta_individuos, mode='r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter=';')
+            for ind in reader:
+                try:
+                    if (int(ind['ANO4']) == ano and
+                        int(ind['TRIMESTRE']) == trimestre and
+                        ind.get('NIVEL_ED_str') == 'Superior o universitario'):
+
+                        codusu = ind['CODUSU']
+                        pondera = float(ind.get('PONDERA', '1'))
+                        individuos_dict[codusu] += pondera
+                except ValueError:
+                    continue
+    except FileNotFoundError:
+        raise FileNotFoundError(f"No se encontró el archivo: {ruta_individuos}")
+    except Exception as e:
+        raise RuntimeError(f"Error al leer el archivo de individuos: {e}")
+
     return individuos_dict
 
-def procesar_hogares(ruta_hogares, año, trimestre, individuos_dict):
-    """ Procesa los hogares y calcula los resultados usando el diccionario ya cargado.
-    Recibe: ruta del archivo csv de hogares, año, trimestre y el diccionario ya
-    cargado de individuos
-    Retorna: Los resultados por aglomerado """
 
-    # defaultdict con valores por defecto para Total y Tiene Superior
-    resultados = defaultdict(lambda: {'Total': 0, 'Tiene Superior': 0})
-    
-    with open(ruta_hogares, mode='r', encoding='utf-8') as file:
-        reader = csv.DictReader(file, delimiter=';')
-        for r in reader:
+def procesar_hogares(ruta_hogares, ano, trimestre, individuos_dict):
+    """
+    Procesa los hogares ponderando por PONDERA y genera resultados por aglomerado.
+    """
+    resultados = defaultdict(lambda: {'Total': 0.0, 'Tiene Superior': 0.0})
 
-            #Filtra hogares por año y trimestre
-            if int(r['ANO4']) == año and int(r['TRIMESTRE']) == trimestre:
-                aglomerado = r['AGLOMERADO']
-                codusu = r['CODUSU']
-                ix_tot = int(r['IX_TOT'])
-                
-                #Siempre incrementa el total de hogares
-                resultados[aglomerado]['Total'] += 1
-                
-                #Solo se verifica educación superior si IX_TOT >= 2
-                if ix_tot >= 2 and individuos_dict.get(codusu, 0) >= 2:
-                    resultados[aglomerado]['Tiene Superior'] += 1
-    
+    try:
+        with open(ruta_hogares, mode='r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter=';')
+            for r in reader:
+                try:
+                    if int(r['ANO4']) == ano and int(r['TRIMESTRE']) == trimestre:
+                        aglomerado = r['AGLOMERADO']
+                        codusu = r['CODUSU']
+                        ix_tot = int(r['IX_TOT'])
+                        pondera = float(r.get('PONDERA', '1'))
+
+                        resultados[aglomerado]['Total'] += pondera
+
+                        if ix_tot >= 2 and individuos_dict.get(codusu, 0) >= 2:
+                            resultados[aglomerado]['Tiene Superior'] += pondera
+                except ValueError:
+                    continue
+    except FileNotFoundError:
+        raise FileNotFoundError(f"No se encontró el archivo: {ruta_hogares}")
+    except Exception as e:
+        raise RuntimeError(f"Error al leer el archivo de hogares: {e}")
+
     return resultados
 
-def top5(resultados):
-    """Calcula el top 5 de aglomerados por porcentaje de educación superior.
-    Recibe: Resultados completos por aglomerado
-    Retorna: diccionario con el Top 5 aglomerados, con sus estadísticas"""
 
-    # Lista para almacenar (aglomerado, promedio)
+def top5(resultados):
+    """
+    Calcula el top 5 de aglomerados por porcentaje de educación superior.
+    """
     aglomerados = []
-    
+
     for aglomerado, data in resultados.items():
         total = data['Total']
         superior = data['Tiene Superior']
+        porcentaje = superior / total if total > 0 else 0
+        aglomerados.append((aglomerado, porcentaje))
 
-        # Calculamos el porcentaje, evitando división por cero
-        promedio = superior / total if total > 0 else 0
-        aglomerados.append((aglomerado, promedio))
-    
-    # Ordenamos descendente por promedio
     aglomerados.sort(key=lambda x: x[1], reverse=True)
-    
-    # Creamos diccionario con top 5 incluyendo todos los datos relevantes
+
     return {
         k: {
-            'Total': resultados[k]['Total'], 
+            'Total': resultados[k]['Total'],
             'Tiene Superior': resultados[k]['Tiene Superior'],
-            'Porcentaje': v * 100
-        } 
+            'Porcentaje': round(v * 100, 2)
+        }
         for k, v in aglomerados[:5]
     }
 
-def ranking_englomerados_nivelSup():
-    """Función principal que coordina el cálculo del ranking.
-    Retorna: diccionario Top 5 aglomerados con mayor porcentaje de educación superior"""
-    # Construimos rutas a los archivos
-    ruta_individuos = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
-    ruta_hogares = Path(__file__).resolve().parent.parent.parent / "utils" / "HogaresTotal.csv"
-    
-    # Obtenemos el año y trimestre más reciente
-    año, trimestre = max_año_trimestre(ruta_hogares)
-    
-    # Precargamos todos los individuos relevantes en un diccionario
-    # Esto evita tener que leer el archivo múltiples veces
-    individuos_dict = cargar_individuos(ruta_individuos, año, trimestre)
-    
-    # Procesamos los hogares usando el diccionario precargado
-    resultados = procesar_hogares(ruta_hogares, año, trimestre, individuos_dict)
-    
-    # Calculamos y retornamos el top 5
+
+def ranking_aglomerados_nivel_sup():
+    """
+    Función principal que coordina el cálculo del ranking.
+    """
+    base_path = Path(__file__).resolve().parent.parent.parent / "utils"
+    ruta_individuos = base_path / "IndividuosTotal.csv"
+    ruta_hogares = base_path / "HogaresTotal.csv"
+
+    ano, trimestre = max_ano_trimestre(ruta_hogares)
+    individuos_dict = cargar_individuos(ruta_individuos, ano, trimestre)
+    resultados = procesar_hogares(ruta_hogares, ano, trimestre, individuos_dict)
     return top5(resultados)
