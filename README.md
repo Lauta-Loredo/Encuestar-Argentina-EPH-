@@ -49,7 +49,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 
         pip install -r requirements.txt
 
-4. **Agregar archivos EPH**:
+4. **Agregar archivos**:
 
     1. Descarga archivos .zip de la Encuesta Permanente de Hogares (EPH) de la [página oficial del INDEC](https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos)
     2. Descarga valores de la canasta basica de alimentos [aqui](https://drive.google.com/file/d/1VmucuJHJZCWVnqWy7eoyt1euOsBm8krT/view?usp=sharing)
@@ -83,7 +83,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
     3. Una carpeta funciones con todas las funciones necesarias para la seccion A
     4. Una carpeta consultas con todas las funciones necesarias para la seccion B
 - La carpeta streamlit contiene la pagina principal y una carpeta con el orden de las demas paginas donde se resuelven los ejercicios mencionados en la parte 2 de la entrega del TP Integrador
-- La carpeta Utils va a contener los csv cuando se generen con todos los DataSets y sus datos nuevos. Ademas va a contener una carpeta data donde contendra los archivos .zip del EPH suministrado por la pagina oficial del INDEC, coordenadas de los aglomerados y un archivo .csv con los valores de la canasta basica de alimentos
+- La carpeta Utils va a contener los csv cuando se generen con todos los DataSets y sus datos nuevos, tambien un archivo con constantes a utilizar durante la ejecucion del programa. Ademas va a contener una carpeta data donde contendra los archivos .zip del EPH suministrado por la pagina oficial del INDEC, coordenadas de los aglomerados y un archivo .csv con los valores de la canasta basica de alimentos
 
 **Tree**
 
@@ -108,7 +108,7 @@ INDEC/
 │   ├── data/               
 │   └── __init__.py
 ├── README.md
-└── requirements.txt
+├── requirements.txt
 ├── license.txt
 └── .gitignore
 ```
