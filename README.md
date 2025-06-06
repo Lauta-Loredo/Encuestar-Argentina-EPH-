@@ -68,7 +68,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 --------------------------------------------------------------------
 ## 👨‍💻 Utilizacion de Streamlit
 
-### 1. Entrar a la carpeta de Streamlit
+1. Entrar a la carpeta de Streamlit
 
 - Posicionarse en la carpeta del trabajo `CODE`.
 - Ingresar a la carpeta de Streamlit:
@@ -77,20 +77,20 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 cd streamlit/
 ```
 
-### 2. Ejecutar el programa de Streamlit
+2. Ejecutar el programa de Streamlit
 
 ```bash
 streamlit run Inicio.py
 ```
 
-### 3. **Cargar los datos**
+3. **Cargar los datos**
 - En la pagina "Carga de datos" presionar el boton "Actualizar datos", el mismo cargara los datos y mostrara uno de los siguientes mensajes:
 
     - ✅ El chequeo resultó exitoso y no se encontraron inconsistencias, en caso de no haber archivos faltantes entre el Año y Trimestre maximo y minimo, tanto para individuos como para hogares
 
     - ⚠️ En caso de haber un faltante, se informara por pantalla el Año, Trimestre y archivo faltante
 
-### 4. **Pagina lista para ser utilizada e interactuar con ella**
+4. **Pagina lista para ser utilizada e interactuar con ella**
 
 --------------------------------------------------------------------
 ## 👥 Integrantes
