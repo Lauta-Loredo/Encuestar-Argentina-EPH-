@@ -6,6 +6,7 @@
 - [Acerca del Proyecto](#-acerca-del-proyecto)
 - [Requisitos](#-requisitos)
 - [Instalación](#-instalación)
+- [Utilizacion de Streamlit](#-utilizacion-de-streamlit)
 - [Integrantes](#-integrantes)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 
@@ -63,6 +64,37 @@ Sigue estos pasos para configurar el entorno de desarrollo:
             |               ├── data_1_2020.zip
             |               ├── valores-canasta-basica-alimentos-canasta-basica-total-mensual-2016.csv
             |               ├── aglomerados_coordenadas.json
+
+--------------------------------------------------------------------
+## 👨‍💻 Utilizacion de Streamlit
+
+1.  **Entrar a la carpeta de Streamlit**
+    - Posicionarse en la carpeta del trabajo "CODE"
+    - Ingresar a la carpeta de Streamlit
+
+        cd streamlit/
+    
+    c. Ejecutar el programa de Streamlit
+        ```bash
+        streamlit run Inicio.py
+    
+    d. En la pagina "Carga de datos" tocar el boton "Actualizar datos"
+    e. Ya estas listo para interactuar con la pagina
+
+
+2. **Ejecutar el programa de Streamlit**
+        ```bash
+        streamlit run Inicio.py
+
+3. **Cargar los datos**
+    - En la pagina "Carga de datos" presionar el boton "Actualizar datos", el mismo cargara los datos y mostrara:
+
+        a. "El chequeo resultó exitoso y no se encontraron inconsistencias", en caso de no haber archivos faltantes
+            entre el Año y Trimestre maximo y minimo, tanto para individuos como para hogares
+
+        b. En caso de haber un faltante, se informara por pantalla el Año, Trimestre y archivo faltante
+
+4. **Pagina lista para ser utilizada e interactuar con ella**
 
 --------------------------------------------------------------------
 ## 👥 Integrantes
