@@ -28,10 +28,10 @@ def porcentaje_extranjeros_universitarios():
         for i in individuos:
             #Filtrar por año y trimestre indicados por el usuario
             if i['ANO4'] == year and i['TRIMESTRE'] == quarter:
-                total += 1
+                total += int(i['PONDERA'])
                 #Si la persona no nació en Argentina y tiene nivel universitario o superior
                 if i[LUGAR_NACIMIENTO] in ('4', '5') and i[NIVEL_EDUCACION] in ('6', '7', '8'):
-                    pers += 1
+                    pers += int(i['PONDERA'])
     
     #Imprime el resultado y verifica que no se divida por 0 para no generar un error
     print(f"El porcentaje de personas no nacidas en Argentina con nivel universitario o superior es: {round(pers/total * 100, 2)}%") if total != 0 else print("No hay datos disponibles para el período seleccionado.")

@@ -17,6 +17,7 @@ importlib.reload(materialhogares)
 sys.path.append(os.path.abspath("../src"))
 ruta_hogares = Path("../utils/HogaresTotal.csv").resolve()
 
+NIVEL_EDUCATIVO = "CH12"
 
 def funciones_hogares():
     with open(ruta_hogares, mode="r", encoding="utf-8") as archivo:
@@ -37,7 +38,7 @@ def hog_insu():
     ruta_individuos = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
 
     # Primero detectar el trimestre más alto disponible
-    trimestres = set()
+    trimestres = []
     for hogar in hogares:
         if hogar["ANO4"] == anio_usuario:
             trimestres.add(int(hogar["TRIMESTRE"]))  # guardamos como int para ordenar bien
@@ -58,7 +59,7 @@ def hog_insu():
         for persona in lector:
             if persona['ANO4'] == anio_usuario and persona['TRIMESTRE'] == str(ultimo_trimestre):
                 clave = (persona['CODUSU'], persona['NRO_HOGAR'])
-                if clave in hogares_insuficientes and persona['CH12'] >= '7':
+                if clave in hogares_insuficientes and persona[NIVEL_EDUCATIVO] >= "7":
                     contador +=1
 
     print(f"Cantidad de personas en viviendas con condición insuficiente y nivel universitario o superior: {contador}")

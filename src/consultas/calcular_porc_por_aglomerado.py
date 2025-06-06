@@ -16,7 +16,7 @@ def calcular_porcentajes_por_aglomerado(individuos,NOMBRES_AGLOMERADOS, tipo_ind
     #Subfunción para verificar si un hogar tiene condición de habitabilidad insuficiente
     def tiene_habitabilidad_insuficiente(cod_usu):
         for hogar in hogares:
-            if hogar["CODUSU"] == cod_usu and hogar["CONDICION_DE_HABITABILIDAD"] == "Insuficiente":
+            if  hogar['CODUSU'] == cod_usu and hogar["CONDICION_DE_HABITABILIDAD"] == "Insuficiente":
                 return True
         return False
     #Analizo si tengo individuos para analizar
@@ -29,17 +29,17 @@ def calcular_porcentajes_por_aglomerado(individuos,NOMBRES_AGLOMERADOS, tipo_ind
         
         for p in individuos:
             aglo = p["AGLOMERADO"]
-            total_por_aglomerado[aglo] = total_por_aglomerado.get(aglo, 0) + 1
+            total_por_aglomerado[aglo] = total_por_aglomerado.get(aglo, 0) + int(p['PONDERA'])
 
             #Tipo de individuo 0 personas que cursaron universidad
-            if tipo_individuo == 0:
+            if tipo_individuo == 'ind_universitario':
                 if p.get("CH12") in ("6", "7", "8"):
-                    cumplen_por_aglomerado[aglo] = cumplen_por_aglomerado.get(aglo, 0) + 1
+                    cumplen_por_aglomerado[aglo] = cumplen_por_aglomerado.get(aglo, 0) + int(p['PONDERA'])
 
             #Tipo de individuo 1 jubilados en hogares con habitabilidad insuficiente
-            elif tipo_individuo == 1 and hogares is not None:
-                if p["CAT_INAC"] == "1" and tiene_habitabilidad_insuficiente(p["CODUSU"]):
-                    cumplen_por_aglomerado[aglo] = cumplen_por_aglomerado.get(aglo, 0) + 1
+            elif tipo_individuo == 'jubilado' and hogares is not None:
+                if p["CAT_INAC"] == "1" and tiene_habitabilidad_insuficiente(p['CODUSU']):
+                    cumplen_por_aglomerado[aglo] = cumplen_por_aglomerado.get(aglo, 0) + int(p['PONDERA'])
         
     #Cálculo de porcentajes finales
     porcentajes = {}
@@ -92,7 +92,7 @@ def obtener_hogares():
 
 #Lee el archivo de individuos y devuelve la lista de registros
 def porcentaje_universitarios_por_aglomerado(individuos):
-    porcentajes = calcular_porcentajes_por_aglomerado(individuos, NOMBRES_AGLOMERADOS,0)
+    porcentajes = calcular_porcentajes_por_aglomerado(individuos, NOMBRES_AGLOMERADOS,'ind_universitario')
     
     imprimir_porcentajes_por_aglomerado(porcentajes,"personas, por aglomerado, que cursaron al menos un nivel universitario.")
 
@@ -104,6 +104,6 @@ def porcentaje_jubilados_condicion_insuficiente(individuos):
     #Filtramos las personas del último trimestre del ultimo anio
     personas_ultimo_trimestre = [p for p in individuos if p["ANO4"] == ult_anio and p["TRIMESTRE"] == ult_trim]
 
-    porcentajes = calcular_porcentajes_por_aglomerado(personas_ultimo_trimestre,NOMBRES_AGLOMERADOS,1,hogares)
+    porcentajes = calcular_porcentajes_por_aglomerado(personas_ultimo_trimestre,NOMBRES_AGLOMERADOS,'jubilado',hogares)
     
     imprimir_porcentajes_por_aglomerado(porcentajes, "jubilados en el ultimo trimestre, por aglomerado, que se encuentran en condicion de habitabilidad insuficiente")

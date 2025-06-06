@@ -30,12 +30,16 @@ def obtener_años_trimestres(datos):
 
 def calcular_porcentajes_lectura():
     """ Calcula el porcentaje de personas capaces e incapaces de leer por año. """
-
+    
     archivo_csv = Path(__file__).resolve().parent.parent.parent / "utils" / "IndividuosTotal.csv"
     datos = cargar_datos(archivo_csv)
 
     año_trimestre = obtener_años_trimestres(datos)
     año_trimestreordenado = sorted(año_trimestre.items())
+
+    años = []
+    porcentajes_sabe = []
+    porcentajes_nosabe = []
 
     for año, ultimo_trimestre in año_trimestreordenado:
         cont_poblacion = 0
@@ -46,20 +50,21 @@ def calcular_porcentajes_lectura():
                 edad = int(row['CH06'])
                 sabe_leer = row['CH09']
                 if edad >= 6:
-                    cont_poblacion += 1
+                    cont_poblacion += int(row['PONDERA'])
                     if sabe_leer == '1':
-                        cont_sabe += 1
+                        cont_sabe += int(row['PONDERA'])
                     elif sabe_leer == '2':
-                        cont_nosabe += 1
+                        cont_nosabe += int(row['PONDERA'])
 
-        if cont_poblacion > 0:  
+        if cont_poblacion > 0:
             porcentaje_sabe = round((cont_sabe / cont_poblacion) * 100, 2)
             porcentaje_nosabe = round((cont_nosabe / cont_poblacion) * 100, 2)
         else:
             porcentaje_sabe = 0
             porcentaje_nosabe = 0
 
-        print(f'Año: {año}, Trimestre: {ultimo_trimestre}')
-        print(f'📚 Mayores de 6 años, Capaces de leer: {porcentaje_sabe}%')
-        print(f'🚫📖 Mayores de 6 años, Incapaces de leer: {porcentaje_nosabe}%')
-        print('-' * 40)  
+        años.append(int(año))
+        porcentajes_sabe.append(porcentaje_sabe)
+        porcentajes_nosabe.append(porcentaje_nosabe)
+
+    return años, porcentajes_sabe, porcentajes_nosabe,

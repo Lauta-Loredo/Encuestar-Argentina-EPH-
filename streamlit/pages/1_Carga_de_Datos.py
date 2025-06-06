@@ -29,4 +29,10 @@ try:
 except ValueError:
     st.write("El sistema no contiene informacion de ningun trimestre y año.")
 
-st.button('Actualizacion de datos', on_click=rutas)
+if st.button("Actualizar datos"):
+    rutas() 
+    st.cache_data.clear()  # limpia el caché global
+    st.session_state["datos_actualizados"] = True  
+    st.rerun()
+    st.success("Datos actualizados correctamente.")
+
