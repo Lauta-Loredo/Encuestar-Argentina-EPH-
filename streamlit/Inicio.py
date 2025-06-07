@@ -8,8 +8,8 @@ st.title("EPH Insight")
 
 def main(): 
     st.info("""
-    Esta aplicación permite explorar y analizar los datos provenientes de la Encuesta Permanente de Hogares (EPH) de Argentina, una operación estadística continua realizada por el INDEC.  
-    La EPH recopila información socioeconómica de los hogares urbanos en Argentina, datos como: empleo, ingresos, educación, características del hogar, integrantes, entre muchos más.
+    **Esta aplicación permite explorar y analizar los datos provenientes de la Encuesta Permanente de Hogares (EPH) de Argentina, una operación estadística continua realizada por el INDEC.  
+    La EPH recopila información socioeconómica de los hogares urbanos en Argentina, datos como: empleo, ingresos, educación, características del hogar, integrantes, entre muchos más.**
     """) 
 
 if __name__ == '__main__':
@@ -24,8 +24,8 @@ secciones = [
     ("⬆️", "Carga de Datos", "1_Carga_de_Datos.py"),
     ("📊", "Características Demográficas", "2_Caracteristicas_Demograficas.py"),
     ("🏘️", "Características de la Vivienda", "3_Características_de_la_Vivienda.py"),
-    ("💼", "Actividad y Empleo", "4_Actividad_y_Empleo.py"),
-    ("🎓", "Educación", "5_Educacion.py"),
+    ("💼⚙️ ", "Actividad y Empleo", "4_Actividad_y_Empleo.py"),
+    ("🧑‍🎓📚️", "Educación", "5_Educacion.py"),
     ("💰", "Ingresos", "6_Ingresos.py"),
 ]
 

@@ -14,10 +14,10 @@ from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obten
 
 st.title("📊 Caracteristicas Demográficas")
 
-st.info("""En esta sección se visualizará información relacionada a la características demográficas de
-la población argentina según la EPH.
+st.info("""**En esta sección se visualizará información relacionada a la características demográficas de
+la población argentina según la EPH.**\n
+***Para continuar por favor seleccione el subtitulo de su agrado, para asi poder visualizar su contenido***
 """)
-st.warning("Selecciona el subtitulo que deseas visualizar, para asi poder ver su contenido")
 
 # Distribución de la población por grupos y sexo cada 10 años
 st.divider()

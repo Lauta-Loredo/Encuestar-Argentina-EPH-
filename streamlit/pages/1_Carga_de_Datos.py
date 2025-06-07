@@ -5,10 +5,10 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent  # Ajusta según niveles necesarios
 sys.path.append(str(project_root))
 
-from src.DataSet import max_min_año_trimestre
+from src.DataSet import año_trimestre
 from src.automatizar_jupyter import rutas
 
-rango_fechas = max_min_año_trimestre()
+rango_fechas = año_trimestre()
 
 st.set_page_config(layout='wide')
 st.title("⬆️ Carga de Datos")
@@ -18,16 +18,38 @@ try:
     if not rango_fechas: #Si rango_fechas = false, va directamente a la excepcion
         raise ValueError("La lista rango_fechas está vacía")  
 
-    trimestre_inicio = rango_fechas[3]
-    año_inicio = rango_fechas[2]
-    trimestre_fin = rango_fechas[1]
-    año_fin = rango_fechas[0]
+    rango_fechas_ordenado = sorted(rango_fechas)
+    
+    anio_inicio, trimestre_inicio = rango_fechas_ordenado[0]
+    anio_fin, trimestre_fin = rango_fechas_ordenado[-1]
 
     st.write(
-        f"El sistema contiene información desde el trimestre {trimestre_inicio}/{año_inicio} hasta el trimestre {trimestre_fin}/{año_fin}."
+        f"***El sistema contiene información desde el trimestre {trimestre_inicio} del año {anio_inicio} hasta trimestre {trimestre_fin} del año {anio_fin}.***"
     )
+
+    #Aca se generan todos los años y trimestres que se esperan
+    periodo_esperado = []
+    anio, trimestre = anio_inicio, trimestre_inicio
+
+    while (anio < anio_fin) or (anio == anio_fin and trimestre <= trimestre_fin):
+        periodo_esperado.append((anio, trimestre))
+        if trimestre == 4:
+            anio += 1
+            trimestre = 1
+        else:
+            trimestre += 1
+    
+    #Detecto faltantes
+    falta = [f"{a} - T{t}" for (a,t) in periodo_esperado if (a,t) not in rango_fechas_ordenado]
+
+    if not falta:
+        st.success("**✅ El chequeo resultó exitoso y no se encontraron inconsistencias**")
+    else:
+        falta_en_texto = "  //  ".join(falta)
+        st.error(f"**⚠️ Faltan los siguientes periodos: {falta_en_texto}**")
+
 except ValueError:
-    st.write("El sistema no contiene informacion de ningun trimestre y año.")
+    st.error("El sistema no contiene informacion de ningun trimestre y año.")
 
 if st.button("Actualizar datos"):
     rutas() 
