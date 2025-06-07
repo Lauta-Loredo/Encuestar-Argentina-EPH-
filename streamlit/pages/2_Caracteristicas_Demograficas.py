@@ -12,18 +12,16 @@ sys.path.append(str(project_root))
 from src.funciones_streamlit import demografia as ats
 from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obtener los aglomerados
 
-st.title("📈 Caracteristicas Demográficas")
+st.title("📊 Caracteristicas Demográficas")
 
 st.info("""En esta sección se visualizará información relacionada a la características demográficas de
 la población argentina según la EPH.
 """)
 st.warning("Selecciona el subtitulo que deseas visualizar, para asi poder ver su contenido")
 
-
-
 # Distribución de la población por grupos y sexo cada 10 años
 st.divider()
-with st.expander("Distribución de la población por grupos y sexo cada 10 años", expanded=False):
+with st.expander("👩‍👦‍👦 Distribución de la población por grupos y sexo cada 10 años", expanded=False):
     df = ats.cargo_valido_columnas() #Cargo el DF con columnas que voy a usar
 
     if df is None:
@@ -53,7 +51,7 @@ with st.expander("Distribución de la población por grupos y sexo cada 10 años
     st.pyplot(grafico) #Si el grafico se creo correctamente, se muestra
 
 # Edad promedio por aglomerado
-with st.expander("Edad promedio de personas por aglomerado", expanded=False):
+with st.expander("➗ Edad promedio de personas por aglomerado", expanded=False):
     ultimo_anio = df["ANO4"].max()
     df_ultimo_anio = df[df["ANO4"] == ultimo_anio]
     ultimo_trimestre = df_ultimo_anio["TRIMESTRE"].max()
@@ -89,7 +87,7 @@ with st.expander("Edad promedio de personas por aglomerado", expanded=False):
     )
 
 # Evolución de la dependencia demográfica
-with st.expander("Evolución de la dependencia demográfica", expanded=False):
+with st.expander("📈 Evolución de la dependencia demográfica", expanded=False):
     aglomerados_opciones = [f"{codigo} - {nombre}" for codigo, nombre in aglomerados.items()]
     seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
     seleccion_codigo = seleccion.split(" - ")[0]
@@ -110,7 +108,7 @@ with st.expander("Evolución de la dependencia demográfica", expanded=False):
         st.pyplot(fig)
 
 # Evolución media y mediana
-with st.expander("Evolución de la Media y la Mediana de la edad", expanded=False):
+with st.expander("📉 Evolución de la Media y la Mediana de la edad", expanded=False):
     media_mediana = ats.media_mediana(df)
 
     if media_mediana.empty:
@@ -134,32 +132,64 @@ with st.expander("Evolución de la Media y la Mediana de la edad", expanded=Fals
         plt.xticks(rotation=45)
         st.pyplot(fig)
 
-st.markdown("""<hr style="margin-top: 50px;">""", unsafe_allow_html=True)
-
 st.markdown("""
-<div style='
-    background-color: #f5f5f5;
-    padding: 20px;
-    border-radius: 5px;
-    font-size: 10pt; 
-    text-align: justify; 
-    color: #333;
-'>
-<h4 style='font-size: 11pt; color: #222;'>Licencia MIT</h4>
-<p>
-Copyright (c) 2025 <strong>Grupo 26</strong>
-</p>
-<p>
-Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados, para utilizar el Software sin restricciones, incluyendo, sin limitación, los derechos a usar, copiar, modificar, fusionar, publicar, distribuir, sublicenciar y/o vender copias del Software, y a permitir a las personas a quienes se les proporcione el Software hacerlo, sujeto a las siguientes condiciones:
-</p>
-<p style='
-    text-align: center; 
-    background-color: #e9e9e9;
-    padding: 10px;
-    border-radius: 3px;
-    margin-top: 15px;
-'>
-Desarrollado por Diego Arrechea, Ulises Rodriguez, Axel Morano, Lautaro Loredo y Lucentini Joaquin · UNLP · 2025
-</p>
-</div>
+    <style>
+    .footer-wrapper {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #ddd;
+        border-top: 1px solid #bbb;
+        z-index: 100;
+    }
+
+    .footer-container {
+        max-width: 960px;
+        margin: auto;
+        padding: 10px 20px 10px 20px;  /* Menos padding vertical */
+        font-size: 10pt;
+        color: #333;
+    }
+
+    .footer-container h4 {
+        font-size: 11pt;
+        color: #222;
+        margin: 0 0 5px 0;
+    }
+
+    .footer-container p {
+        margin: 2px 0;
+        text-align: justify;
+    }
+
+    .footer-container .footer-note {
+        text-align: center;
+        background-color: #ccc;
+        padding: 6px;
+        border-radius: 3px;
+        margin-top: 8px;
+        font-size: 9.5pt;
+    }
+
+    /* MÁS espacio inferior para evitar solapamiento */
+    .main > div {
+        padding-bottom: 220px;
+    }
+    </style>
+
+    <div class="footer-wrapper">
+        <div class="footer-container">
+            <h4>Licencia MIT</h4>
+            <p>
+            Copyright (c) 2025 <strong>Grupo 26</strong>
+            </p>
+            <p>
+            Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados...
+            </p>
+            <p class="footer-note">
+            Desarrollado por Diego Arrechea, Ulises Rodriguez, Axel Morano, Lautaro Loredo y Lucentini Joaquin · UNLP · 2025
+            </p>
+        </div>
+    </div>
 """, unsafe_allow_html=True)
