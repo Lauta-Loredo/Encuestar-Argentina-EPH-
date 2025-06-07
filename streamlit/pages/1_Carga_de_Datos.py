@@ -26,8 +26,14 @@ try:
     st.write(
         f"***El sistema contiene información desde el trimestre {trimestre_inicio} del año {anio_inicio} hasta trimestre {trimestre_fin} del año {anio_fin}.***"
     )
-
-    #Aca se generan todos los años y trimestres que se esperan
+    
+    # Defino el incio y el fin 
+    anio_inicio = 2016
+    trimestre_inicio = 1
+    anio_fin = 2024
+    trimestre_fin = 4
+    
+ 
     periodo_esperado = []
     anio, trimestre = anio_inicio, trimestre_inicio
 
@@ -38,15 +44,28 @@ try:
             trimestre = 1
         else:
             trimestre += 1
-    
-    #Detecto faltantes
-    falta = [f"{a} - T{t}" for (a,t) in periodo_esperado if (a,t) not in rango_fechas_ordenado]
 
-    if not falta:
-        st.success("**✅ El chequeo resultó exitoso y no se encontraron inconsistencias**")
+    # Detectamos faltantes
+    faltantes = [(a, t) for (a, t) in periodo_esperado if (a, t) not in rango_fechas_ordenado]
+
+    if not faltantes:
+        st.success("✅ El chequeo resultó exitoso y no se encontraron inconsistencias")
     else:
-        falta_en_texto = "  //  ".join(falta)
-        st.error(f"**⚠️ Faltan los siguientes periodos: {falta_en_texto}**")
+        agrupados = {}
+        for anio, trimestre in faltantes:
+            if anio not in agrupados:
+                agrupados[anio] = []
+            agrupados[anio].append(f"T{trimestre}")
+        
+        # Armar el texto para mostrar
+
+        mensaje = ""
+        for anio in sorted(agrupados.keys()):
+            trimestres = ", ".join(agrupados[anio])
+            mensaje += f"**{anio}:** {trimestres}  \n"  # doble espacio + salto para Markdown
+
+        st.error(f"⚠️ Faltan los siguientes periodos:\n\n{mensaje}")
+
 
 except ValueError:
     st.error("El sistema no contiene informacion de ningun trimestre y año.")
@@ -56,7 +75,7 @@ if st.button("Actualizar datos"):
     st.cache_data.clear()  # limpia el caché global
     st.session_state["datos_actualizados"] = True  
     st.rerun()
-    st.success("Datos actualizados correctamente.")
+    
 
 st.markdown("""
     <style>
