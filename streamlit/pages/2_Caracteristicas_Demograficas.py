@@ -100,6 +100,10 @@ with st.expander("📈 Evolución de la dependencia demográfica", expanded=Fals
     else:
         fig, ax = plt.subplots(figsize=(10, 5))
         ax.plot(resultado.index, resultado["Dependencia"], marker="o", linestyle="-", color="tab:blue")
+
+        #Agrego etiquetas a cada punto
+        for x, y in zip(resultado.index, resultado['Dependencia']):
+            ax.text(x,y + 0.25, f"{y: .2f}", ha="center", va="bottom", fontsize=9, color="black")
         ax.set_title(f"Evolución de la dependencia demográfica - {aglomerados[seleccion_codigo]}", fontsize=14)
         ax.set_xlabel("Período", fontsize=12)
         ax.set_ylabel("Índice de dependencia (%)", fontsize=12)
