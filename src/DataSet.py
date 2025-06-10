@@ -90,29 +90,24 @@ def guardar_como_csv(nombre_archivo, lista_diccionarios, delimitador=";"):
     print(f"✅ Archivo {nombre_archivo} guardado en: {ruta_archivo}")
 
 
-def max_min_año_trimestre():
-    """Encuentra el año y trimestre maximo y minimo en el archivo de hogares e individuos.
-    Retorna: una tupla(año, trimestre) maximos y minimos para individuos y hogares"""
+def año_trimestre():
+    """
+    Devuelve una tupla que contiene tuplas con (año, trimestre) en el archivo de Hogares
+    """
 
     ruta_hogares = Path(__file__).resolve().parent.parent / "utils" / "HogaresTotal.csv"
+    
     if not os.path.exists(ruta_hogares):
         return False
-    else:
 
-        max_año = 0
-        max_trimestre = 0
-        min_año = 1000000
-        min_trimestre = 5
+    registro = set()
 
-        with open(ruta_hogares, mode="r", encoding="utf-8") as file:
-            reader = csv.DictReader(file, delimiter=";")
-            for r in reader:
-                año = int(r["ANO4"])
-                trimestre = int(r["TRIMESTRE"])
+    with open(ruta_hogares, mode="r", encoding="utf-8") as file:
+        reader = csv.DictReader(file, delimiter=";")
+        for r in reader:
+            año = int(r["ANO4"])
+            trimestre = int(r["TRIMESTRE"])
+            registro.add((año, trimestre))
+    
+    return registro
 
-                # Actualiza máximo y minimo año y trimestre para hogares
-                if año > max_año or (año == max_año and trimestre > max_trimestre):
-                    max_año, max_trimestre = año, trimestre
-                if año < min_año or (año == min_año and trimestre < min_trimestre):
-                    min_año, min_trimestre = año, trimestre
-    return max_año, max_trimestre, min_año, min_trimestre

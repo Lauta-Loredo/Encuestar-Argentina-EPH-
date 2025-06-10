@@ -1,4 +1,4 @@
-def function_value (value_original):
+def valor_educacion_texto (value_original):
     """Retorno un string en base a un numero en tipo str"""
     if value_original == '1':
         return ("Primario incompleto")
@@ -23,8 +23,8 @@ def key_nivel_ed_str (info_individuos):
     Retorno: Lista de diccionarios con nueva clave en cada diccionario y su valor"""
     for individuos in info_individuos:
         if 'NIVEL_ED' in (individuos):
-            value_original = individuos['NIVEL_ED']
-            individuos["NIVEL_ED_str"] = function_value (value_original)
+            valor = individuos['NIVEL_ED']
+            individuos["NIVEL_ED_str"] = valor_educacion_texto (valor)
         else:
             individuos["NIVEL_ED_str"] = None
 

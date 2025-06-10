@@ -38,9 +38,9 @@ def cant_precarius(year, list_dic_dataset):
         precarios = 0
         for row in datos_año: # Recorro los datos filtrados por año
             if row['AGLOMERADO'] == aglomerado:
-                total += 1
+                total += int(row["PONDERA"])
                 if row['MATERIAL_TECHUMBRE'] == 'Material precario':
-                    precarios += 1
+                    precarios += int(row["PONDERA"])
         
         if total > 0:
             porcentaje = round((precarios / total) * 100)
