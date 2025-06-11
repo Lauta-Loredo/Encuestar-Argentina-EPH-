@@ -1,8 +1,3 @@
-
-
-
-
-
 def key_tipo_hogar(list_dic_hogar):
     for dic in list_dic_hogar:
         cant_personas = int(dic.get('IX_TOT', 0))
