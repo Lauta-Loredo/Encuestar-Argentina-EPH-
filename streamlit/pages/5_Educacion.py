@@ -100,7 +100,7 @@ if isinstance(df_trimestral, pd.DataFrame) and not df_trimestral.empty:
 
     # llamo al grafico creado y lo dejo en segundo plano
     chart = ed.grafica_porcentajes_lectura(años, porcen_sabe, porcen_nosabe)
-    st.plotly_chart(chart, use_container_width=True, key="lectura_chart")
+    st.altair_chart(chart, use_container_width=True, key="lectura_chart")
 else:
     st.warning("Por favor seleccione un año y trimestre válido para ver el resumen.")
 

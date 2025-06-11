@@ -2,8 +2,6 @@ import pandas as pd
 from pathlib import Path
 import streamlit as st
 import plotly.express as px
-import matplotlib.pyplot as plt
-
 
 #---------------------------------------------------------------------------------------------------------------------
     #LAS SIGIENTES FUNCIONES SON PARA LA CARGA DE DATOS Y LA FILTRACION DE LAS COLUMNAAS QUE PRECISO
