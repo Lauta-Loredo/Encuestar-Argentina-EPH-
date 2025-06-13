@@ -15,14 +15,15 @@ def porcentaje_inqui():
         lector = csv.DictReader(archivo, delimiter=";")
         for hogar in lector:
             region = hogar['REGION']
+            ponderacion = int(hogar['PONDERA'])
             clave = region
 
             if not clave in region_totales:
                 region_totales[clave] = {'inquilinos': 0, 'total': 0}
 
-            region_totales[clave]['total'] += 1
+            region_totales[clave]['total'] += ponderacion
             if hogar["II7"] == "3":
-                region_totales[clave]['inquilinos'] += 1
+                region_totales[clave]['inquilinos'] += ponderacion
 
     region_porcentaje = []
 

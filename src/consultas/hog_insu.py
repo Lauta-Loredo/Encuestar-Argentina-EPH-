@@ -18,6 +18,7 @@ sys.path.append(os.path.abspath("../src"))
 ruta_hogares = Path("../utils/HogaresTotal.csv").resolve()
 
 NIVEL_EDUCATIVO = "CH12"
+CODIGO_RELACIONAL = 'CODUSU'
 
 def funciones_hogares():
     with open(ruta_hogares, mode="r", encoding="utf-8") as archivo:
@@ -51,15 +52,15 @@ def hog_insu():
 
     for hogar in hogares:
         if hogar['ANO4'] == anio_usuario and hogar['TRIMESTRE'] == str(ultimo_trimestre) and hogar['CONDICION_DE_HABITABILIDAD'] == 'Insuficiente':
-            clave = (hogar['CODUSU'], hogar['NRO_HOGAR'])
+            clave = (hogar[CODIGO_RELACIONAL], hogar["NRO_HOGAR"])
             hogares_insuficientes[clave] = True
     contador = 0
     with open(ruta_individuos, mode='r', encoding='utf-8') as archivo:
         lector = csv.DictReader(archivo, delimiter=";")
         for persona in lector:
             if persona['ANO4'] == anio_usuario and persona['TRIMESTRE'] == str(ultimo_trimestre):
-                clave = (persona['CODUSU'], persona['NRO_HOGAR'])
+                clave = (persona[CODIGO_RELACIONAL], persona["NRO_HOGAR"])
                 if clave in hogares_insuficientes and persona[NIVEL_EDUCATIVO] >= "7":
-                    contador +=1
+                    contador += int(persona['PONDERA'])
 
     print(f"Cantidad de personas en viviendas con condición insuficiente y nivel universitario o superior: {contador}")

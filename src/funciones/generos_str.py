@@ -14,8 +14,3 @@ def int_to_str (list_disc_indi):
                 list_disc_indi[i]['CH04_str'] = 'Masculino'
         else:
             list_disc_indi[i]['CH04_str'] = 'Femenino'
-
-
-
-    
-        
