@@ -117,7 +117,6 @@ st.markdown(
         padding-bottom: 220px;
     }
     </style>
-
     <div class="footer-wrapper">
         <div class="footer-container">
             <h4>Licencia MIT</h4>
