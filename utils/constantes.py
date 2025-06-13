@@ -1,3 +1,16 @@
+from pathlib import Path
+
+PROJECT_PATH = Path(__file__).parents[1].resolve() #Raiz del proyecto
+UTILS_PATH = PROJECT_PATH / 'utils'
+DATA_PATH = UTILS_PATH / 'data' # Ruta donde se almacena los datos que utiliza el software
+SRC_PATH = PROJECT_PATH / 'src' # Código fuente
+NOTEBOOKS_PATH = PROJECT_PATH / 'notebooks' # Jupyter Notebooks
+STREAMLIT_PATH = PROJECT_PATH / 'streamlit' # App Streamlit
+
+#Archivos CSV
+HOGARES_CSV = UTILS_PATH / 'HogaresTotal.csv' #Archivo CSV de Hogares
+INDIVIDUALS_CSV = UTILS_PATH / 'IndividualsTotal.csv' #Archivo CSV de Individuos
+
 NOMBRES_AGLOMERADOS = {"2": "Gran La Plata", "3": "Bahía Blanca - Cerri", "4": "Gran Rosario", 
                 "5": "Gran Santa Fé", "6": "Gran Paraná", "7": "Posadas", 
                 "8": "Gran Resistencia", "9": "Comodoro Rivadavia - Rada Tilly", 
@@ -49,3 +62,4 @@ NIVEL_EDUCATIVO = {
         7 : 'Sin instrucción',
         9 : 'Ns/Nr',
 }
+

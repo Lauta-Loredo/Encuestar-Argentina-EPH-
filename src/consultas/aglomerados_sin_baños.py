@@ -28,7 +28,7 @@ def contar_viviendas_por_aglomerado(viviendas_precarias):
     conteo_por_aglomerado = {}
     for vivienda in viviendas_precarias:
         aglomerado = vivienda["AGLOMERADO"]
-        conteo_por_aglomerado[aglomerado] = conteo_por_aglomerado.get(aglomerado, 0) + 1
+        conteo_por_aglomerado[aglomerado] = conteo_por_aglomerado.get(aglomerado, 0) + int(vivienda["PONDERA"])
     return conteo_por_aglomerado
 
 def aglomerado_con_mas_viviendas_precarias(conteo_por_aglomerado):
