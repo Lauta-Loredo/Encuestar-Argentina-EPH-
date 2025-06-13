@@ -1,5 +1,3 @@
-
-
 def add_uni(data):
     for info in data:
         if not info.get("NIVEL_ED"):

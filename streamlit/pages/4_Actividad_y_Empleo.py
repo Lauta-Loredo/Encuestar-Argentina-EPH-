@@ -24,6 +24,11 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+if st.session_state.get("datos_actualizados", False):
+    st.cache_data.clear()  # fuerza recarga
+    st.session_state["datos_actualizados"] = False
+
+
 # cargo datos
 df = emp.cargar_df(ruta_csv_individuos)
 
@@ -45,19 +50,21 @@ st.markdown(
     "<h2 style='text-align: center;'>Evolucion de la tasa de desempleo segun aglomerado o país.</h2>",
     unsafe_allow_html=True,
 )
+tasa = "desempleo"
+aglomerado = emp.definir_aglomerado(df, "1.5.31", cons.NOMBRES_AGLOMERADOS)
+evolucion = emp.tasa_des_empleo(df,tasa, aglomerado)
+muestra = emp.muestra_tasa(tasa,evolucion)
+st.divider()
 
-aglomerado = emp.definir_aglomerado(df,cons.NOMBRES_AGLOMERADOS)
-evolucion = emp.tasa_desempleo(df, aglomerado)
-if evolucion:
-    anios = list(evolucion.keys())
-    tasas = list(evolucion.values())
-    plt.plot(anios, tasas)
-    fig, ax = plt.subplots()
-    ax.bar(anios, tasas)
-    ax.set_xlabel("Año")
-    ax.set_ylabel("Tasa de desempleo (%)")
-    ax.set_title("Evolución de la tasa de desempleo")
-    st.pyplot(fig)
-    st.divider()
-else:
-    st.warning("Por favor, elije una opción")
+# 1.5.3 Informar la evolución del empleo(tasa de empleo) a lo largo del tiempo. Se debe poder filtrar por aglomerado y en caso de no elegir ninguno se debe calcular para todo el país.
+st.markdown(
+    "<h2 style='text-align: center;'>Evolucion de la tasa de empleo segun aglomerado o país.</h2>",
+    unsafe_allow_html=True,
+)
+tasa = "empleo"
+aglomerado = emp.definir_aglomerado(df,"1.5.32", cons.NOMBRES_AGLOMERADOS)
+evolucion = emp.tasa_des_empleo(df, tasa, aglomerado)
+muestra2 = emp.muestra_tasa(tasa, evolucion)
+st.divider()
+
+
