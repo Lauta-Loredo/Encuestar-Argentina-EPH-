@@ -1,12 +1,11 @@
 import pandas as pd
-from pathlib import Path
 import streamlit as st
 import matplotlib.pyplot as plt
 
 @st.cache_data
 def cargar_df(ruta_df):
 
-    COLUMNAS_NECESARIAS = ["ESTADO", "NIVEL_ED", "ANO4", "TRIMESTRE", "AGLOMERADO", "PP04A"]
+    COLUMNAS_NECESARIAS = ["ESTADO", "NIVEL_ED", "ANO4", "TRIMESTRE", "AGLOMERADO", "PP04A", "PONDERA"]
     try:
         df = pd.read_csv(ruta_df,delimiter=";", usecols=COLUMNAS_NECESARIAS)
 
@@ -56,30 +55,30 @@ def definir_trimestre(df, anio_seleccionado,clave):
     else:
         return None
 
-def muestra_tasa(tasa,evolucion):
+
+def muestra_tasa(tasa, evolucion):
     if evolucion:
+        fig, ax = plt.subplots()
         anios = list(evolucion.keys())
         tasas = list(evolucion.values())
-        plt.plot(anios, tasas)
-        fig, ax = plt.subplots()
-        ax.bar(anios, tasas)
+        ax.bar(anios, tasas, color="skyblue")
         ax.set_xlabel("Año")
         ax.set_ylabel(f"Tasa de {tasa} (%)")
         ax.set_title(f"Evolución de la tasa de {tasa}")
         st.pyplot(fig)
-        st.divider()
     else:
         st.warning("Por favor, elije una opción")
 
 
 # 1.5.1
 def calcular_desocupados_por_nivel(df, anio, trimestre, NIVEL_EDUCATIVO):
-    df_filtrado = df[(df["ANO4"] == anio) & (df["TRIMESTRE"] == trimestre)]
-    df_desocupados = df_filtrado[(df_filtrado[ESTADO_LABORAL] == 2)]
-    # cambio los numeros que representan cada nivel educativo por su descripcion
-    df_desocupados["NIVEL_ED"] = df_desocupados["NIVEL_ED"].map(NIVEL_EDUCATIVO)
-    # Esto cuenta cuántos desocupados hay para cada valor de NIVEL_ED (del 1 al 9):
-    conteo = df_desocupados.groupby("NIVEL_ED").size().sort_index()
+    # Creo una copia para asegurarme de no modificar el dataframe original.
+    df_filtrado = df[(df["ANO4"] == anio) & (df["TRIMESTRE"] == trimestre) & (df[ESTADO_LABORAL] == 2)].copy()
+    #le cambio el tipo de dato en la columna PONDERA, aca es donde modifico el dataframe, por eso la copia.
+    df_filtrado['PONDERA'] = df_filtrado['PONDERA'].astype(int)
+    df_filtrado["NIVEL_ED"] = df_filtrado["NIVEL_ED"].map(NIVEL_EDUCATIVO)
+    # agrupa el dataframe filtrado por nivel educacional, y hace la suma por cada nivel segun la cantidad ponderada. Esto genera una serie donde muestra la cantidad total de personas segun nivel educativo, y lo ordena por indice.
+    conteo = (df_filtrado.groupby("NIVEL_ED")['PONDERA'].sum().sort_index())
     return conteo
 
 # 1.5.2
@@ -102,30 +101,33 @@ def definir_aglomerado(df,clave, NOMBRES_AGLOMERADOS):
     codigo = int(aglomerado_elegido.split(" - ")[0])
     return codigo
 
-def tasa_des_empleo(df,tasa,aglo=None):
+
+def tasa_des_empleo(df, tipo, aglo=None):
     evolucion = {}
+    # Creo una copia para proteger de modificaciones el dataframe original
+    df = df.copy()
+    # Cambio el tipo de la columna PONDERA
+    df["PONDERA"] = df["PONDERA"].astype(float)
+    if aglo not in (None, "pais"):
+        df = df[df["AGLOMERADO"] == aglo]
 
     for anio in sorted(df["ANO4"].unique()):
         df_anio = df[df["ANO4"] == anio]
-
-        if aglo != "pais":
-            df_anio = df_anio[df_anio["AGLOMERADO"] == aglo]
-        
-        # .shape[0] es la forma rápida de contar filas en pandas.
-        desocupados = df_anio[df_anio[ESTADO_LABORAL] == 2].shape[0]
-        ocupados = df_anio[df_anio[ESTADO_LABORAL] == 1].shape[0]
+        # .isin([1, 2]): devuelve una serie booleana (en el dataframe filtrado por año), con True para aquellos registros cuyo estado sea 1 (ocupado) o 2 (desocupado) y False para cualquier otro valor (por ejemplo, 3=inactivo).
+        df_anio = df_anio[df_anio[ESTADO_LABORAL].isin([1, 2])]
+        # Hago las sumatorias desde la columna PONDERA, .loc me deja seleccionar columna y fila a la vez. En este caso, filtra las filas dependiendo el estado laboral, y me retorna los datos de la columna PONDERA. Despues, hace .sum() sobre esa serie.
+        desocupados = df_anio.loc[df_anio[ESTADO_LABORAL] == 2, "PONDERA"].sum()
+        ocupados = df_anio.loc[df_anio[ESTADO_LABORAL] == 1, "PONDERA"].sum()
         total = desocupados + ocupados
-        if tasa == "desempleo":
+        if tipo == "desempleo":
             if total > 0 :
                 tasa = (desocupados / total) * 100
             else:
                 tasa= 0
-        elif tasa == "empleo":
+        elif tipo == "empleo":
             if total > 0 :
                 tasa = (ocupados / total) * 100
             else:
                 tasa= 0
         evolucion[anio] = tasa
-    if aglo == None:
-        return None
-    return evolucion
+    return None if aglo is None else evolucion

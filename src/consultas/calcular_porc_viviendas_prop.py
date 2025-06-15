@@ -49,10 +49,11 @@ def porcentaje_viviendas_propias_por_aglomerado(hogares, nombre_aglomerados):
 
     for hogar in hogares:
         aglomerado = hogar["AGLOMERADO"]
-        total_por_aglomerado[aglomerado] = total_por_aglomerado.get(aglomerado, 0) + 1
+        ponderado = int(hogar['PONDERA'])
+        total_por_aglomerado[aglomerado] = total_por_aglomerado.get(aglomerado, 0) + ponderado
 
         if hogar["II7"] in ("1", "2"):
-            propietarios_por_aglomerado[aglomerado] = propietarios_por_aglomerado.get(aglomerado, 0) + 1
+            propietarios_por_aglomerado[aglomerado] = propietarios_por_aglomerado.get(aglomerado, 0) + ponderado
 
     porcentajes = {}
     for aglomerado, total in total_por_aglomerado.items():

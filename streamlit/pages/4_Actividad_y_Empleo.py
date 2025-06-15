@@ -54,10 +54,10 @@ st.markdown(
     "<h2 style='text-align: center;'>Evolucion de la tasa de desempleo segun aglomerado o país.</h2>",
     unsafe_allow_html=True,
 )
-tasa = "desempleo"
+tipo = "desempleo"
 aglomerado = emp.definir_aglomerado(df, "1.5.31", cons.NOMBRES_AGLOMERADOS)
-evolucion = emp.tasa_des_empleo(df, tasa, aglomerado)
-muestra = emp.muestra_tasa(tasa, evolucion)
+evolucion = emp.tasa_des_empleo(df, tipo, aglomerado)
+muestra = emp.muestra_tasa(tipo, evolucion)
 st.divider()
 
 # 1.5.3 Informar la evolución del empleo(tasa de empleo) a lo largo del tiempo. Se debe poder filtrar por aglomerado y en caso de no elegir ninguno se debe calcular para todo el país.
@@ -65,23 +65,22 @@ st.markdown(
     "<h2 style='text-align: center;'>Evolucion de la tasa de empleo segun aglomerado o país.</h2>",
     unsafe_allow_html=True,
 )
-tasa = "empleo"
+tipo = "empleo"
 aglomerado = emp.definir_aglomerado(df, "1.5.32", cons.NOMBRES_AGLOMERADOS)
-evolucion = emp.tasa_des_empleo(df, tasa, aglomerado)
-muestra2 = emp.muestra_tasa(tasa, evolucion)
+evolucion = emp.tasa_des_empleo(df, tipo, aglomerado)
+muestra2 = emp.muestra_tasa(tipo, evolucion)
 st.divider()
+
+# 1.5.4
+
 
 st.markdown(
     """
     <style>
-    .footer-wrapper {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
+    .footer-wrapper { 
+        
         background-color: #ddd;
         border-top: 1px solid #bbb;
-        z-index: 100;
     }
 
     .footer-container {
