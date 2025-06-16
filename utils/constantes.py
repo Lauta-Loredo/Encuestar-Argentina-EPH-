@@ -42,6 +42,7 @@ UBICACION_BANIOS = {1 : 'Dentro de la vivienda',
         2 : 'Fuera de la vivienda pero dentro del terreno',
         3 : 'Fuera del terreno'
 }
+
 DERECHO_PROPIEDAD = {1 : 'Propietario de la vivienda y el terreno',
                 2 : 'Propietario de la vivienda solamente',
                 3 : 'Inquilino/arrendatario de la vivienda',
