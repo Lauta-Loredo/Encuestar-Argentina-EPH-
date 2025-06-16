@@ -27,13 +27,6 @@ try:
         f"***El sistema contiene información desde el trimestre {trimestre_inicio} del año {anio_inicio} hasta trimestre {trimestre_fin} del año {anio_fin}.***"
     )
     
-    # Defino el incio y el fin 
-    anio_inicio = 2016
-    trimestre_inicio = 1
-    anio_fin = 2024
-    trimestre_fin = 4
-    
- 
     periodo_esperado = []
     anio, trimestre = anio_inicio, trimestre_inicio
 
@@ -45,26 +38,26 @@ try:
         else:
             trimestre += 1
 
-    # Detectamos faltantes
-    faltantes = [(a, t) for (a, t) in periodo_esperado if (a, t) not in rango_fechas_ordenado]
+    # Agrupar faltantes por año usando un diccionario común
+    faltantes = {}
+    for a, t in periodo_esperado:
+        if (a, t) not in rango_fechas_ordenado:
+            if a not in faltantes:
+                faltantes[a] = []
+            faltantes[a].append(f"T{t}")
 
+    # Mostrar resultado
     if not faltantes:
         st.success("✅ El chequeo resultó exitoso y no se encontraron inconsistencias")
     else:
-        agrupados = {}
-        for anio, trimestre in faltantes:
-            if anio not in agrupados:
-                agrupados[anio] = []
-            agrupados[anio].append(f"T{trimestre}")
-        
-        # Armar el texto para mostrar
+        mensaje = "⚠️ Faltan los siguientes períodos:\n\n"
+        for a in sorted(faltantes.keys()):
+            trimestres = ", ".join(faltantes[a])
+            mensaje += f"**{a}**: {trimestres}\n"
+        st.error(mensaje)
 
-        mensaje = ""
-        for anio in sorted(agrupados.keys()):
-            trimestres = ", ".join(agrupados[anio])
-            mensaje += f"**{anio}:** {trimestres}  \n"  # doble espacio + salto para Markdown
-
-        st.error(f"⚠️ Faltan los siguientes periodos:\n\n{mensaje}")
+except ValueError:
+    st.error("El sistema no contiene informacion de ningun trimestre y año.")
 
 
 except ValueError:
