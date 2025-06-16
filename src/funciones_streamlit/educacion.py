@@ -12,7 +12,7 @@ def carga_df ():
 
     ruta_csv_individuos = Path(__file__).parent.parent.parent / "utils" / "IndividuosTotal.csv"
     
-    columnas_necesarias = ["ANO4", "TRIMESTRE", "CH06","NIVEL_ED_str", "PONDERA", "CODUSU", "NRO_HOGAR", "COMPONENTE"]
+    columnas_necesarias = ["ANO4", "TRIMESTRE", "CH06","NIVEL_ED", "PONDERA", "CODUSU", "NRO_HOGAR", "COMPONENTE"]
     df = pd.read_csv(ruta_csv_individuos, delimiter=";", usecols=columnas_necesarias)
     
     # Chequeo que las columnas esten
@@ -48,34 +48,40 @@ def anio_trimestre (df):
 
     
 def personalizacion_datos(df):
-    
-    # Seleccion de anio-trimestre
     anio, trimestre = anio_trimestre(df)
 
     df = df[(df["ANO4"] == anio) & (df["TRIMESTRE"] == trimestre)]
-    df_por_anio = df[(df["ANO4"] == anio)]
-    # Agrupo y sumo Ponderaciones
-    df_resumen = (df.groupby('NIVEL_ED_str')['PONDERA'].sum().reset_index())
-    # Ordeno
-    df_resumen = df_resumen.sort_values(by='PONDERA', ascending=True)   
-    #Elimino dato no relevante     
-    df_resumen = df_resumen[df_resumen["NIVEL_ED_str"] != "Sin informacion"]
-    # Cambios nombres de las columnas 
-    cambios_nom_columns = {'NIVEL_ED_str':'Niveles Educativos', 'PONDERA' : 'Cantidad Maxima'}
-    df_final = df_resumen.rename(columns = cambios_nom_columns)
-    
-    return df_final,df_por_anio
+    df_por_anio = df[df["ANO4"] == anio]
+
+    # Cambio los nombres de la fila de int a str
+    valores_originales = [1, 2, 3, 4, 5, 6]
+    nombres = [
+        'Primario incompleto', 'Primario completo',
+        'Secundario incompleto', 'Secundario completo',
+        'Superior incompleto', 'Superior completo'
+    ]
+    diccionario_mapeo = dict(zip(valores_originales, nombres))
+    df_por_anio = df_por_anio[df_por_anio['NIVEL_ED'].isin(valores_originales)]
+    df_por_anio = df_por_anio.copy()
+    df_por_anio['NIVEL_ED'] = df_por_anio['NIVEL_ED'].replace(diccionario_mapeo)
+
+    df_resumen = df_por_anio.groupby('NIVEL_ED')['PONDERA'].sum().reset_index()
+    df_resumen = df_resumen.sort_values(by='PONDERA', ascending=True)
+
+    cambios_nom_columns = {'NIVEL_ED': 'Niveles Educativos', 'PONDERA': 'Cantidad Maxima'}
+    df_final = df_resumen.rename(columns=cambios_nom_columns)
+
+    return df_final, df_por_anio
 
 #---------------------------------------------------------------------------------------------------------------------
         #LAS SIGIENTES FUNCIONES SON PARA EL PUNTO 1.6.2
 #---------------------------------------------------------------------------------------------------------------------
-def agrupamiento (df_por_anio, opciones):
-    
+
+def agrupamiento(df_por_anio, opciones):
     df_filtrado = df_por_anio[df_por_anio['CH06'] >= 20]
 
-    # Agrupar por año, nivel educacional y edad
-    df_mascomun = df_filtrado.groupby(['ANO4', 'NIVEL_ED_str', 'CH06'])['PONDERA'].sum().reset_index()
-
+    # Agrupamos por año, nivel educativo (ya en texto) y edad
+    df_mascomun = df_filtrado.groupby(['ANO4', 'NIVEL_ED', 'CH06'])['PONDERA'].sum().reset_index()
     resultados_por_grupos = {}
 
     for rango in opciones:
@@ -83,13 +89,18 @@ def agrupamiento (df_por_anio, opciones):
             df_rango = df_mascomun[df_mascomun['CH06'] >= 60]
         else:
             limite_inferior, limite_superior = map(int, rango.split('-'))
-            df_rango = df_mascomun[(df_mascomun['CH06'] >= limite_inferior) & (df_mascomun['CH06'] <= limite_superior)]
+            df_rango = df_mascomun[
+                (df_mascomun['CH06'] >= limite_inferior) & 
+                (df_mascomun['CH06'] <= limite_superior)
+            ]
 
-        # Agrupar por nivel educacional para encontrar el más común en este rango
-        df_nivel = df_rango.groupby('NIVEL_ED_str')['PONDERA'].sum().reset_index()
+        # Agrupar por nivel educativo (ya en texto)
+        df_nivel = df_rango.groupby('NIVEL_ED')['PONDERA'].sum().reset_index()
+
         if not df_nivel.empty:
             nivel_mas_comun = df_nivel.loc[df_nivel['PONDERA'].idxmax()]
-            resultados_por_grupos[rango] = (nivel_mas_comun['NIVEL_ED_str'], nivel_mas_comun['PONDERA'])
+            resultados_por_grupos[rango] = (nivel_mas_comun['NIVEL_ED'], nivel_mas_comun['PONDERA'])
+
     return resultados_por_grupos
 
 def grafico_barras (resultados_por_grupos, orden_etario):
