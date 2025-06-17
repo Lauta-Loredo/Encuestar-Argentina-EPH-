@@ -37,6 +37,20 @@ def crear_dataframe():
     return None
 
 
+def filtrar_dataframe_por_anio(df, anio_seleccionado):
+    # Filtro el dataframe según si se seleccionó un año o "Todos"
+    if anio_seleccionado != 'Todos':
+        df_filtrado = df[df['ANO4'] == anio_seleccionado]
+        if df_filtrado.empty:
+            st.warning("⚠️ No hay datos para el año seleccionado.")
+            return None
+        return df_filtrado
+    else:
+        if df.empty:
+            st.warning("⚠️ No hay datos en el sistema.")
+        return df
+
+
 def selector_anios(df,todos=True):
     #Años disponibles en el dataframe
     anios_disponibles = sorted(df['ANO4'].dropna().unique(), reverse=True)
@@ -53,6 +67,7 @@ def selector_anios(df,todos=True):
     )
     
     return anio_seleccionado
+
 
 def selector_anio_trimestre(df):
     col1, col2 = st.columns(2)
