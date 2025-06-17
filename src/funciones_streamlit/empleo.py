@@ -25,10 +25,7 @@ def cargar_df(ruta_df):
         print(f"Error al cargar el archivo CSV, ERROR: ", {str(e)})
         return None
 
-TIPO_EMPLEO = "PP04A"
 ESTADO_LABORAL = "ESTADO"
-
-# Cargar datos ➔ 2. Filtrar año-trimestre ➔ 3. Filtrar desocupados ➔ 4. Agrupar por educación ➔ 5. Contar ponderado ➔ 6. Mostrar.
 
 def definir_anio(df,clave):
     anios_disponibles = sorted(df["ANO4"].unique())
@@ -68,7 +65,6 @@ def muestra_tasa(tasa, evolucion):
         st.pyplot(fig)
     else:
         st.warning("Por favor, elije una opción")
-
 
 # 1.5.1
 def calcular_desocupados_por_nivel(df, anio, trimestre, NIVEL_EDUCATIVO):
@@ -132,6 +128,41 @@ def tasa_des_empleo(df, tipo, aglo=None):
         evolucion[anio] = tasa
     return None if aglo is None else evolucion
 
+
+# 1.5.4
+TIPO_EMPLEO = "PP04A"  # OCUPACION PRINCIPAL
+TIPO_EMPLEO_STR = "PP04A_str"
+# Informar para cada aglomerado el total de personas ocupadas, el porcentaje con empleo estatal, el porcentaje con empleo privado y el porcentaje de otro tipo. Considerar la ocupación principal.
+def tipo_empleo(cat):
+    if cat == '1':
+        return "Estatal"
+    elif cat == '2':
+        return "Privado"
+    else:
+        return "Otro"
+
+def ocupados_por_nivel(df):
+    df_filtrado = df[(df[ESTADO_LABORAL] == 1)].copy()
+    #creo una columna nueva donde me muestra el tipo de empleo en texto.
+    df_filtrado[TIPO_EMPLEO_STR] = df_filtrado[TIPO_EMPLEO].apply(tipo_empleo)
+    # serie de dos indices que agrupa por aglomerado y tipo de empleo, y me retorna la suma de la columna PONDERA
+    agrupado = df_filtrado.groupby(["AGLOMERADO", TIPO_EMPLEO_STR])["PONDERA"].sum()
+    # Transformar a diccionario final
+    porcentajes = {}
+
+    for aglomerado in agrupado.index.get_level_values(0).unique():
+        # valores es una serie unidimensional, diferente a agrupado, que me retorna los valores de cada aglomerado.
+        valores = agrupado.loc[aglomerado]
+        #total es la cantidad total de empleados por aglomerado.
+        total = valores.sum()
+        # guardo en el diccionario los porcentajes por cada aglomerado. round redondea el resultado en 2 decimales maximo.
+        porcentajes[aglomerado] = {
+            "Total": total,
+            "% Estatal": round(valores.get("Estatal", 0) / total * 100, 2),
+            "% Privado": round(valores.get("Privado", 0) / total * 100, 2),
+            "% Otro": round(valores.get("Otro", 0) / total * 100, 2),
+        }
+    return porcentajes
 
 def footer():
     st.markdown(

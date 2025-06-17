@@ -25,6 +25,7 @@ from src.funciones_streamlit.empleo import (
     calcular_desocupados_por_nivel,
     definir_aglomerado,
     tasa_des_empleo,
+    ocupados_por_nivel,
     footer
 )
 
@@ -89,6 +90,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+df_resultado = ocupados_por_nivel(df)
+st.dataframe(df_resultado)
 st.divider()
+
+
 # footer
 footer()
