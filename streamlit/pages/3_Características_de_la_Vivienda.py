@@ -45,11 +45,10 @@ from src.funciones_streamlit.viviendas import (
 df_hogares = crear_dataframe()
 
 if df_hogares is not  None:
-    anio_seleccionado,trim = selector_anio_trimestre(df_hogares)
-    #anio_seleccionado = selector_anios(df_hogares)
+    anio_seleccionado = selector_anios(df_hogares)
     if anio_seleccionado != 'Seleccione un año...':
         df = filtrar_dataframe_por_anio(df_hogares,anio_seleccionado)
-        calcular_cantidad(df)
+        calcular_cantidad(df,"**Cantidad de hogares en el periodo seleccionado**:")
     
         tabs = st.tabs(['Tipos de Viviendas',
                                 'Material de piso predominante por aglomerado',
