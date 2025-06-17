@@ -66,9 +66,11 @@ def condicion_de_habitabilidad(hogares):
                     points += 2
 
             # Asignación final según puntaje acumulado
-            if points >= 6 :
+            if points <= 4:
+                h["CONDICION_DE_HABITABILIDAD"] = "Insuficiente"
+            elif points <= 8:
                 h["CONDICION_DE_HABITABILIDAD"] = "Regular"
-            elif points >= 10 :
+            elif points < 17:
                 h["CONDICION_DE_HABITABILIDAD"] = "Saludable"
-            else:
+            elif points >= 17:  # points >= 15
                 h["CONDICION_DE_HABITABILIDAD"] = "Buena"
