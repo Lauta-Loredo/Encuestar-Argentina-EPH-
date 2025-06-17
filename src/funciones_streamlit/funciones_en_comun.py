@@ -51,7 +51,21 @@ def filtrar_dataframe_por_anio(df, anio_seleccionado):
         return df
 
 
-def selector_anios(df,todos=True):
+def filtrar_dataframe_por_anio_y_trim(df,anio,trim):
+    df_fil_anio = filtrar_dataframe_por_anio(df,anio)
+    if trim != 'Todos':
+        df_fil_anio = df[df['TRIMESTRE'] == trim]
+        if df_fil_anio.empty:
+            st.warning("⚠️ No hay datos para el trim seleccionado.")
+            return None
+        return df_fil_anio
+    else:
+        if df.empty:
+            st.warning("⚠️ No hay datos en el sistema.")
+        return df
+
+
+def selector_anios(df,todos=False):
     #Años disponibles en el dataframe
     anios_disponibles = sorted(df['ANO4'].dropna().unique(), reverse=True)
     opciones = ['Seleccione un año...']
