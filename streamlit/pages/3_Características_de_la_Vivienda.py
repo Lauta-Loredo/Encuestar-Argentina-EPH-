@@ -5,20 +5,28 @@ import streamlit as st
 import pandas as pd
 from importlib import reload
 
-from datetime import datetime as dt
-
 st.set_page_config(layout='wide')
 st.title("🏘️ Características de la vivienda")
+st.markdown(
+    "En esta sección se visualiza información relacionada con las características habitacionales de la población argentina según los datos de la EPH. "
+    "Podés seleccionar un año específico para analizar o elegir ver todos los períodos disponibles en el sistema."
+)
+st.divider()
+
 sys.path.append(os.path.abspath("../code"))
 
-from utils.constantes import (
-    UTILS_PATH,
-    HOGARES_CSV
+import src.funciones_streamlit.viviendas as viviendas
+import src.funciones_streamlit.funciones_en_comun as funciones_en_comun
+
+reload(funciones_en_comun)
+
+from src.funciones_streamlit.funciones_en_comun import (
+    crear_dataframe,
+    footer,
+    selector_anio_trimestre
 )
 
-import src.funciones_streamlit.viviendas as viviendas
-
-reload(viviendas)
+reload(viviendas) 
 
 # Ahora vuelves a importar lo que necesitas para que sean accesibles con las funciones recargadas:
 from src.funciones_streamlit.viviendas import (
@@ -34,27 +42,15 @@ from src.funciones_streamlit.viviendas import (
     footer
 )
 
-df_hogares = None
+df_hogares = crear_dataframe()
 
-try:
-    #Genero el dataframe de hogares
-    df_hogares = pd.read_csv(UTILS_PATH/HOGARES_CSV, sep=';', low_memory=False)
-except FileNotFoundError:
-    st.error(f"Error: archivo CSV no encontrado")
-except pd.errors.ParserError:  # Usá este en lugar de csv.Error para pandas
-    st.error(" Error al leer el archivo CSV")
-except Exception as e:
-    st.error(f" Ocurrió una excepción inesperada: {e} ({type(e).__name__})")
-
-st.divider()
-
-anio_seleccionado = selector_anios(df_hogares)
-
-if anio_seleccionado != 'Seleccione un año...':
-    if df_hogares is not  None:
+if df_hogares is not  None:
+    anio_seleccionado,trim = selector_anio_trimestre(df_hogares)
+    #anio_seleccionado = selector_anios(df_hogares)
+    if anio_seleccionado != 'Seleccione un año...':
         df = filtrar_dataframe_por_anio(df_hogares,anio_seleccionado)
         calcular_cantidad(df)
-        
+    
         tabs = st.tabs(['Tipos de Viviendas',
                                 'Material de piso predominante por aglomerado',
                                 'Prop. viviendas con baño dentro del hogar',
@@ -68,7 +64,7 @@ if anio_seleccionado != 'Seleccione un año...':
         
         with tabs[1]:
             material_predominante_por_aglomerado(df)
-        
+
         with tabs[2]:
             proporcion_viviendas_banio(df)
         
@@ -80,7 +76,7 @@ if anio_seleccionado != 'Seleccione un año...':
         
         with tabs[5]:
             condiciones_de_habitabilidad(df)
-else: 
-    st.warning('Seleccione un periodo para poder trabajar con el dataframe.')
+    else: 
+        st.warning('Seleccione un periodo para poder trabajar con el dataframe.')
 
 footer()
