@@ -7,7 +7,7 @@ sys.path.append(str(project_root))
 
 from src.DataSet import año_trimestre
 from src.automatizar_jupyter import rutas
-from src.funciones_streamlit.viviendas import footer
+from src.funciones_streamlit.funciones_en_comun import footer
 
 rango_fechas = año_trimestre()
 
