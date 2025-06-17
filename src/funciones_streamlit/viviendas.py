@@ -8,6 +8,10 @@ import matplotlib.pyplot as plt
 
 sys.path.append(os.path.abspath("../code"))
 
+from src.funciones_streamlit.funciones_en_comun import (
+    selector_aglomerados,
+    convertir_csv
+)
 from utils.constantes import (
     TIPOS_VIVIENDAS, 
     NOMBRES_AGLOMERADOS, 
@@ -25,58 +29,9 @@ UBICACION_BANIO = "IV9"
 TIPO_TENENCIA = 'II7'
 
 
-def selector_anios(df):
-    #Años disponibles en el dataframe
-    anios_disponibles = sorted(df['ANO4'].dropna().unique(), reverse=True)
-    
-    opciones = ['Seleccione un año...', 'Todos'] + list(anios_disponibles)
-    
-    #Selectbox para seleccionar un año en especifico o todos los años
-    anio_seleccionado = st.selectbox( 
-        "Seleccione un año para explorar las características de la población argentina:",
-        opciones
-    )
-    
-    return anio_seleccionado
-
-
-def selector_aglomerados():
-    opciones_aglomerados = ['Seleccione un aglomerado...'] + sorted(NOMBRES_AGLOMERADOS.values())
-    seleccion_aglomerado = st.selectbox(
-            'Seleccione un aglomerado para visualizar su evolución de tenencia',
-            opciones_aglomerados
-        )
-    return seleccion_aglomerado
-
-
-def convertir_csv(df):
-    # Conveierte a CSV el dataframe en memoria
-        csv = df.to_csv().encode('utf-8')
-        st.download_button(
-            label="📁 Descargar CSV",
-            data=csv,
-            file_name="Hogares.csv",
-            mime="text/csv"
-        )
-
-
-def filtrar_dataframe_por_anio(df_hogares, anio_seleccionado):
-    # Filtro el dataframe según si se seleccionó un año o "Todos"
-    if anio_seleccionado != 'Todos':
-        df_filtrado = df_hogares[df_hogares['ANO4'] == anio_seleccionado]
-        if df_filtrado.empty:
-            st.warning("⚠️ No hay datos para el año seleccionado.")
-            return None
-        return df_filtrado
-    else:
-        if df_hogares.empty:
-            st.warning("⚠️ No hay datos en el sistema.")
-        return df_hogares
-
-
-def calcular_cantidad(df):
-    cantidad_hogares = df['PONDERA'].sum()
-    st.metric("**Cantidad de hogares en el periodo seleccionado**:", f"{cantidad_hogares:,.0f}")
+def calcular_cantidad(df,descripcion=None):
+    cantidad = df['PONDERA'].sum()
+    st.metric(descripcion, f"{cantidad:,.0f}")
 
 
 def grafico_tipo_de_viviendas(df):
@@ -150,44 +105,46 @@ def proporcion_viviendas_banio(df):
 
 def evolucion_tenencia(df):
     st.subheader('📈 Evolución de Tenencia de la Vivienda')
-    
+
     c1, c2 = st.columns(2)
 
     with c1:
         seleccion_aglomerado = selector_aglomerados()
 
-    with c2:
-        seleccion_tenencias = st.multiselect(
-            'Seleccione los tipos de tenencia que desea visualizar:',
-            options=list(DERECHO_PROPIEDAD.values())
-        )
-
     if seleccion_aglomerado == 'Seleccione un aglomerado...':
         st.warning('Debe seleccionar un aglomerado para ver el gráfico.')
-    elif not seleccion_tenencias:
-        st.warning('Debe seleccionar al menos un tipo de tenencia para continuar.')
+        return
+
+    # Filtrar DataFrame por aglomerado
+    cod_aglo = {v: k for k, v in NOMBRES_AGLOMERADOS.items()}[seleccion_aglomerado]
+    df_aglo = df[df['AGLOMERADO'] == cod_aglo].copy()
+    df_aglo['PERIODO'] = df_aglo['ANO4'].astype(str) + "-T" + df_aglo['TRIMESTRE'].astype(str)
+
+    varios_anios = df_aglo['ANO4'].nunique() > 1
+
+    if varios_anios:
+        agrupado = df_aglo.groupby(['ANO4', TIPO_TENENCIA])['PONDERA'].sum().unstack(fill_value=0)
+        agrupado.index = agrupado.index.astype(str)
     else:
+        agrupado = df_aglo.groupby(['PERIODO', TIPO_TENENCIA])['PONDERA'].sum().unstack(fill_value=0)
 
-        cod_aglo = {v: k for k, v in NOMBRES_AGLOMERADOS.items()}[seleccion_aglomerado]
-        df_aglo = df[df['AGLOMERADO'] == cod_aglo].copy()
+    agrupado = (agrupado.div(agrupado.sum(axis=1), axis=0) * 100).round(2)
+    agrupado.rename(columns=DERECHO_PROPIEDAD, inplace=True)
 
-        # Agrupar por año y trimestre
-        df_aglo['PERIODO'] = df_aglo['ANO4'].astype(str) + "-T" + df_aglo['TRIMESTRE'].astype(str)
+    with c2:
+        opciones_disponibles = [t for t in DERECHO_PROPIEDAD.values() if t in agrupado.columns]
+        seleccion_tenencias = st.multiselect(
+            'Seleccione los tipos de tenencia que desea visualizar:',
+            options=opciones_disponibles,
+        )
 
-        varios_anios = df_aglo['ANO4'].nunique() > 1
+    if not seleccion_tenencias:
+        st.warning('Debe seleccionar al menos un tipo de tenencia para continuar.')
+        return
 
-        if varios_anios:
-            agrupado = df_aglo.groupby(['ANO4',TIPO_TENENCIA])['PONDERA'].sum().unstack(fill_value=0)
-            agrupado = (agrupado.div(agrupado.sum(axis=1), axis=0) * 100).round(2)
-            agrupado.index = agrupado.index.astype(str)  # eje X solo el año
-        else:
-            agrupado = df_aglo.groupby(['PERIODO',TIPO_TENENCIA])['PONDERA'].sum().unstack(fill_value=0)
-            agrupado = (agrupado.div(agrupado.sum(axis=1), axis=0) * 100).round(2)
+    agrupado = agrupado[seleccion_tenencias]
 
-        agrupado.rename(columns=DERECHO_PROPIEDAD, inplace=True)
-        agrupado = agrupado[seleccion_tenencias]
-
-        st.line_chart(agrupado)
+    st.line_chart(agrupado)
 
 
 def cantidad_viviendas_en_villas(df):
@@ -242,67 +199,3 @@ def condiciones_de_habitabilidad(df):
     st.dataframe(df_habitabilidad)
     
     convertir_csv(df_habitabilidad)
-
-
-def footer():
-    st.markdown("""
-    <style>
-    .footer-wrapper {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #ddd;
-        border-top: 1px solid #bbb;
-        z-index: 100;
-    }
-
-    .footer-container {
-        max-width: 960px;
-        margin: auto;
-        padding: 10px 20px 10px 20px;  /* Menos padding vertical */
-        font-size: 10pt;
-        color: #333;
-    }
-
-    .footer-container h4 {
-        font-size: 11pt;
-        color: #222;
-        margin: 0 0 5px 0;
-    }
-
-    .footer-container p {
-        margin: 2px 0;
-        text-align: justify;
-    }
-
-    .footer-container .footer-note {
-        text-align: center;
-        background-color: #ccc;
-        padding: 6px;
-        border-radius: 3px;
-        margin-top: 8px;
-        font-size: 9.5pt;
-    }
-
-    /* MÁS espacio inferior para evitar solapamiento */
-    .main > div {
-        padding-bottom: 220px;
-    }
-    </style>
-
-    <div class="footer-wrapper">
-        <div class="footer-container">
-            <h4>Licencia MIT</h4>
-            <p>
-            Copyright (c) 2025 <strong>Grupo 26</strong>
-            </p>
-            <p>
-            Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados...
-            </p>
-            <p class="footer-note">
-            Desarrollado por Diego Arrechea, Ulises Rodriguez, Axel Morano, Lautaro Loredo y Lucentini Joaquin · UNLP · 2025
-            </p>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
