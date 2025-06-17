@@ -3,6 +3,7 @@ import sys
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+from importlib import reload
 
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
@@ -12,9 +13,20 @@ ruta_csv_individuos = (
 )
 
 from datetime import datetime as dt
-import funciones_streamlit.empleo as emp
+import src.funciones_streamlit.empleo as emp
 import utils.constantes as cons
+reload(emp)
 
+from src.funciones_streamlit.empleo import (
+    cargar_df,
+    definir_anio,
+    definir_trimestre,
+    muestra_tasa,
+    calcular_desocupados_por_nivel,
+    definir_aglomerado,
+    tasa_des_empleo,
+    footer
+)
 
 st.set_page_config(layout="wide")
 st.title("💼⚙️ Actividad y Empleo")
@@ -34,13 +46,13 @@ if st.session_state.get("datos_actualizados", False):
 
 
 # cargo datos
-df = emp.cargar_df(ruta_csv_individuos)
+df = cargar_df(ruta_csv_individuos)
 
 # 1.5.1 Para las personas desocupadas, informar la cantidad de ellas según sus estudios alcanzados. Se debe informar para un año y trimestre elegido por el usuario
-anio = emp.definir_anio(df, "1.5.1A")
-trimestre = emp.definir_trimestre(df, anio, "1.5.1T")
+anio = definir_anio(df, "1.5.1A")
+trimestre = definir_trimestre(df, anio, "1.5.1T")
 if anio and trimestre:
-    conteo = emp.calcular_desocupados_por_nivel(df, anio, trimestre, cons.NIVEL_EDUCATIVO)
+    conteo = calcular_desocupados_por_nivel(df, anio, trimestre, cons.NIVEL_EDUCATIVO)
     fig, ax = plt.subplots()
     ax.pie(conteo, labels=conteo.index, autopct="%1.1f%%")
     ax.set_title("Distribución de desocupados según nivel educativo")
@@ -55,9 +67,9 @@ st.markdown(
     unsafe_allow_html=True,
 )
 tipo = "desempleo"
-aglomerado = emp.definir_aglomerado(df, "1.5.31", cons.NOMBRES_AGLOMERADOS)
-evolucion = emp.tasa_des_empleo(df, tipo, aglomerado)
-muestra = emp.muestra_tasa(tipo, evolucion)
+aglomerado = definir_aglomerado(df, "1.5.31", cons.NOMBRES_AGLOMERADOS)
+evolucion = tasa_des_empleo(df, tipo, aglomerado)
+muestra = muestra_tasa(tipo, evolucion)
 st.divider()
 
 # 1.5.3 Informar la evolución del empleo(tasa de empleo) a lo largo del tiempo. Se debe poder filtrar por aglomerado y en caso de no elegir ninguno se debe calcular para todo el país.
@@ -66,70 +78,17 @@ st.markdown(
     unsafe_allow_html=True,
 )
 tipo = "empleo"
-aglomerado = emp.definir_aglomerado(df, "1.5.32", cons.NOMBRES_AGLOMERADOS)
-evolucion = emp.tasa_des_empleo(df, tipo, aglomerado)
-muestra2 = emp.muestra_tasa(tipo, evolucion)
+aglomerado = definir_aglomerado(df, "1.5.32", cons.NOMBRES_AGLOMERADOS)
+evolucion = tasa_des_empleo(df, tipo, aglomerado)
+muestra2 = muestra_tasa(tipo, evolucion)
 st.divider()
 
 # 1.5.4
-
-
 st.markdown(
-    """
-    <style>
-    .footer-wrapper { 
-        
-        background-color: #ddd;
-        border-top: 1px solid #bbb;
-    }
-
-    .footer-container {
-        max-width: 960px;
-        margin: auto;
-        padding: 10px 20px 10px 20px;  /* Menos padding vertical */
-        font-size: 10pt;
-        color: #333;
-    }
-
-    .footer-container h4 {
-        font-size: 11pt;
-        color: #222;
-        margin: 0 0 5px 0;
-    }
-
-    .footer-container p {
-        margin: 2px 0;
-        text-align: justify;
-    }
-
-    .footer-container .footer-note {
-        text-align: center;
-        background-color: #ccc;
-        padding: 6px;
-        border-radius: 3px;
-        margin-top: 8px;
-        font-size: 9.5pt;
-    }
-
-    /* MÁS espacio inferior para evitar solapamiento */
-    .main > div {
-        padding-bottom: 220px;
-    }
-    </style>
-    <div class="footer-wrapper">
-        <div class="footer-container">
-            <h4>Licencia MIT</h4>
-            <p>
-            Copyright (c) 2025 <strong>Grupo 26</strong>
-            </p>
-            <p>
-            Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados...
-            </p>
-            <p class="footer-note">
-            Desarrollado por Diego Arrechea, Ulises Rodriguez, Axel Morano, Lautaro Loredo y Lucentini Joaquin · UNLP · 2025
-            </p>
-        </div>
-    </div>
-""",
+    "<h2 style='text-align: center;'>Informacion sobre personas ocupadas y su tipo de ocupación.</h2>",
     unsafe_allow_html=True,
 )
+
+st.divider()
+# footer
+footer()
