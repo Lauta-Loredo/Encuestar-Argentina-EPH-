@@ -2,7 +2,6 @@ from pathlib import Path
 import sys
 import os
 import streamlit as st
-import pandas as pd
 from importlib import reload
 
 st.set_page_config(layout='wide')
@@ -22,16 +21,16 @@ reload(funciones_en_comun)
 
 from src.funciones_streamlit.funciones_en_comun import (
     crear_dataframe,
+    selector_anios,
+    filtrar_dataframe_por_anio,
     footer,
-    selector_anio_trimestre
+
 )
 
 reload(viviendas) 
 
 # Ahora vuelves a importar lo que necesitas para que sean accesibles con las funciones recargadas:
 from src.funciones_streamlit.viviendas import (
-    selector_anios,
-    filtrar_dataframe_por_anio,
     calcular_cantidad,
     grafico_tipo_de_viviendas,
     material_predominante_por_aglomerado,
@@ -39,7 +38,6 @@ from src.funciones_streamlit.viviendas import (
     evolucion_tenencia,
     cantidad_viviendas_en_villas,
     condiciones_de_habitabilidad,
-    footer
 )
 
 df_hogares = crear_dataframe()
