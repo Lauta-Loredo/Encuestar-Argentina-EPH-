@@ -20,13 +20,16 @@ from utils.constantes import (
 
 NOMBRES_AGLOMERADOS = {int(k): v for k, v in NOMBRES_AGLOMERADOS.items()}
 
-def crear_dataframe():
+@st.cache_data
+def crear_dataframe(columnas=None):
     try:
         #Genero el dataframe de hogares
         df = pd.read_csv(UTILS_PATH / HOGARES_CSV, sep=';', low_memory=False)
         if df.empty:
             st.warning(f"El archvio está vacío.")
             return None
+        if columnas is not None:
+            df = df[columnas]
         return df
     except FileNotFoundError:
         st.error(f"Error: archivo CSV no encontrado")
