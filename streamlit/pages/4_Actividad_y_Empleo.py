@@ -30,10 +30,10 @@ from src.funciones_streamlit.empleo import (
     tasa_aglomerado,
     colores_aglomerado,
     graficar_mapa,
-    footer
 )
 from src.funciones_streamlit.funciones_en_comun import (
-    crear_dataframe
+    crear_dataframe,
+    footer
 )
 
 

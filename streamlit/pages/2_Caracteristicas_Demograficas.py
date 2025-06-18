@@ -15,126 +15,132 @@ from src.funciones_streamlit import funciones_en_comun as fc
 
 st.title("📊 Caracteristicas Demográficas")
 
-st.info("""**En esta sección se visualizará información relacionada a la características demográficas de
+st.info("""**En esta sección se visualizará información relacionada a las características demográficas de
 la población argentina según la EPH.**\n
-***Para continuar por favor seleccione el subtitulo de su agrado, para asi poder visualizar su contenido***
+\n***Para continuar por favor active la opcion de Visualizar Datos Demograficos y seleccione el subtitulo de su agrado, para asi poder ver su contenido***
 """)
 
-# Distribución de la población por grupos y sexo cada 10 años
 st.divider()
-with st.expander("👩‍👦‍👦 Distribución de la población por grupos y sexo cada 10 años", expanded=False):
+mostrar_graficos = st.toggle("***Visualizar Datos Demograficos***", value=False)
+
+if mostrar_graficos:
+    #Creo el DataFrame
     df = ats.cargar_csv() #Cargo el DF con columnas que voy a usar
 
     if df is None:
         st.stop() #Si ocurre algo detego la app
 
-    #Un selectbox para la seleccion de año y trimestre
-    anios_disponibles = sorted(df["ANO4"].unique())
-    anios = st.selectbox("Seleccione un año: ", anios_disponibles)
-    tri_disponible = sorted(df[df["ANO4"] == anios]["TRIMESTRE"].unique())
-    trimestre = st.selectbox("Seleccione un trimestre: ", tri_disponible)
+    # Distribución de la población por grupos y sexo cada 10 años
+    st.divider()
+    with st.expander("👩‍👦‍👦 Distribución de la población por grupos y sexo cada 10 años", expanded=False):
 
-    #Filtro los datos segun el año y trimestre seleccionados
-    df_filtrado = df[(df["ANO4"] == anios) & (df["TRIMESTRE"] == trimestre)]
+        #Un selectbox para la seleccion de año y trimestre
+        anios_disponibles = sorted(df["ANO4"].unique())
+        anios = st.selectbox("Seleccione un año: ", anios_disponibles)
+        tri_disponible = sorted(df[df["ANO4"] == anios]["TRIMESTRE"].unique())
+        trimestre = st.selectbox("Seleccione un trimestre: ", tri_disponible)
 
-    if df_filtrado.empty:
-        st.warning("No hay datos disponibles para ese año y trimestre")
-        st.stop()
+        #Filtro los datos segun el año y trimestre seleccionados
+        df_filtrado = df[(df["ANO4"] == anios) & (df["TRIMESTRE"] == trimestre)]
 
-    #Creo un grafico de barras por grupos de edad y sexo
-    grafico = ats.grafico_barras_grup_edad(df_filtrado, anios, trimestre)
+        if df_filtrado.empty:
+            st.warning("No hay datos disponibles para ese año y trimestre")
+            st.stop()
 
-    if grafico is None:
-        st.error('Ocurrió un error al configurar el gráfico')
-        st.stop()
+        #Creo un grafico de barras por grupos de edad y sexo
+        grafico = ats.grafico_barras_grup_edad(df_filtrado, anios, trimestre)
 
-    st.pyplot(grafico) #Si el grafico se creo correctamente, se muestra
+        if grafico is None:
+            st.error('Ocurrió un error al configurar el gráfico')
+            st.stop()
 
-# Edad promedio por aglomerado
-with st.expander("➗ Edad promedio de personas por aglomerado", expanded=False):
-    ultimo_anio = df["ANO4"].max()
-    df_ultimo_anio = df[df["ANO4"] == ultimo_anio]
-    ultimo_trimestre = df_ultimo_anio["TRIMESTRE"].max()
+        st.pyplot(grafico) #Si el grafico se creo correctamente, se muestra
 
-    st.markdown(f'**Periodo de análisis:** {ultimo_anio}-T{ultimo_trimestre} (último disponible)')
+    # Edad promedio por aglomerado
+    with st.expander("➗ Edad promedio de personas por aglomerado", expanded=False):
+        ultimo_anio = df["ANO4"].max()
+        df_ultimo_anio = df[df["ANO4"] == ultimo_anio]
+        ultimo_trimestre = df_ultimo_anio["TRIMESTRE"].max()
 
-    aglomerados = cpv.obtener_nombre_aglomerados()
-    df_filtrado2 = df[(df['ANO4'] == ultimo_anio) & (df['TRIMESTRE'] == ultimo_trimestre)]
-    df_filtrado2 = ats.calcular_edad_promedio(df_filtrado2)
-    df_filtrado2['Nombre Aglomerado'] = df_filtrado2['AGLOMERADO'].astype(str).map(aglomerados)
-    df_filtrado2 = df_filtrado2.sort_values(by='AGLOMERADO')
-    df_filtrado2['Año'] = ultimo_anio
-    df_filtrado2['Trimestre'] = ultimo_trimestre
+        st.markdown(f'**Periodo de análisis:** {ultimo_anio}-T{ultimo_trimestre} (último disponible)')
 
-    orden_columnas = ['Año', 'Trimestre', 'AGLOMERADO', 'Nombre Aglomerado',
-                      'poblacion_representada', 'edad_promedio']
-    df_filtrado2 = df_filtrado2[orden_columnas]
+        aglomerados = cpv.obtener_nombre_aglomerados()
+        df_filtrado2 = df[(df['ANO4'] == ultimo_anio) & (df['TRIMESTRE'] == ultimo_trimestre)]
+        df_filtrado2 = ats.calcular_edad_promedio(df_filtrado2)
+        df_filtrado2['Nombre Aglomerado'] = df_filtrado2['AGLOMERADO'].astype(str).map(aglomerados)
+        df_filtrado2 = df_filtrado2.sort_values(by='AGLOMERADO')
+        df_filtrado2['Año'] = ultimo_anio
+        df_filtrado2['Trimestre'] = ultimo_trimestre
 
-    st.dataframe(
-        df_filtrado2.style.format({
-            'edad_promedio': '{:.1f} años',
-            'poblacion_representada': '{:,.0f} personas'
-        }),
-        height=400,
-        column_config={
-            "AGLOMERADO": "Código Aglomerado",
-            "Nombre Aglomerado": "Nombre del Aglomerado",
-            "edad_promedio": "Edad Promedio",
-            "poblacion_representada": "Población Representada",
-            "Año": "Año",
-            "Trimestre": "Trimestre"
-        }
-    )
+        orden_columnas = ['Año', 'Trimestre', 'AGLOMERADO', 'Nombre Aglomerado',
+                        'poblacion_representada', 'edad_promedio']
+        df_filtrado2 = df_filtrado2[orden_columnas]
 
-# Evolución de la dependencia demográfica
-with st.expander("📈 Evolución de la dependencia demográfica", expanded=False):
-    aglomerados_opciones = [f"{codigo} - {nombre}" for codigo, nombre in aglomerados.items()]
-    seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
-    seleccion_codigo = seleccion.split(" - ")[0]
-    df_filtrado3 = df[df["AGLOMERADO"] == int(seleccion_codigo)]
+        st.dataframe(
+            df_filtrado2.style.format({
+                'edad_promedio': '{:.1f} años',
+                'poblacion_representada': '{:,.0f} personas'
+            }),
+            height=400,
+            column_config={
+                "AGLOMERADO": "Código Aglomerado",
+                "Nombre Aglomerado": "Nombre del Aglomerado",
+                "edad_promedio": "Edad Promedio",
+                "poblacion_representada": "Población Representada",
+                "Año": "Año",
+                "Trimestre": "Trimestre"
+            }
+        )
 
-    resultado = ats.dependencia_demografica(df_filtrado3)
+    # Evolución de la dependencia demográfica
+    with st.expander("📈 Evolución de la dependencia demográfica", expanded=False):
+        aglomerados_opciones = [f"{codigo} - {nombre}" for codigo, nombre in aglomerados.items()]
+        seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
+        seleccion_codigo = seleccion.split(" - ")[0]
+        df_filtrado3 = df[df["AGLOMERADO"] == int(seleccion_codigo)]
 
-    if resultado.empty:
-        st.warning("No hay datos disponibles para este aglomerado.")
-    else:
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.plot(resultado.index, resultado["Dependencia"], marker="o", linestyle="-", color="tab:blue")
+        _, df_dep = ats.evoluciones(df_filtrado3)
 
-        #Agrego etiquetas a cada punto
-        for x, y in zip(resultado.index, resultado['Dependencia']):
-            ax.text(x,y + 0.25, f"{y: .2f}", ha="center", va="bottom", fontsize=9, color="black")
-        ax.set_title(f"Evolución de la dependencia demográfica - {aglomerados[seleccion_codigo]}", fontsize=14)
-        ax.set_xlabel("Período", fontsize=12)
-        ax.set_ylabel("Índice de dependencia (%)", fontsize=12)
-        ax.tick_params(axis='x', rotation=45)
-        ax.grid(True)
-        st.pyplot(fig)
+        if df_dep.empty:
+            st.warning("No hay datos disponibles para este aglomerado.")
+        else:
+            fig, ax = plt.subplots(figsize=(10, 5))
+            ax.plot(df_dep.index, df_dep["Dependencia"], marker="o", linestyle="-", color="tab:blue")
 
-# Evolución media y mediana
-with st.expander("📉 Evolución de la Media y la Mediana de la edad", expanded=False):
-    media_mediana = ats.media_mediana(df)
+            for x, y in zip(df_dep.index, df_dep['Dependencia']):
+                ax.text(x, y + 0.07, f"{y: .2f}", ha="center", va="bottom", fontsize=9, color="black")
 
-    if media_mediana.empty:
-        st.warning("No hay datos disponibles")
-    else:
-        fig, ax = plt.subplots(figsize=(10, 5))
-        ax.plot(media_mediana["Periodo"], media_mediana["Media"], label="Media", marker='o')
-        ax.plot(media_mediana["Periodo"], media_mediana["Mediana"], label="Mediana", marker='o')
+            ax.set_title(f"Evolución de la dependencia demográfica - {aglomerados[seleccion_codigo]}", fontsize=14)
+            ax.set_xlabel("Período", fontsize=12)
+            ax.set_ylabel("Índice de dependencia (%)", fontsize=12)
+            ax.tick_params(axis='x', rotation=45)
+            ax.grid(True)
+            st.pyplot(fig)
 
-        for i, row in media_mediana.iterrows():
-            ax.text(row["Periodo"], row["Media"] + 0.07, f"{row['Media']:.1f}", 
-                    ha='center', va='bottom', fontsize=9, color='blue')
-            ax.text(row["Periodo"], row["Mediana"] - 0.07, f"{row['Mediana']:.1f}", 
-                    ha='center', va='top', fontsize=9, color='orange')
+    # Evolución media y mediana
+    with st.expander("📉 Evolución de la Media y la Mediana de la edad", expanded=False):
+        df_edad, _ = ats.evoluciones(df)
 
-        ax.set_title("Evolución de la Media y la Mediana de la edad")
-        ax.set_xlabel("Periodo")
-        ax.set_ylabel("Edad")
-        ax.legend()
-        ax.grid(True)
-        plt.xticks(rotation=45)
-        st.pyplot(fig)
+        if df_edad.empty:
+            st.warning("No hay datos disponibles")
+        else:
+            fig, ax = plt.subplots(figsize=(10, 5))
+            ax.plot(df_edad["Periodo"], df_edad["Media"], label="Media", marker='o')
+            ax.plot(df_edad["Periodo"], df_edad["Mediana"], label="Mediana", marker='o')
+
+            for i, row in df_edad.iterrows():
+                ax.text(row["Periodo"], row["Media"] + 0.07, f"{row['Media']:.1f}", 
+                        ha='center', va='bottom', fontsize=9, color='blue')
+                ax.text(row["Periodo"], row["Mediana"] - 0.07, f"{row['Mediana']:.1f}", 
+                        ha='center', va='top', fontsize=9, color='orange')
+
+            ax.set_title("Evolución de la Media y la Mediana de la edad")
+            ax.set_xlabel("Periodo")
+            ax.set_ylabel("Edad")
+            ax.legend()
+            ax.grid(True)
+            plt.xticks(rotation=45)
+            st.pyplot(fig)
 
 #Imprimo footer
 fc.footer()

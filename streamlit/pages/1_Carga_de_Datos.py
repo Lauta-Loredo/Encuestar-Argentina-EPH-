@@ -54,7 +54,7 @@ try:
         mensaje = "⚠️ Faltan los siguientes períodos:\n\n"
         for a in sorted(faltantes.keys()):
             trimestres = ", ".join(faltantes[a])
-            mensaje += f"**{a}**: {trimestres}\n"
+            mensaje += f" || **{a}**: {trimestres}\n"
         st.error(mensaje)
 
 except ValueError:

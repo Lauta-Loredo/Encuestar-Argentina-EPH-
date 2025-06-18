@@ -175,31 +175,49 @@ def footer():
     """
     st.markdown("""
     <style>
+    html, body, #root {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
+    }
+
+    .main > div {
+        padding-bottom: 80px; /* espacio para que el footer no tape contenido */
+    }
+
     .footer-wrapper {
-        position: fixed;
+        position: fixed;  /* fijo en pantalla */
         bottom: 0;
         left: 0;
+        right: 0;
         width: 100%;
         background-color: #ddd;
         border-top: 1px solid #bbb;
-        z-index: 100;
+        padding: 10px 20px;
+        font-size: 10pt;
+        color: #333;
+        box-sizing: border-box;
+        z-index: 9999; /* para que esté arriba de todo */
     }
+
     .footer-container {
         max-width: 960px;
         margin: auto;
-        padding: 10px 20px 10px 20px;
-        font-size: 10pt;
-        color: #333;
     }
+
     .footer-container h4 {
         font-size: 11pt;
         color: #222;
         margin: 0 0 5px 0;
     }
+
     .footer-container p {
         margin: 2px 0;
         text-align: justify;
     }
+
     .footer-container .footer-note {
         text-align: center;
         background-color: #ccc;
@@ -207,9 +225,6 @@ def footer():
         border-radius: 3px;
         margin-top: 8px;
         font-size: 9.5pt;
-    }
-    .main > div {
-        padding-bottom: 220px;
     }
     </style>
 
@@ -228,3 +243,4 @@ def footer():
         </div>
     </div>
     """, unsafe_allow_html=True)
+
