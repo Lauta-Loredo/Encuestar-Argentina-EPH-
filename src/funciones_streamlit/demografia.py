@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from pathlib import Path
-import funciones_en_comun as fc
+from src import funciones_en_comun as fc
 import streamlit as st
 
 

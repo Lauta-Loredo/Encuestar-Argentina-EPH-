@@ -10,7 +10,7 @@ sys.path.append(str(project_root))
 
 #Importo algunas funciones
 from src.funciones_streamlit import demografia as ats
-from src.funciones_streamlit import funciones_en_comun as fc
+from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obtener los aglomerados
 
 st.title("📊 Caracteristicas Demográficas")
 
@@ -57,7 +57,7 @@ with st.expander("➗ Edad promedio de personas por aglomerado", expanded=False)
 
     st.markdown(f'**Periodo de análisis:** {ultimo_anio}-T{ultimo_trimestre} (último disponible)')
 
-    aglomerados = fc.selector_aglomerados()
+    aglomerados = cpv.obtener_nombre_aglomerados()
     df_filtrado2 = df[(df['ANO4'] == ultimo_anio) & (df['TRIMESTRE'] == ultimo_trimestre)]
     df_filtrado2 = ats.calcular_edad_promedio(df_filtrado2)
     df_filtrado2['Nombre Aglomerado'] = df_filtrado2['AGLOMERADO'].astype(str).map(aglomerados)
