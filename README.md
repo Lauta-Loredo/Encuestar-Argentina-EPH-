@@ -87,9 +87,9 @@ streamlit run Inicio.py
 #### 3. **Cargar los datos**
 - En la pagina "Carga de datos" presionar el boton "Actualizar datos", el mismo cargara los datos y mostrara uno de los siguientes mensajes:
 
-    - ✅ El chequeo resultó exitoso y no se encontraron inconsistencias, en caso de no haber archivos faltantes entre el Año y Trimestre maximo y minimo, tanto para individuos como para hogares
+    - ✅ El chequeo resultó exitoso y no se encontraron inconsistencias, en caso de no haber archivos faltantes entre el Año y Trimestre maximo y minimo
 
-    - ⚠️ En caso de haber un faltante, se informara por pantalla el Año, Trimestre y archivo faltante
+    - ⚠️ En caso de haber un faltante, se informara por pantalla el Año y Trimestre faltante
 
 #### 4. **Pagina lista para ser utilizada e interactuar con ella**
 
