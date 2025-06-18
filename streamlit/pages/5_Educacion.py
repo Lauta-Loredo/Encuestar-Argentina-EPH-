@@ -1,110 +1,149 @@
-import streamlit as st
-import pandas as pd
-from pathlib import Path
 import sys
+from pathlib import Path
+import pandas as pd
+import streamlit as st
 
-project_root = Path(__file__).parent.parent.parent / 'src'
-sys.path.append(str(project_root))
+# Ajuste de ruta de proyecto
+project_root = Path(__file__).resolve().parent.parent.parent
+sys.path.insert(0, str(project_root))
 
-import src.funciones_streamlit.educacion as ed
-from src.consultas.ranking5 import ranking_aglomerados_nivel_sup
 from src.consultas.consulta_leer_escribir import calcular_porcentajes_lectura
-from src.funciones_streamlit.funciones_en_comun import footer
-
-st.title("🧑‍🎓📚️ Educacion")
-
-st.info(
-    """En esta sección se visualizará información relacionada al nivel de educación
-    alcanzado por la población argentina según la EPH."""
+from src.consultas.ranking5 import ranking_aglomerados_nivel_sup
+from src.funciones_streamlit import educacion as ed
+from src.funciones_streamlit.funciones_en_comun import (
+    footer,
+    selector_anios,
+    selector_anio_trimestre,
+    filtrar_dataframe_por_anio_y_trim,
 )
 
-st.divider()  # Aca arranca el punto 1.6.1
+# Título e información inicial
+st.title("🧑‍🎓📚️ Educación")
+st.info(
+    """
+    En esta sección se visualizará información relacionada al nivel de educación
+    alcanzado por la población argentina según la EPH.
+    """
+)
+st.divider()
 
 if st.session_state.get("datos_actualizados", False):
-    st.cache_data.clear()  # fuerza recarga
-    st.session_state["datos_actualizados"] = False  # reiniciamos la bandera
+    st.cache_data.clear()
+    st.session_state["datos_actualizados"] = False
 
-# Carga de datos
 df = ed.carga_df()
 
-st.title("Informacion educativa Trimestral")
+if df is None or not isinstance(df, pd.DataFrame) or df.empty:
+    st.info("Los datos no están disponibles o no pudieron cargarse correctamente.")
+    st.stop()
 
-df_trimestral, df_por_anio = ed.personalizacion_datos(df)
+# ------------------------------------------------------------------------------------
+# 📌 Actividad 1.6.1 - Resumen Trimestral por Nivel Educativo
+# ------------------------------------------------------------------------------------
+st.subheader("📅 Actividad 1.6.1 - Resumen trimestral por nivel educativo")
 
-# Hasta que el usuario no seleccione un año y trimestre no se va a visualizar ni ejecutar nada de la pagina
-if isinstance(df_trimestral, pd.DataFrame) and not df_trimestral.empty:
-    st.write("Informa la cantidad maxima de personas que terminaron o no un nivel educativo")
+anio, trimestre = selector_anio_trimestre(df, key="selector_1_6_1")
+df_trimestral = filtrar_dataframe_por_anio_y_trim(df, anio, trimestre)
+df_trimestral, _ = ed.procesar_niveles_educativos(df_trimestral, pd.DataFrame())
+
+if not df_trimestral.empty:
+    st.write("Informa la cantidad máxima de personas que terminaron o no un nivel educativo")
     df_trimestral = df_trimestral.set_index("Niveles Educativos")
     st.table(df_trimestral)
 
-    st.divider()  # Aca arranca el punto 1.6.2
+
+st.divider()
+
+# ------------------------------------------------------------------------------------
+# 📌 Actividad 1.6.2 - Nivel educativo más común por grupo etario (Año completo)
+# ------------------------------------------------------------------------------------
+st.subheader("📆 Actividad 1.6.2 - Nivel educativo más común por grupo etario")
+
+anio_solo = selector_anios(df, key="selector_1_6_2")
+
+if anio_solo and anio_solo != "Seleccione un año...":
+    df_por_anio = df[df["ANO4"] == anio_solo].copy()
+    _, df_por_anio = ed.procesar_niveles_educativos(pd.DataFrame(), df_por_anio)
 
     orden_etario = ["20-30", "30-40", "40-50", "50-60", "+60"]
-
-    st.title("Resumen sobre nivel educacional")
     st.text(
-        "En esta seccion respecto al año seleccionado anteriormente se informa "
-        "el nivel educativo mas comun entre la poblacion separados por grupos etario de pares de 10 en 10"
+        "Se informa el nivel educativo más común entre la población, "
+        "separado por grupos etarios de 10 en 10 años."
     )
-    seleccionar_todos = st.checkbox("Seleccionar todos los grupos etarios")
+
+    seleccionar_todos = st.checkbox("Seleccionar todos los grupos etarios", key="checkbox_grupos")
     if seleccionar_todos:
         seleccion = orden_etario
     else:
-        seleccion = st.multiselect(
-            "",
-            orden_etario,
-            placeholder="¿Qué grupo etario desea ver?"
-        )
+        seleccion = st.multiselect("", orden_etario, placeholder="¿Qué grupo etario desea ver?")
 
-    if seleccion and (isinstance(df_por_anio, pd.DataFrame) and not df_por_anio.empty):
-        # Aca hago la filtracion por edad y educacion
-        resultados_por_grupos = ed.agrupamiento(df_por_anio, seleccion)
-
-        # creo el grafico para visualizar lo obtenido en resultados_por_grupos
-        fig = ed.grafico_barras(resultados_por_grupos, orden_etario)
-
-        st.plotly_chart(fig, key="fig")
+    if seleccion and not df_por_anio.empty:
+        try:
+            resultados_por_grupos = ed.agrupamiento(df_por_anio, seleccion)
+            fig = ed.grafico_barras(resultados_por_grupos, orden_etario)
+            st.plotly_chart(fig, key="fig_1_6_2")
+        except Exception as e:
+            st.error(f"No se pudo generar el gráfico: {e}")
     else:
         st.info("Por favor seleccione al menos un grupo etario.")
+else:
+    st.info("Por favor seleccione un año para activar la visualización del grupo etario y gráfico.")
 
-    st.divider()  # Aca arranca el punto 1.6.3
+st.divider()
 
-    st.write(
-        """Ranking de los 5 aglomerados con mayor porcentaje de hogares con dos o más ocupantes 
-        con estudios universitarios o superiores finalizados"""
-    )
+# ------------------------------------------------------------------------------------
+# 📌 Actividad 1.6.3 - Ranking de aglomerados
+# ------------------------------------------------------------------------------------
+st.subheader("🏙️ Actividad 1.6.3 - Ranking de aglomerados")
 
-    # Llamo a la funcion ranking 5
+st.write(
+    """
+    Ranking de los 5 aglomerados con mayor porcentaje de hogares con dos o más ocupantes
+    con estudios universitarios o superiores finalizados.
+    """
+)
+
+try:
     data = ranking_aglomerados_nivel_sup()
-
-    # le paso "data" que contiene el diccionario con el top 5 aglomerados y me lo devuelve a csv
     csv = ed.exportar_csv(data)
-
-    # Este boton exporta y descarga el archivo CSV
     st.download_button(
         label="📄 Descargar CSV",
         data=csv,
-        file_name="datos.csv",
-        mime="text/csv"
+        file_name="ranking_aglomerados.csv",
+        mime="text/csv",
     )
+except Exception as e:
+    st.error(f"Error al generar el ranking o exportar CSV: {e}")
 
-    st.divider()  # Aca arranca el punto 1.6.4
+st.divider()
 
-    # Llamo a la consulta leer_escribir
-    años, porcen_sabe, porcen_nosabe = calcular_porcentajes_lectura()
+# ------------------------------------------------------------------------------------
+# 📌 Actividad 1.6.4 - Porcentajes de alfabetismo y analfabetismo
+# ------------------------------------------------------------------------------------
+st.subheader("🔤 Actividad 1.6.4 - Porcentajes de alfabetismo y analfabetismo")
 
-    # Muestro los porcentajes en formato texto
-    for i in range(len(años)):
-        st.write(f"**Año {años[i]}**")
-        st.write(f"✔️ Capaces de leer: {porcen_sabe[i]}%")
-        st.write(f"❌ Incapaces de leer: {porcen_nosabe[i]}%")
-        st.markdown("---")
+try:
+    anios, porcen_sabe, porcen_nosabe = calcular_porcentajes_lectura()
 
-    # llamo al grafico creado y lo dejo en segundo plano
-    chart = ed.grafica_porcentajes_lectura(años, porcen_sabe, porcen_nosabe)
+    # Crear columnas para mostrar datos lado a lado
+    for i in range(len(anios)):
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.write(f"**Año {anios[i]}**")
+        with col2:
+            st.write(f"✔️ Capaces de leer: {porcen_sabe[i]}%")
+        with col3:
+            st.write(f"❌ Incapaces de leer: {porcen_nosabe[i]}%")
+
+    st.markdown("---")
+
+    chart = ed.grafica_porcentajes_lectura(anios, porcen_sabe, porcen_nosabe)
     st.altair_chart(chart, use_container_width=True, key="lectura_chart")
 
-else:
-    st.warning("Por favor seleccione un año y trimestre válido para ver el resumen.")
+except Exception as e:
+    st.error(f"Error al generar el gráfico de lectura: {e}")
 
 footer()
+
+
+
