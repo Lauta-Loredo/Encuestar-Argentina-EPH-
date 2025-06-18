@@ -20,7 +20,6 @@ import utils.constantes as cons
 reload(emp)
 
 from src.funciones_streamlit.empleo import (
-    cargar_df,
     definir_anio,
     definir_trimestre,
     muestra_tasa,
@@ -33,6 +32,10 @@ from src.funciones_streamlit.empleo import (
     graficar_mapa,
     footer
 )
+from src.funciones_streamlit.funciones_en_comun import (
+    crear_dataframe
+)
+
 
 st.set_page_config(layout="wide")
 st.title("💼⚙️ Actividad y Empleo")
@@ -50,9 +53,18 @@ if st.session_state.get("datos_actualizados", False):
     st.cache_data.clear()  # fuerza recarga
     st.session_state["datos_actualizados"] = False
 
+COLUMNAS_NECESARIAS = [
+    "ESTADO",
+    "NIVEL_ED",
+    "ANO4",
+    "TRIMESTRE",
+    "AGLOMERADO",
+    "PP04A",
+    "PONDERA",
+]
 
 # cargo datos
-df = cargar_df(ruta_csv_individuos)
+df = crear_dataframe(ruta_csv_individuos,COLUMNAS_NECESARIAS)
 
 # 1.5.1 Para las personas desocupadas, informar la cantidad de ellas según sus estudios alcanzados. Se debe informar para un año y trimestre elegido por el usuario
 anio = definir_anio(df, "1.5.1A")
@@ -91,7 +103,7 @@ st.divider()
 
 # 1.5.4
 st.markdown(
-    "<h2 style='text-align: center;'>Informacion sobre personas ocupadas y su tipo de ocupación.</h2>",
+    "<h2 style='text-align: center;'>Informacion por aglomerado sobre personas ocupadas y su tipo de ocupación.</h2>",
     unsafe_allow_html=True,
 )
 
@@ -99,7 +111,6 @@ df_resultado = ocupados_por_nivel(df)
 st.dataframe(df_resultado)
 st.divider()
 # 1.5.5
-# Ejemplo de datos mínimos
 datos_path = cons.DATA_PATH / "aglomerados_coordenadas.json"
 with open(datos_path, "r", encoding="utf-8") as f:
     coordenadas_aglomerado = json.load(f)

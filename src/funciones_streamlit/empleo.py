@@ -3,29 +3,6 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import folium
 
-@st.cache_data
-def cargar_df(ruta_df):
-
-    COLUMNAS_NECESARIAS = ["ESTADO", "NIVEL_ED", "ANO4", "TRIMESTRE", "AGLOMERADO", "PP04A", "PONDERA"]
-    try:
-        df = pd.read_csv(ruta_df,delimiter=";", usecols=COLUMNAS_NECESARIAS)
-
-        if not set(COLUMNAS_NECESARIAS).issubset(df.columns):
-            st.error("El archivo no contiene las columnas necesarias")
-            st.stop()
-            raise ValueError("El archivo no contiene las columnas necesarias.")
-        else:
-            return df
-    except FileNotFoundError:
-        print("Error: No se encontró el archivo CSV en la ruta especificada.")
-        return None
-    except ValueError as ve:
-        print(f"Error de validación: {str(ve)}")
-        return None
-    except Exception as e:
-        print(f"Error al cargar el archivo CSV, ERROR: ", {str(e)})
-        return None
-
 ESTADO_LABORAL = "ESTADO"
 
 def definir_anio(df,clave):
