@@ -1,6 +1,7 @@
 import pandas as pd
 import streamlit as st
 import matplotlib.pyplot as plt
+import folium
 
 @st.cache_data
 def cargar_df(ruta_df):
@@ -132,7 +133,7 @@ def tasa_des_empleo(df, tipo, aglo=None):
 # 1.5.4
 TIPO_EMPLEO = "PP04A"  # OCUPACION PRINCIPAL
 TIPO_EMPLEO_STR = "PP04A_str"
-# Informar para cada aglomerado el total de personas ocupadas, el porcentaje con empleo estatal, el porcentaje con empleo privado y el porcentaje de otro tipo. Considerar la ocupación principal.
+
 def tipo_empleo(cat):
     if cat == '1':
         return "Estatal"
@@ -143,7 +144,7 @@ def tipo_empleo(cat):
 
 def ocupados_por_nivel(df):
     df_filtrado = df[(df[ESTADO_LABORAL] == 1)].copy()
-    #creo una columna nueva donde me muestra el tipo de empleo en texto.
+    # creo una columna nueva donde me muestra el tipo de empleo en texto.
     df_filtrado[TIPO_EMPLEO_STR] = df_filtrado[TIPO_EMPLEO].apply(tipo_empleo)
     # serie de dos indices que agrupa por aglomerado y tipo de empleo, y me retorna la suma de la columna PONDERA
     agrupado = df_filtrado.groupby(["AGLOMERADO", TIPO_EMPLEO_STR])["PONDERA"].sum()
@@ -153,7 +154,7 @@ def ocupados_por_nivel(df):
     for aglomerado in agrupado.index.get_level_values(0).unique():
         # valores es una serie unidimensional, diferente a agrupado, que me retorna los valores de cada aglomerado.
         valores = agrupado.loc[aglomerado]
-        #total es la cantidad total de empleados por aglomerado.
+        # total es la cantidad total de empleados por aglomerado.
         total = valores.sum()
         # guardo en el diccionario los porcentajes por cada aglomerado. round redondea el resultado en 2 decimales maximo.
         porcentajes[aglomerado] = {
@@ -163,6 +164,90 @@ def ocupados_por_nivel(df):
             "% Otro": round(valores.get("Otro", 0) / total * 100, 2),
         }
     return porcentajes
+# 1.5.5
+def tasa_aglomerado(df):
+    df = df.copy()
+    # Cambio el tipo de la columna PONDERA
+    df["PONDERA"] = df["PONDERA"].astype(float)
+    df_filtrado = df[df[ESTADO_LABORAL].isin([1,2])]
+    # .drop_duplicates() elimina las filas repetidas.Si hay varias filas con el mismo año y trimestre, se queda solo con una de cada combinación.
+    # .values.tolist() Convierte ese DataFrame en una lista de listas (o sea, una lista de pares [año, trimestre]).
+    fechas = sorted(df_filtrado[["ANO4", "TRIMESTRE"]].drop_duplicates().values.tolist())
+    fecha_min = fechas[0]  # año y trimestre más antiguo
+    fecha_max = fechas[-1]  # año y trimestre más reciente
+    # reduzco el dataframe solo con los datos que corresponden a las fechas pedidas
+    df_reducido = df_filtrado[
+        (df_filtrado["ANO4"] == fecha_min[0])
+        & (df_filtrado["TRIMESTRE"] == fecha_min[1])
+        | (df_filtrado["ANO4"] == fecha_max[0])
+        & (df_filtrado["TRIMESTRE"] == fecha_max[1])]
+    # Cada grupo es un subconjunto del DataFrame original, que contiene solo las filas que pertenecen a una combinación específica de:
+    # aglo: el número del aglomerado
+    # anio: el año
+    # trim: el trimestre
+    tasas = {}
+    for (aglo, anio, trim), grupo in df_reducido.groupby(['AGLOMERADO', 'ANO4', 'TRIMESTRE']):
+        # Recorre cada clave de grupo (la tupla con aglomerado, año y trimestre), y guarda el sub-DataFrame correspondiente en grupo
+        ocupados = grupo.loc[grupo[ESTADO_LABORAL] == 1, 'PONDERA'].sum()
+        desocupados = grupo.loc[grupo[ESTADO_LABORAL] == 2, 'PONDERA'].sum()
+        total = ocupados + desocupados
+        if total > 0:
+            tasa_empleo = round((ocupados / total) * 100, 2)
+            tasa_desempleo = round((desocupados / total) * 100, 2)
+        else:
+            tasa_empleo = tasa_desempleo = 0
+
+        if aglo not in tasas:
+            tasas[aglo] = {
+                "empleo": {},
+                "desempleo": {},
+            }
+
+        if [anio, trim] == fecha_min:
+            tasas[aglo]["empleo"]["inicio"] = tasa_empleo
+            tasas[aglo]["desempleo"]["inicio"] = tasa_desempleo
+        elif [anio, trim] == fecha_max:
+            tasas[aglo]["empleo"]["fin"] = tasa_empleo
+            tasas[aglo]["desempleo"]["fin"] = tasa_desempleo
+
+    return tasas
+
+def colores_aglomerado(tipo, tasas):
+    colores = {}
+    for aglo, datos in tasas.items():
+        if tipo not in datos:
+            continue
+        inicio = datos[tipo]["inicio"]
+        fin = datos[tipo]["fin"]
+
+        if tipo == "empleo":
+            colores[aglo] = "green" if fin > inicio else "red"
+        elif tipo == "desempleo":
+            colores[aglo] = "red" if fin > inicio else "green"
+    return colores
+
+
+def graficar_mapa(coordenadas_aglomerados, colores):
+    #creo el mapa
+    mapa = folium.Map(location=[-34.6, -58.4], zoom_start=4.5)
+
+    # Paso 3: Agregar puntos
+    for aglo_cod, color in colores.items():
+        aglo_cod_str = str(aglo_cod).zfill(2)
+        if aglo_cod_str in coordenadas_aglomerados:
+            data = coordenadas_aglomerados[aglo_cod_str]
+            nombre = data["nombre"]
+            lat, lon = data["coordenadas"]
+            folium.CircleMarker(
+                location=[lat, lon],
+                radius=6,
+                color=color,
+                fill=True,
+                fill_color=color,
+                fill_opacity=0.8,
+                popup=f"{nombre}",
+            ).add_to(mapa)
+    return mapa 
 
 def footer():
     st.markdown(

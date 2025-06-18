@@ -4,7 +4,9 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 from importlib import reload
+import streamlit.components.v1 as components
 
+import json
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
 sys.path.append(str(project_root / "src"))
@@ -26,6 +28,9 @@ from src.funciones_streamlit.empleo import (
     definir_aglomerado,
     tasa_des_empleo,
     ocupados_por_nivel,
+    tasa_aglomerado,
+    colores_aglomerado,
+    graficar_mapa,
     footer
 )
 
@@ -90,10 +95,27 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-df_resultado = ocupados_por_nivel(df)
+df_resultado = ocupados_por_nivel(df)  
 st.dataframe(df_resultado)
 st.divider()
+# 1.5.5
+# Ejemplo de datos mínimos
+datos_path = cons.DATA_PATH / "aglomerados_coordenadas.json"
+with open(datos_path, "r", encoding="utf-8") as f:
+    coordenadas_aglomerado = json.load(f)
 
-
+tasas = tasa_aglomerado(df)
+tipo = st.selectbox("Seleccioná el tipo de tasa que querés visualizar:", ("empleo", "desempleo"))
+st.markdown(
+    "<p>- Al elegir la tasa de empleo se ven puntos verdes en los aglomerados cuya tasa de empleo aumentó con el correr del tiempo. Rojo en el caso contrario. </p>"
+    "<p>- Al elegir la tasa de desempleo se ven puntos rojos en los aglomerados cuya"
+    "tasa de empleo aumentó con el correr del tiempo. Verde en el caso contrario. </p>",
+    unsafe_allow_html=True,
+)
+colores = colores_aglomerado(tipo, tasas)
+mapa = graficar_mapa(coordenadas_aglomerado,colores)
+mapa.save("mapa_aglomerados.html")
+components.html(open("mapa_aglomerados.html", "r", encoding="utf-8").read(), height=600)
+st.divider()
 # footer
 footer()
