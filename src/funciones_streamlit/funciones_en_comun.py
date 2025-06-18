@@ -149,11 +149,10 @@ def selector_aglomerados(key=None):
     """
     if key is None:
         key = "selector_aglomerados"
-    aglomerados_opciones = ['Sleccione un aglomerado...'] + [f"{codigo} - {nombre}" for codigo, nombre in NOMBRES_AGLOMERADOS.items()]
+    aglomerados_opciones = ['Seleccione un aglomerado...'] + [f"{codigo} - {nombre}" for codigo, nombre in NOMBRES_AGLOMERADOS.items()]
     seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0,key=key)
-    if seleccion != 'Sleccione un aglomerado...':
+    if seleccion != 'Seleccione un aglomerado...':
         seleccion_codigo = seleccion.split(" - ")[0]
-        
         return int(seleccion_codigo)
     else:
         return seleccion
