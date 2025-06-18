@@ -11,10 +11,6 @@ sys.path.append(os.path.abspath("../code"))
 from utils.constantes import UTILS_PATH, HOGARES_CSV
 from utils.constantes import NOMBRES_AGLOMERADOS
 
-# Diccionario de nombres de aglomerados con claves enteras
-NOMBRES_AGLOMERADOS = {int(k): v for k, v in NOMBRES_AGLOMERADOS.items()}
-
-
 @st.cache_data
 def crear_dataframe(archivo_csv, columnas=None):
     """
@@ -145,12 +141,11 @@ def selector_aglomerados():
     """
     Muestra un selector de aglomerados basado en los valores del diccionario NOMBRES_AGLOMERADOS.
     """
-    opciones_aglomerados = ['Seleccione un aglomerado...'] + sorted(NOMBRES_AGLOMERADOS.values())
-    seleccion_aglomerado = st.selectbox(
-        'Seleccione un aglomerado para visualizar su evolución de tenencia',
-        opciones_aglomerados
-    )
-    return seleccion_aglomerado
+    aglomerados_opciones = [f"{codigo} - {nombre}" for codigo, nombre in NOMBRES_AGLOMERADOS.items()]
+    seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
+    seleccion_codigo = seleccion.split(" - ")[0]
+
+    return seleccion_codigo
 
 
 def convertir_csv(df, nombre_archivo="archivo.csv", key=None, indice=True):

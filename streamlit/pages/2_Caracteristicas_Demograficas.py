@@ -91,10 +91,9 @@ if mostrar_graficos:
 
     # Evolución de la dependencia demográfica
     with st.expander("📈 Evolución de la dependencia demográfica", expanded=False):
-        aglomerados_opciones = [f"{codigo} - {nombre}" for codigo, nombre in NOMBRES_AGLOMERADOS.items()]
-        seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
-        seleccion_codigo = seleccion.split(" - ")[0]
-        df_filtrado3 = df[df["AGLOMERADO"] == int(seleccion_codigo)]
+        #Llamo a una funcion para seleccionar un aglomerado para analizar
+        seleccion = fc.selector_aglomerados()
+        df_filtrado3 = df[df["AGLOMERADO"] == int(seleccion)]
 
         _, df_dep = ats.evoluciones(df_filtrado3)
 
@@ -107,7 +106,7 @@ if mostrar_graficos:
             for x, y in zip(df_dep.index, df_dep['Dependencia']):
                 ax.text(x, y + 0.07, f"{y: .2f}", ha="center", va="bottom", fontsize=9, color="black")
 
-            ax.set_title(f"Evolución de la dependencia demográfica - {NOMBRES_AGLOMERADOS[seleccion_codigo]}", fontsize=14)
+            ax.set_title(f"Evolución de la dependencia demográfica - {NOMBRES_AGLOMERADOS[seleccion]}", fontsize=14)
             ax.set_xlabel("Período", fontsize=12)
             ax.set_ylabel("Índice de dependencia (%)", fontsize=12)
             ax.tick_params(axis='x', rotation=45)
