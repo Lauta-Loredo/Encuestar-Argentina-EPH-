@@ -155,6 +155,8 @@ def selector_aglomerados(key=None):
         seleccion_codigo = seleccion.split(" - ")[0]
         
         return int(seleccion_codigo)
+    else:
+        return seleccion
 
 
 def convertir_csv(df, nombre_archivo="archivo.csv", key=None, indice=True):
