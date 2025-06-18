@@ -1,22 +1,21 @@
-import pandas as pd
-from pathlib import Path
-import streamlit as st
-import plotly.express as px
 import json
+from pathlib import Path
 import altair as alt
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+
+from src.funciones_streamlit.funciones_en_comun import crear_dataframe
+
 
 # ---------------------------------------------------------------------------------------------------------------------
-# LAS SIGUIENTES FUNCIONES SON PARA LA CARGA DE DATOS Y LA FILTRACION DE LAS COLUMNAS QUE PRECISO
+# CARGA Y PREPARACIÓN DE DATOS
 # ---------------------------------------------------------------------------------------------------------------------
-
 
 @st.cache_data
 def carga_df():
-    ruta_csv_individuos = (
-        Path(__file__).parent.parent.parent / "utils" / "IndividuosTotal.csv"
-    )
-
-    columnas_necesarias = [
+    """Carga el DataFrame de individuos filtrando columnas necesarias."""
+    columnas = [
         "ANO4",
         "TRIMESTRE",
         "CH06",
@@ -26,50 +25,27 @@ def carga_df():
         "NRO_HOGAR",
         "COMPONENTE",
     ]
-    df = pd.read_csv(ruta_csv_individuos, delimiter=";", usecols=columnas_necesarias)
-
-    # Chequeo que las columnas estén
-    if not set(columnas_necesarias).issubset(df.columns):
-        st.error("El archivo no contiene las columnas necesarias")
-        st.stop()
-
-    # Elimino duplicados
-    subset_cols = ["ANO4", "CODUSU", "NRO_HOGAR", "COMPONENTE"]
-    df_sin_duplicados = df.drop_duplicates(subset=subset_cols)
-    return df_sin_duplicados
+    try:
+        return crear_dataframe("IndividuosTotal.csv", columnas=columnas)
+    except FileNotFoundError as e:
+        st.error(f"No se encontró el archivo de datos: {e}")
+        return pd.DataFrame()
+    except Exception as e:
+        st.error(f"Error inesperado al cargar datos: {e}")
+        return pd.DataFrame()
 
 
-def anio_trimestre(df):
-    # Selección de año-trimestre
-    anios_disponibles = sorted(df["ANO4"].unique())
-    anios_opciones = ["Seleccione un año..."] + list(map(int, anios_disponibles))
+# ---------------------------------------------------------------------------------------------------------------------
+# PROCESAMIENTO DE NIVELES EDUCATIVOS
+# ---------------------------------------------------------------------------------------------------------------------
 
-    anio_seleccionado = st.selectbox("Seleccione un año:", anios_opciones)
-
-    trimestre_seleccionado = None
-    if anio_seleccionado != "Seleccione un año...":
-        trimestres_disponibles = sorted(
-            df[df["ANO4"] == int(anio_seleccionado)]["TRIMESTRE"].unique()
-        )
-        trimestres_opciones = ["Seleccione un trimestre..."] + list(
-            map(int, trimestres_disponibles)
-        )
-
-        trimestre_seleccionado = st.selectbox("Seleccione un trimestre:", trimestres_opciones)
-
-    if trimestre_seleccionado != "Seleccione un trimestre...":
-        return anio_seleccionado, trimestre_seleccionado
-    else:
-        return anio_seleccionado, None
-
-
-def personalizacion_datos(df):
-    anio, trimestre = anio_trimestre(df)
-
-    df_trimestral = df[(df["ANO4"] == anio) & (df["TRIMESTRE"] == trimestre)].copy()
-    df_por_anio = df[df["ANO4"] == anio].copy()
-
-    # Cambio los nombres int que tenia NIVEL_ED a str
+def procesar_niveles_educativos(df_trimestral, df_por_anio):
+    """
+    Mapea y renombra los niveles educativos en ambos DataFrames.
+    Devuelve:
+    - Un resumen trimestral (agrupado y ponderado) si df_trimestral no está vacío.
+    - El df_por_anio con niveles educativos renombrados.
+    """
     valores_originales = [1, 2, 3, 4, 5, 6]
     nombres = [
         "Primario incompleto",
@@ -81,35 +57,54 @@ def personalizacion_datos(df):
     ]
     diccionario_mapeo = dict(zip(valores_originales, nombres))
 
-    # Filtrar niveles educativos válidos
-    df_por_anio = df_por_anio[df_por_anio["NIVEL_ED"].isin(valores_originales)].copy()
-    df_por_anio["NIVEL_ED"] = df_por_anio["NIVEL_ED"].replace(diccionario_mapeo)
+    resumen_trimestre = pd.DataFrame()
 
-    df_trimestral = df_trimestral[df_trimestral["NIVEL_ED"].isin(valores_originales)].copy()
-    df_trimestral["NIVEL_ED"] = df_trimestral["NIVEL_ED"].replace(diccionario_mapeo)
+    if isinstance(df_trimestral, pd.DataFrame) and not df_trimestral.empty:
+        if "NIVEL_ED" in df_trimestral.columns:
+            df_trimestral = df_trimestral[
+                df_trimestral["NIVEL_ED"].isin(valores_originales)
+            ].copy()
+            df_trimestral["NIVEL_ED"] = df_trimestral["NIVEL_ED"].replace(
+                diccionario_mapeo
+            )
 
-    resumen_trimestre = (
-        df_trimestral.groupby("NIVEL_ED")["PONDERA"]
-        .sum()
-        .reset_index()
-        .sort_values(by="PONDERA", ascending=True)
-    )
-    resumen_trimestre = resumen_trimestre.rename(
-        columns={"NIVEL_ED": "Niveles Educativos", "PONDERA": "Cantidad Maxima"}
-    )
+            resumen_trimestre = (
+                df_trimestral.groupby("NIVEL_ED")["PONDERA"]
+                .sum()
+                .reset_index()
+                .sort_values(by="PONDERA", ascending=True)
+                .rename(
+                    columns={
+                        "NIVEL_ED": "Niveles Educativos",
+                        "PONDERA": "Cantidad Maxima",
+                    }
+                )
+            )
+
+    if isinstance(df_por_anio, pd.DataFrame) and not df_por_anio.empty:
+        if "NIVEL_ED" in df_por_anio.columns:
+            df_por_anio = df_por_anio[
+                df_por_anio["NIVEL_ED"].isin(valores_originales)
+            ].copy()
+            df_por_anio["NIVEL_ED"] = df_por_anio["NIVEL_ED"].replace(
+                diccionario_mapeo
+            )
 
     return resumen_trimestre, df_por_anio
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# LAS SIGUIENTES FUNCIONES SON PARA EL PUNTO 1.6.2
+# FUNCIONES PUNTO 1.6.2
 # ---------------------------------------------------------------------------------------------------------------------
 
-
 def agrupamiento(df_por_anio, opciones):
+    """Calcula el nivel educativo más común para cada grupo etario seleccionado."""
+    if df_por_anio.empty:
+        st.warning("El DataFrame para agrupamiento está vacío.")
+        return {}
+
     df_filtrado = df_por_anio[df_por_anio["CH06"] >= 20]
 
-    # Agrupamos por año, nivel educativo y edad
     df_mascomun = (
         df_filtrado.groupby(["ANO4", "NIVEL_ED", "CH06"])["PONDERA"]
         .sum()
@@ -118,30 +113,34 @@ def agrupamiento(df_por_anio, opciones):
     resultados_por_grupos = {}
 
     for rango in opciones:
-        if rango == "+60":
-            df_rango = df_mascomun[df_mascomun["CH06"] >= 60]
-        else:
-            limite_inferior, limite_superior = map(int, rango.split("-"))
-            df_rango = df_mascomun[
-                (df_mascomun["CH06"] >= limite_inferior)
-                & (df_mascomun["CH06"] <= limite_superior)
-            ]
+        try:
+            if rango == "+60":
+                df_rango = df_mascomun[df_mascomun["CH06"] >= 60]
+            else:
+                li, ls = map(int, rango.split("-"))
+                df_rango = df_mascomun[
+                    (df_mascomun["CH06"] >= li) & (df_mascomun["CH06"] <= ls)
+                ]
 
-        # Agrupar por nivel educativo
-        df_nivel = df_rango.groupby("NIVEL_ED")["PONDERA"].sum().reset_index()
-
-        if not df_nivel.empty:
-            nivel_mas_comun = df_nivel.loc[df_nivel["PONDERA"].idxmax()]
-            resultados_por_grupos[rango] = (
-                nivel_mas_comun["NIVEL_ED"],
-                nivel_mas_comun["PONDERA"],
-            )
+            df_nivel = df_rango.groupby("NIVEL_ED")["PONDERA"].sum().reset_index()
+            if not df_nivel.empty:
+                nivel_mas_comun = df_nivel.loc[df_nivel["PONDERA"].idxmax()]
+                resultados_por_grupos[rango] = (
+                    nivel_mas_comun["NIVEL_ED"],
+                    nivel_mas_comun["PONDERA"],
+                )
+        except Exception as e:
+            st.warning(f"No se pudo procesar el rango {rango}: {e}")
 
     return resultados_por_grupos
 
 
 def grafico_barras(resultados_por_grupos, orden_etario):
-    # Creo un dataframe a partir del resultados_por_grupos
+    """Genera un gráfico de barras con el nivel educativo más común por grupo etario."""
+    if not resultados_por_grupos:
+        st.warning("No hay datos para graficar.")
+        return None
+
     df_grafico = pd.DataFrame(
         [
             {"Grupo Etario": r, "Nivel Educativo": n, "PONDERA": p}
@@ -149,17 +148,10 @@ def grafico_barras(resultados_por_grupos, orden_etario):
         ]
     )
 
-    # Esto lo uso para que las barras a la hora de ser visualizadas por el usuario estén ordenadas
-    # sin importar el orden de selección
     df_grafico["Grupo Etario"] = pd.Categorical(
         df_grafico["Grupo Etario"], categories=orden_etario, ordered=True
     )
-
-    # Ordenar el DataFrame según ese orden
     df_grafico = df_grafico.sort_values("Grupo Etario")
-
-    # Creo el Gráfico
-    st.subheader("Visualización gráfica del nivel educativo más común por grupo etario")
 
     fig = px.bar(
         df_grafico,
@@ -172,67 +164,95 @@ def grafico_barras(resultados_por_grupos, orden_etario):
     )
     fig.update_traces(textposition="outside", width=0.35)
     fig.update_layout(
-        xaxis_title="Grupo Etario", yaxis_title="PONDERA", legend_title="Nivel Educativo"
+        xaxis_title="Grupo Etario",
+        yaxis_title="PONDERA",
+        legend_title="Nivel Educativo",
     )
 
     return fig
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# LAS SIGUIENTES FUNCIONES SON PARA EL PUNTO 1.6.3
+# FUNCIONES PUNTO 1.6.3
 # ---------------------------------------------------------------------------------------------------------------------
 
-arc_json = Path(__file__).resolve().parent.parent.parent / "utils" / "data" / "aglomerados_coordenadas.json"
+arc_json = (
+    Path(__file__).resolve().parent.parent.parent / "utils" / "data" / "aglomerados_coordenadas.json"
+)
 
 
 def exportar_csv(data):
-    # utilizo el archivo "aglomerados_coordenadas" para extraer los nombres de los aglomerados
+    """Convierte un ranking de aglomerados a CSV con nombres legibles."""
+    try:
+        with open(arc_json, encoding="utf-8") as f:
+            aglo_data = json.load(f)
+    except FileNotFoundError:
+        st.error(f"No se encontró el archivo JSON: {arc_json}")
+        return ""
+    except json.JSONDecodeError as e:
+        st.error(f"Error al leer el JSON: {e}")
+        return ""
 
-    with open(arc_json, encoding="utf-8") as f:
-        aglo_data = json.load(f)
+    ranking_con_nombres = {
+        aglo_data.get(cod.zfill(2), {}).get("nombre", f"Aglomerado {cod}"): datos
+        for cod, datos in data.items()
+    }
 
-    # cambio el codigo de aglomerado por su nombre
-    ranking_con_nombres = {}
-    for cod, datos in data.items():
-        # cod.zfill tuve que agregarlo porque me generaba error
-        # los codigos con un solo digito en el diccionario porque el json tenía un 0 delante del dígito EJ: 02
-        nombre = aglo_data.get(cod.zfill(2), {}).get("nombre", f"Aglomerado {cod}")
-        ranking_con_nombres[nombre] = datos
-
-    # convierto el diccionario en dataframe
     df = pd.DataFrame.from_dict(ranking_con_nombres, orient="index")
-
-    # convierto ranking 5 en CSV
-    csv = df.to_csv(index=True)
-
-    return csv
+    return df.to_csv(index=True)
 
 
 # ---------------------------------------------------------------------------------------------------------------------
-# LAS SIGUIENTES FUNCIONES SON PARA EL PUNTO 1.6.4
+# FUNCIONES PUNTO 1.6.4
 # ---------------------------------------------------------------------------------------------------------------------
-
 
 def grafica_porcentajes_lectura(años, porcentajes_sabe, porcentajes_nosabe):
-    df = pd.DataFrame(
-        {
-            "Año": años * 2,
-            "Porcentaje": porcentajes_sabe + porcentajes_nosabe,
-            "Lectura": ["Sabe leer"] * len(años) + ["No sabe leer"] * len(años),
-        }
-    )
+    """Genera dos líneas separadas: una para personas que saben leer y otra para las que no saben leer."""
+    try:
+        df = pd.DataFrame({
+            "Año": años,
+            "Sabe leer": porcentajes_sabe,
+            "No sabe leer": porcentajes_nosabe
+        })
 
-    chart = (
-        alt.Chart(df)
-        .mark_line(point=True)
+        df = df.melt(id_vars=["Año"], var_name="Lectura", value_name="Porcentaje")
+
+    except Exception as e:
+        st.error(f"Error al crear DataFrame para la gráfica: {e}")
+        return alt.Chart(pd.DataFrame())
+
+    chart_sabe = (
+        alt.Chart(df[df["Lectura"] == "Sabe leer"])
+        .mark_line(point=alt.OverlayMarkDef(filled=True, size=60), strokeWidth=3)
         .encode(
-            x=alt.X("Año:Q", axis=alt.Axis(title="Año", format="d")),
-            y=alt.Y("Porcentaje:Q", title="Porcentaje (%)"),
-            color="Lectura:N",
-            tooltip=["Año", "Lectura", "Porcentaje"],
+            x=alt.X("Año:O", axis=alt.Axis(title="Año")),
+            y=alt.Y(
+                "Porcentaje:Q",
+                title="Sabe leer (%)",
+                scale=alt.Scale(domain=[90, 100])
+            ),
+            color=alt.value("#1f77b4"),
+            tooltip=["Año", "Lectura", "Porcentaje"]
         )
-        .properties(title="Porcentaje de personas que saben/no saben leer por año", width=700, height=400)
-        .interactive()
+        .properties(height=200)
     )
 
-    return chart
+    chart_nosabe = (
+        alt.Chart(df[df["Lectura"] == "No sabe leer"])
+        .mark_line(point=alt.OverlayMarkDef(filled=True, size=60), strokeWidth=3)
+        .encode(
+            x=alt.X("Año:O", axis=alt.Axis(title="Año")),
+            y=alt.Y(
+                "Porcentaje:Q",
+                title="No sabe leer (%)",
+                scale=alt.Scale(domain=[0, 10])
+            ),
+            color=alt.value("#d62728"),
+            tooltip=["Año", "Lectura", "Porcentaje"]
+        )
+        .properties(height=200)
+    )
+
+    chart_final = alt.vconcat(chart_sabe, chart_nosabe).resolve_scale(x='shared')
+
+    return chart_final
