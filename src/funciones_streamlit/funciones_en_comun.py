@@ -131,9 +131,9 @@ def selector_aglomerados():
     return seleccion_aglomerado
 
 
-def convertir_csv(df, nombre_archivo="archivo.csv", key=None):
+def convertir_csv(df, nombre_archivo="archivo.csv", key=None,indice=True):
     # Convierte a CSV el dataframe en memoria
-    csv = df.to_csv(index=False).encode('utf-8')
+    csv = df.to_csv(index=indice).encode('utf-8')
     if key is None:
         key = f"descarga_{id(df)}"
     st.download_button(
