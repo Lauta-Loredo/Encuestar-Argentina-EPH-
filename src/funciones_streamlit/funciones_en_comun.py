@@ -145,7 +145,7 @@ def selector_aglomerados():
     seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
     seleccion_codigo = seleccion.split(" - ")[0]
 
-    return seleccion_codigo
+    return int(seleccion_codigo)
 
 
 def convertir_csv(df, nombre_archivo="archivo.csv", key=None, indice=True):

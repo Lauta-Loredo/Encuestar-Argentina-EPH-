@@ -106,7 +106,7 @@ if mostrar_graficos:
             for x, y in zip(df_dep.index, df_dep['Dependencia']):
                 ax.text(x, y + 0.07, f"{y: .2f}", ha="center", va="bottom", fontsize=9, color="black")
 
-            ax.set_title(f"Evolución de la dependencia demográfica - {NOMBRES_AGLOMERADOS[seleccion]}", fontsize=14)
+            ax.set_title(f"Evolución de la dependencia demográfica - {NOMBRES_AGLOMERADOS[str(seleccion)]}", fontsize=14)
             ax.set_xlabel("Período", fontsize=12)
             ax.set_ylabel("Índice de dependencia (%)", fontsize=12)
             ax.tick_params(axis='x', rotation=45)
