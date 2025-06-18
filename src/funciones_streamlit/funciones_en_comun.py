@@ -21,15 +21,25 @@ from utils.constantes import (
 NOMBRES_AGLOMERADOS = {int(k): v for k, v in NOMBRES_AGLOMERADOS.items()}
 
 @st.cache_data
-def crear_dataframe(columnas=None):
+def crear_dataframe(tipo,columnas=None):
     try:
-        #Genero el dataframe de hogares
-        df = pd.read_csv(UTILS_PATH / HOGARES_CSV, sep=';', low_memory=False)
+        # Cargo el DataFrame desde el CSV
+        df = pd.read_csv(UTILS_PATH / tipo, sep=';', low_memory=False)
+        
+        # Si está vacío, aviso y devuelvo None
         if df.empty:
             st.warning(f"El archvio está vacío.")
             return None
+        
+        # Si se pasó una lista de columnas, filtro solo esas columnas
         if columnas is not None:
-            df = df[columnas]
+            # Validar que las columnas existan antes para evitar Error
+            columnas_validas = [col for col in columnas if col in df.columns]
+            if len(columnas_validas) < len(columnas):
+                columnas_invalidas = set(columnas) - set(columnas_validas)
+                st.warning(f"Algunas columnas no existen y fueron omitidas: {columnas_invalidas}")
+            df = df[columnas_validas]
+            
         return df
     except FileNotFoundError:
         st.error(f"Error: archivo CSV no encontrado")
@@ -121,15 +131,18 @@ def selector_aglomerados():
     return seleccion_aglomerado
 
 
-def convertir_csv(df):
-    # Conveierte a CSV el dataframe en memoria
-        csv = df.to_csv().encode('utf-8')
-        st.download_button(
-            label="📁 Descargar CSV",
-            data=csv,
-            file_name="Hogares.csv",
-            mime="text/csv"
-        )
+def convertir_csv(df, nombre_archivo="archivo.csv", key=None):
+    # Convierte a CSV el dataframe en memoria
+    csv = df.to_csv(index=False).encode('utf-8')
+    if key is None:
+        key = f"descarga_{id(df)}"
+    st.download_button(
+        label="📁 Descargar CSV",
+        data=csv,
+        file_name=nombre_archivo,
+        mime="text/csv",
+        key=key
+    )
 
 
 def footer():
