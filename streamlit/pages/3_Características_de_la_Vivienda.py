@@ -62,7 +62,7 @@ df_hogares = crear_dataframe(HOGARES_CSV,columnas_necesarias)
 if df_hogares is not  None:
     
     # Muestra un selector de año y filtra el dataframe si se elige uno
-    anio_seleccionado = selector_anios(df_hogares,True)
+    anio_seleccionado = selector_anios(df_hogares,True,'selector_anio_viviendas')
     
     # Si se seleccionó un año válido, se filtra por el mismo
     if anio_seleccionado != 'Seleccione un año...':
