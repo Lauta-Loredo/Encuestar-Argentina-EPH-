@@ -28,14 +28,25 @@ TIPO_PISO = 'IV3'
 UBICACION_BANIO = "IV9"
 TIPO_TENENCIA = 'II7'
 
-# Calcula la cantidad ponderada de hogares
-# Recibe el dataframe y una descripcion para mostrar en pantalla
+# 
+# 
 def calcular_cantidad(df,descripcion=None):
+    '''
+    Calcula la cantidad ponderada de objetos que hay en el dataframe y los pondera
+    Parametros que recibe: un dataframe y una descripcion para mostrar en pantalla
+    '''
     cantidad = df['PONDERA'].sum()
     st.metric(descripcion, f"{cantidad:,.0f}")
 
 
 def calcular_proporcion_tipo_viviendas(df):
+    """
+    Calcula la proporción de viviendas según su tipo.
+    Parámetros:
+    - df: DataFrame que contiene las columnas de tipo de vivienda y ponderación.
+    Devuelve:
+    - Serie con los porcentajes redondeados por tipo de vivienda, con etiquetas descriptivas.
+    """
     # Calcula el total por tipo de vivienda
     totales = df.groupby(TIPO_VIVIENDA)['PONDERA'].sum()
     
