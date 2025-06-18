@@ -9,7 +9,7 @@ STREAMLIT_PATH = PROJECT_PATH / 'streamlit' # App Streamlit
 
 #Archivos CSV
 HOGARES_CSV = UTILS_PATH / 'HogaresTotal.csv' #Archivo CSV de Hogares
-INDIVIDUALS_CSV = UTILS_PATH / 'IndividualsTotal.csv' #Archivo CSV de Individuos
+INDIVIDUOS_CSV = UTILS_PATH / 'IndividuosTotal.csv' #Archivo CSV de Individuos
 
 NOMBRES_AGLOMERADOS = {"2": "Gran La Plata", "3": "Bahía Blanca - Cerri", "4": "Gran Rosario", 
                 "5": "Gran Santa Fé", "6": "Gran Paraná", "7": "Posadas", 
@@ -30,7 +30,7 @@ TIPOS_VIVIENDAS = {1 : 'Casa' ,
                 3 : 'Pieza en inquilinato',
                 4 : 'Pieza en hotel/pensión',
                 5 : 'Local no construido para habitación',
-                6: 'Otros'
+                6 : 'Otros'
 }
 
 TIPOS_PISOS = {1 : 'mosaico/baldosa/madera/cerámica/alfombra',
