@@ -141,11 +141,12 @@ def selector_aglomerados():
     """
     Muestra un selector de aglomerados basado en los valores del diccionario NOMBRES_AGLOMERADOS.
     """
-    aglomerados_opciones = [f"{codigo} - {nombre}" for codigo, nombre in NOMBRES_AGLOMERADOS.items()]
+    aglomerados_opciones = ['Sleccione un aglomerado...'] + [f"{codigo} - {nombre}" for codigo, nombre in NOMBRES_AGLOMERADOS.items()]
     seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
-    seleccion_codigo = seleccion.split(" - ")[0]
-
-    return int(seleccion_codigo)
+    if seleccion != 'Sleccione un aglomerado...':
+        seleccion_codigo = seleccion.split(" - ")[0]
+        
+        return int(seleccion_codigo)
 
 
 def convertir_csv(df, nombre_archivo="archivo.csv", key=None, indice=True):
