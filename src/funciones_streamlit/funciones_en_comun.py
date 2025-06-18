@@ -85,11 +85,13 @@ def filtrar_dataframe_por_anio_y_trim(df, anio, trim):
     return df
 
 
-def selector_anios(df, todos=False):
+def selector_anios(df,todos=False,key=None):
     """
     Crea un selector de años basado en los disponibles en el DataFrame.
     Si `todos` es True, incluye la opción 'Todos'.
     """
+    if key is None:
+        key = "selector_anio"
     anios_disponibles = sorted(df['ANO4'].dropna().unique(), reverse=True)
     opciones = ['Seleccione un año...']
 
@@ -100,19 +102,22 @@ def selector_anios(df, todos=False):
 
     anio_seleccionado = st.selectbox(
         "Seleccione un año para explorar las características de la población argentina:",
-        opciones
+        opciones,
+        key = key
     )
 
     return anio_seleccionado
 
 
-def selector_anio_trimestre(df):
+def selector_anio_trimestre(df,key=None):
     """
     Muestra dos selectores: uno para año y otro para trimestre disponible según el año seleccionado.
     Devuelve una tupla (anio, trimestre) o (anio, None).
     """
     col1, col2 = st.columns(2)
-
+    if key is None:
+        key = "selector_anio_trim"
+    
     with col1:
         anio_seleccionado = selector_anios(df)
 
@@ -128,7 +133,8 @@ def selector_anio_trimestre(df):
 
             trimestre_seleccionado = st.selectbox(
                 "Seleccione un trimestre:",
-                trimestres_opciones
+                trimestres_opciones,
+                key = key
             )
 
     if trimestre_seleccionado and trimestre_seleccionado != "Seleccione un trimestre...":
@@ -137,16 +143,20 @@ def selector_anio_trimestre(df):
     return anio_seleccionado, None
 
 
-def selector_aglomerados():
+def selector_aglomerados(key=None):
     """
     Muestra un selector de aglomerados basado en los valores del diccionario NOMBRES_AGLOMERADOS.
     """
+    if key is None:
+        key = "selector_aglomerados"
     aglomerados_opciones = ['Sleccione un aglomerado...'] + [f"{codigo} - {nombre}" for codigo, nombre in NOMBRES_AGLOMERADOS.items()]
-    seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
+    seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0,key=key)
     if seleccion != 'Sleccione un aglomerado...':
         seleccion_codigo = seleccion.split(" - ")[0]
         
         return int(seleccion_codigo)
+    else:
+        return seleccion
 
 
 def convertir_csv(df, nombre_archivo="archivo.csv", key=None, indice=True):
