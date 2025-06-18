@@ -2,8 +2,8 @@ from pathlib import Path
 
 PROJECT_PATH = Path(__file__).parents[1].resolve() #Raiz del proyecto
 UTILS_PATH = PROJECT_PATH / 'utils'
-DATA_PATH = UTILS_PATH / 'data' # Ruta donde se almacena los datos que utiliza el software
-SRC_PATH = PROJECT_PATH / 'src' # Código fuente
+DATA_PATH = UTILS_PATH / 'data' # Ruta donde se almacena los datos que utiliza el programa
+SRC_PATH = PROJECT_PATH / 'src' # Ruta donde estan las diferentes funciones
 NOTEBOOKS_PATH = PROJECT_PATH / 'notebooks' # Jupyter Notebooks
 STREAMLIT_PATH = PROJECT_PATH / 'streamlit' # App Streamlit
 

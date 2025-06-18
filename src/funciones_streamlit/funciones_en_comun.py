@@ -5,98 +5,116 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-
+# Agrega la ruta al módulo utils
 sys.path.append(os.path.abspath("../code"))
 
+from utils.constantes import UTILS_PATH, HOGARES_CSV
+from utils.constantes import NOMBRES_AGLOMERADOS
 
-from utils.constantes import (
-    UTILS_PATH,
-    HOGARES_CSV
-)
-
-from utils.constantes import (
-    NOMBRES_AGLOMERADOS,
-)
-
+# Diccionario de nombres de aglomerados con claves enteras
 NOMBRES_AGLOMERADOS = {int(k): v for k, v in NOMBRES_AGLOMERADOS.items()}
 
+
 @st.cache_data
-def crear_dataframe(tipo,columnas=None):
+def crear_dataframe(archivo_csv, columnas=None):
+    """
+    Crea un DataFrame a partir de un archivo CSV ubicado en UTILS_PATH.
+    Si se especifican columnas, devuelve solo esas columnas válidas.
+    Muestra advertencias si el archivo está vacío o si hay columnas inválidas.
+    """
     try:
-        # Cargo el DataFrame desde el CSV
-        df = pd.read_csv(UTILS_PATH / tipo, sep=';', low_memory=False)
-        
-        # Si está vacío, aviso y devuelvo None
+        df = pd.read_csv(UTILS_PATH / archivo_csv, sep=';', low_memory=False)
+
         if df.empty:
-            st.warning(f"El archvio está vacío.")
+            print("El archivo está vacío")
+            st.warning("⚠️ ERROR INESPERADO")
             return None
-        
-        # Si se pasó una lista de columnas, filtro solo esas columnas
+
         if columnas is not None:
-            # Validar que las columnas existan antes para evitar Error
             columnas_validas = [col for col in columnas if col in df.columns]
             if len(columnas_validas) < len(columnas):
                 columnas_invalidas = set(columnas) - set(columnas_validas)
-                st.warning(f"Algunas columnas no existen y fueron omitidas: {columnas_invalidas}")
+                print(f"Algunas columnas no existen y fueron omitidas: {columnas_invalidas}")
+                st.warning("⚠️ ERROR INESPERADO")
             df = df[columnas_validas]
-            
+
         return df
+
     except FileNotFoundError:
-        st.error(f"Error: archivo CSV no encontrado")
-    except pd.errors.ParserError:  # Usá este en lugar de csv.Error para pandas
-        st.error(" Error al leer el archivo CSV")
+        print("Error: archivo CSV no encontrado")
+        st.warning("⚠️ ERROR INESPERADO")
+    except pd.errors.ParserError:
+        print("Error al leer el archivo CSV")
+        st.warning("⚠️ ERROR INESPERADO")
     except Exception as e:
-        st.error(f" Ocurrió una excepción inesperada: {e} ({type(e).__name__})")
+        print(f"Ocurrió una excepción inesperada: {e} ({type(e).__name__})")
+        st.warning("⚠️ ERROR INESPERADO")
+
     return None
 
 
 def filtrar_dataframe_por_anio(df, anio_seleccionado):
-    # Filtro el dataframe según si se seleccionó un año o "Todos"
+    """
+    Filtra el DataFrame por un año específico si se selecciona uno.
+    Si se selecciona 'Todos', devuelve el DataFrame completo.
+    """
     if anio_seleccionado != 'Todos':
         df_filtrado = df[df['ANO4'] == anio_seleccionado]
         if df_filtrado.empty:
             st.warning("⚠️ No hay datos para el año seleccionado.")
             return None
         return df_filtrado
-    else:
-        if df.empty:
-            st.warning("⚠️ No hay datos en el sistema.")
-        return df
+
+    if df.empty:
+        st.warning("⚠️ No hay datos en el sistema.")
+    return df
 
 
-def filtrar_dataframe_por_anio_y_trim(df,anio,trim):
-    df_fil_anio = filtrar_dataframe_por_anio(df,anio)
+def filtrar_dataframe_por_anio_y_trim(df, anio, trim):
+    """
+    Filtra el DataFrame por año y trimestre si se seleccionan.
+    Devuelve None si no hay datos disponibles para la selección.
+    """
+    df_fil_anio = filtrar_dataframe_por_anio(df, anio)
+
     if trim != 'Todos':
         df_fil_anio = df[df['TRIMESTRE'] == trim]
         if df_fil_anio.empty:
-            st.warning("⚠️ No hay datos para el trim seleccionado.")
+            st.warning("⚠️ No hay datos para el trimestre seleccionado.")
             return None
         return df_fil_anio
-    else:
-        if df.empty:
-            st.warning("⚠️ No hay datos en el sistema.")
-        return df
+
+    if df.empty:
+        st.warning("⚠️ No hay datos en el sistema.")
+    return df
 
 
-def selector_anios(df,todos=False):
-    #Años disponibles en el dataframe
+def selector_anios(df, todos=False):
+    """
+    Crea un selector de años basado en los disponibles en el DataFrame.
+    Si `todos` es True, incluye la opción 'Todos'.
+    """
     anios_disponibles = sorted(df['ANO4'].dropna().unique(), reverse=True)
     opciones = ['Seleccione un año...']
+
     if todos:
         opciones.append('Todos')
-    
+
     opciones += list(anios_disponibles)
-    
-    #Selectbox para seleccionar un año en especifico o todos los años
-    anio_seleccionado = st.selectbox( 
+
+    anio_seleccionado = st.selectbox(
         "Seleccione un año para explorar las características de la población argentina:",
         opciones
     )
-    
+
     return anio_seleccionado
 
 
 def selector_anio_trimestre(df):
+    """
+    Muestra dos selectores: uno para año y otro para trimestre disponible según el año seleccionado.
+    Devuelve una tupla (anio, trimestre) o (anio, None).
+    """
     col1, col2 = st.columns(2)
 
     with col1:
@@ -105,34 +123,40 @@ def selector_anio_trimestre(df):
     with col2:
         trimestre_seleccionado = None
 
-        # Verificamos que sea un año válido (no texto)
         if anio_seleccionado not in ["Seleccione un año...", "Todos"]:
             anio_int = int(anio_seleccionado)
-            trimestres_disponibles = sorted(df[df["ANO4"] == anio_int]["TRIMESTRE"].unique())
+            trimestres_disponibles = sorted(
+                df[df["ANO4"] == anio_int]["TRIMESTRE"].unique()
+            )
             trimestres_opciones = ["Seleccione un trimestre..."] + list(map(int, trimestres_disponibles))
 
             trimestre_seleccionado = st.selectbox(
                 "Seleccione un trimestre:",
-                trimestres_opciones,
+                trimestres_opciones
             )
-        
+
     if trimestre_seleccionado and trimestre_seleccionado != "Seleccione un trimestre...":
         return anio_seleccionado, trimestre_seleccionado
-    else:
-        return anio_seleccionado, None
+
+    return anio_seleccionado, None
 
 
 def selector_aglomerados():
+    """
+    Muestra un selector de aglomerados basado en los valores del diccionario NOMBRES_AGLOMERADOS.
+    """
     opciones_aglomerados = ['Seleccione un aglomerado...'] + sorted(NOMBRES_AGLOMERADOS.values())
     seleccion_aglomerado = st.selectbox(
-            'Seleccione un aglomerado para visualizar su evolución de tenencia',
-            opciones_aglomerados
-        )
+        'Seleccione un aglomerado para visualizar su evolución de tenencia',
+        opciones_aglomerados
+    )
     return seleccion_aglomerado
 
 
-def convertir_csv(df, nombre_archivo="archivo.csv", key=None,indice=True):
-    # Convierte a CSV el dataframe en memoria
+def convertir_csv(df, nombre_archivo="archivo.csv", key=None, indice=True):
+    """
+    Permite descargar el DataFrame como archivo CSV desde la interfaz de Streamlit.
+    """
     csv = df.to_csv(index=indice).encode('utf-8')
     if key is None:
         key = f"descarga_{id(df)}"
@@ -146,6 +170,9 @@ def convertir_csv(df, nombre_archivo="archivo.csv", key=None,indice=True):
 
 
 def footer():
+    """
+    Muestra un pie de página fijo con información de licencia y autores del sistema.
+    """
     st.markdown("""
     <style>
     .footer-wrapper {
@@ -157,26 +184,22 @@ def footer():
         border-top: 1px solid #bbb;
         z-index: 100;
     }
-
     .footer-container {
         max-width: 960px;
         margin: auto;
-        padding: 10px 20px 10px 20px;  /* Menos padding vertical */
+        padding: 10px 20px 10px 20px;
         font-size: 10pt;
         color: #333;
     }
-
     .footer-container h4 {
         font-size: 11pt;
         color: #222;
         margin: 0 0 5px 0;
     }
-
     .footer-container p {
         margin: 2px 0;
         text-align: justify;
     }
-
     .footer-container .footer-note {
         text-align: center;
         background-color: #ccc;
@@ -185,8 +208,6 @@ def footer():
         margin-top: 8px;
         font-size: 9.5pt;
     }
-
-    /* MÁS espacio inferior para evitar solapamiento */
     .main > div {
         padding-bottom: 220px;
     }
@@ -199,11 +220,11 @@ def footer():
             Copyright (c) 2025 <strong>Grupo 26</strong>
             </p>
             <p>
-            Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados...
+            Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software...
             </p>
             <p class="footer-note">
             Desarrollado por Diego Arrechea, Ulises Rodriguez, Axel Morano, Lautaro Loredo y Lucentini Joaquin · UNLP · 2025
             </p>
         </div>
     </div>
-""", unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
