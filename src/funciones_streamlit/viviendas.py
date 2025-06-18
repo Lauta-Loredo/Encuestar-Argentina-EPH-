@@ -20,13 +20,15 @@ from utils.constantes import (
     DERECHO_PROPIEDAD
 )
 
+# Convertimos las claves de NOMBRES_AGLOMERADOS a enteros para asegurar compatibilidad
 NOMBRES_AGLOMERADOS = {int(k): v for k, v in NOMBRES_AGLOMERADOS.items()}
 
-VILLA_EMERGENCIA = 'IV12_3'
-TIPO_VIVIENDA = 'IV1' 
-TIPO_PISO = 'IV3'
-UBICACION_BANIO = "IV9"
-TIPO_TENENCIA = 'II7'
+# Define con nombres mas representativos las columnas clave 
+VILLA_EMERGENCIA = 'IV12_3' # Columna que indica si la vivienda está en una villa de emergencia
+TIPO_VIVIENDA = 'IV1'      # Columna que describe el tipo de vivienda
+TIPO_PISO = 'IV3'          # Columna que describe el material del piso
+UBICACION_BANIO = "IV9"    # Columna que describe la ubicación del baño
+TIPO_TENENCIA = 'II7'      # Columna que describe el tipo de tenencia de la vivienda
 
 
 def calcular_cantidad(df,descripcion=None):
@@ -57,6 +59,14 @@ def calcular_proporcion_tipo_viviendas(df):
 
 
 def grafico_tipo_de_viviendas(tipos_viviendas):
+    '''
+    Genera y muestra un gráfico de torta de la proporción de tipos de viviendas.
+    El grafico incluye, grafico de torta y una leyenda.
+    
+    Parametros:
+    -serie con el tipo de viviendas
+    
+    '''
     # Crea la figura y los ejes para el gráfico
     fig, ax = plt.subplots()
     
@@ -92,7 +102,15 @@ def grafico_tipo_de_viviendas(tipos_viviendas):
 
 
 def calcular_material_predominante_por_aglomerado(df):
+    '''
+    Determina el material predominante del piso para cada aglomerado.
     
+    Parametros:
+    - DataFrame con las columnas 'AGLOMERADO', `TIPO_PISO` y 'PONDERA'.
+    
+    Retorna:
+    - Una serie donde el indice son los nombres de los aglomerados y uns strign con el tipo de piso predominante.
+    '''
     # Agrupa por aglomerado y tipo de piso
     predominantes_por_p_y_a = df.groupby(['AGLOMERADO',TIPO_PISO])['PONDERA'].sum().reset_index()
     
@@ -116,6 +134,12 @@ def calcular_material_predominante_por_aglomerado(df):
 
 
 def informar_material_predominante(serie):
+    '''
+    Muestra en streamlit un titulo, una descripcion y una serie en forma de tabla.
+    
+    Parametros:
+    - Una Series
+    '''
     st.subheader('🧱 Material Predrominante de Piso por Aglormerado')
     st.text('''🏘️ ¿Qué muestra? 
         Esta sección se encarga por cada aglomerado, de informa cuál es el material más común en los pisos interiores de las viviendas (por ejemplo: cerámica, cemento, tierra, etc.).''')
@@ -124,6 +148,15 @@ def informar_material_predominante(serie):
 
 
 def calcular_proporcion_viviendas_banio(df):
+    '''
+    Calcula la proporcion ponderada de viviendas con baño interior por aglomerado.
+    
+    Paramtetros:
+    -Un dataframe con las columnas 'AGLOMERADO', `UBICACION_BANIO` y 'PONDERA'.
+    
+    Retorna:
+    - Una Series con el nombre de los aglomerados como indice y el porcentaje de cada uno.
+    '''
     
     # Hacem una copia del DataFrame para no modificar el original
     df_copy = df.copy()
@@ -150,6 +183,12 @@ def calcular_proporcion_viviendas_banio(df):
 
 
 def informar_prop_banio_interior(proporcion_banio):
+    '''
+    Muestra en Streamlit la proporción de viviendas con baño interior por aglomerado.
+    
+    Parámetros:
+    - Una Series, que tiene los porcentajes de las viviendas con banio interior
+    '''
     st.subheader('🚽 Proporcion Viviendas con Baño Interio')
     st.text('''🚽 ¿Qué muestra? 
         Esta sección se encarga de calcular el porcentaje de viviendad, de cada aglomerado, que poseen un baño en el interior de la misma.''')
@@ -158,6 +197,17 @@ def informar_prop_banio_interior(proporcion_banio):
 
 
 def calcular_evolucion_tenencia(df,cod_aglo):
+    '''
+    Calcula la evolucion de los tipos de tenencia de viviendas para un aglomerado, 
+    el ususairo puede elegir que tipo de tenencia a visualizar.
+    
+    Parametros:
+    -DataFrame con las columans 'AGLOMERADO', 'ANO4','TRIMESTRE', `TIPO_TENENCIA` y 'PONDERA'.
+    -Un codigo de aglomerado(int)
+    
+    Devulve:
+    -Un dataframe con la evolicion de los porcentajes a lo largo del tiempo.
+    '''
     if cod_aglo is None:
         return None
 
@@ -180,7 +230,16 @@ def calcular_evolucion_tenencia(df,cod_aglo):
 
 
 def informar_evolucion_tenencia(df):
+    '''
+    Permite al usuario seleccionar un aglomerado y tipos de tenencia para visualizar
+    su evolución a lo largo del tiempo mediante un gráfico de líneas.
+
+    Maneja la interacción con el usuario en Streamlit, incluyendo selectores
+    para aglomerados y tipos de tenencia, y muestra el gráfico resultante.
     
+    Parámetros:
+    - DataFrame con todos los datos de vivienda
+    '''
     # Crea dos columnas para dividir la interfaz
     c1, c2 = st.columns(2)
     
@@ -227,7 +286,15 @@ def informar_evolucion_tenencia(df):
 
 
 def calcular_cantidad_viviendas_en_villas(df):
+    '''
+    Calcula la cantidad t proporcion de viviendas ubicadas en villas de emergencias por aglomerados.
     
+    Parametros:
+    -El dataframe que debe contener las columnas 'AGLOMERADO',`VILLA_EMERGENCIA` y 'PONDERA'.
+    
+    Devuelve:
+    Un datafreme con la contidad de viviendas en villas, el total y porcentajes, con los nombres de los aglomerados como indices.
+    '''
     # Filtra solo las viviendas que están en villas de emergencia (valor 1 en la columna correspondiente)
     df_villas = df[df[VILLA_EMERGENCIA] == 1]
     
@@ -256,6 +323,12 @@ def calcular_cantidad_viviendas_en_villas(df):
 
 
 def informar_viviendad_en_villas(resultado):
+    '''
+    Muestra en Streamlit la información sobre viviendas en villas de emergencia, presenta el DataFrame 
+
+    Parámetros:
+    - un DataFrame que contiene la cantidad y proporción de viviendas en villas por aglomerado.
+    '''
     st.subheader('Proporción de Viviendas en Villas por Aglomerado')
     st.text('''📉 ¿Qué muestra? 
         Una lista ordenada de los aglomerados según la cantidad de viviendas ubicadas en villas de emergencia.\
@@ -265,6 +338,19 @@ def informar_viviendad_en_villas(resultado):
 
 
 def calcular_condicion_de_habitabilidad(df):
+    '''
+    Calcula la proporción de viviendas según su condición de habitabilidad por aglomerado.
+
+    Clasifica las viviendas en categorías de habitabilidad (Insuficiente, Regular,
+    Saludable, Buena) y calcula el porcentaje de cada categoría dentro de cada aglomerado,
+    basándose en la ponderación.
+
+    Parámetros:
+    - Un DataFrame que debe contener las columnas 'AGLOMERADO', 'CONDICION_DE_HABITABILIDAD' y 'PONDERA'.
+
+    Devuelve:
+    - Un DataFrame con los porcentajes de cada condición de habitabilidad por aglomerado y el total de viviendas ponderadas, con nombres de aglomerados como indice.
+    '''
     # Calcula el total de viviendas ponderadas por aglomerado
     total_por_aglo = df.groupby('AGLOMERADO')['PONDERA'].sum().sort_index()
     
@@ -294,10 +380,18 @@ def calcular_condicion_de_habitabilidad(df):
 
 
 def informar_cond_habitabilidad(df_habitabilidad):
+    '''
+    Muestra en Streamlit la tabla de condiciones de habitabilidad y un boton de descarga, 
+    para descargar ese dataframe en forma de archivo csv.
+
+    Parámetros:
+    - un DataFrame con los porcentajes de condiciones de habitabilidad por aglomerado.
+    '''
     st.subheader('🏠 Condiciones de Habitabilidad de las Viviendas por Aglomerado')
     st.text('''✅ ¿Qué muestra? 
         Por cada aglomerado, se presenta el porcentaje de viviendas según su condición de habitabilidad y el total de viviendas. \
         Además, podés descargar los resultados en un archivo CSV. ''')
+    
     st.dataframe(df_habitabilidad)
     
-    convertir_csv(df_habitabilidad,'condicion_habitabilidad.csv')
+    convertir_csv(df_habitabilidad,'condicion_habitabilidad.csv','convertir_csv_viviendas')
