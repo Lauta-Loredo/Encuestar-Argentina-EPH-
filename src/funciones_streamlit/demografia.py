@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-from src import funciones_en_comun as fc
+from . import funciones_en_comun as fc
 import streamlit as st
 
 

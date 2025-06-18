@@ -11,6 +11,7 @@ sys.path.append(str(project_root))
 #Importo algunas funciones
 from src.funciones_streamlit import demografia as ats
 from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obtener los aglomerados
+from src.funciones_streamlit import funciones_en_comun as fc
 
 st.title("📊 Caracteristicas Demográficas")
 
@@ -135,64 +136,5 @@ with st.expander("📉 Evolución de la Media y la Mediana de la edad", expanded
         plt.xticks(rotation=45)
         st.pyplot(fig)
 
-st.markdown("""
-    <style>
-    .footer-wrapper {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        background-color: #ddd;
-        border-top: 1px solid #bbb;
-        z-index: 100;
-    }
-
-    .footer-container {
-        max-width: 960px;
-        margin: auto;
-        padding: 10px 20px 10px 20px;  /* Menos padding vertical */
-        font-size: 10pt;
-        color: #333;
-    }
-
-    .footer-container h4 {
-        font-size: 11pt;
-        color: #222;
-        margin: 0 0 5px 0;
-    }
-
-    .footer-container p {
-        margin: 2px 0;
-        text-align: justify;
-    }
-
-    .footer-container .footer-note {
-        text-align: center;
-        background-color: #ccc;
-        padding: 6px;
-        border-radius: 3px;
-        margin-top: 8px;
-        font-size: 9.5pt;
-    }
-
-    /* MÁS espacio inferior para evitar solapamiento */
-    .main > div {
-        padding-bottom: 220px;
-    }
-    </style>
-
-    <div class="footer-wrapper">
-        <div class="footer-container">
-            <h4>Licencia MIT</h4>
-            <p>
-            Copyright (c) 2025 <strong>Grupo 26</strong>
-            </p>
-            <p>
-            Por la presente se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de este software y de los archivos de documentación asociados...
-            </p>
-            <p class="footer-note">
-            Desarrollado por Diego Arrechea, Ulises Rodriguez, Axel Morano, Lautaro Loredo y Lucentini Joaquin · UNLP · 2025
-            </p>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
+#Imprimo footer
+fc.footer()
