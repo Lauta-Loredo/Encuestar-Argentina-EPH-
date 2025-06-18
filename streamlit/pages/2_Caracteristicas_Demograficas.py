@@ -12,6 +12,7 @@ sys.path.append(str(project_root))
 from src.funciones_streamlit import demografia as ats
 from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obtener los aglomerados
 from src.funciones_streamlit import funciones_en_comun as fc
+from utils.constantes import NOMBRES_AGLOMERADOS
 
 st.title("📊 Caracteristicas Demográficas")
 
@@ -33,28 +34,25 @@ if mostrar_graficos:
     # Distribución de la población por grupos y sexo cada 10 años
     st.divider()
     with st.expander("👩‍👦‍👦 Distribución de la población por grupos y sexo cada 10 años", expanded=False):
+        anios, trimestre = fc.selector_anio_trimestre(df)
 
-        #Un selectbox para la seleccion de año y trimestre
-        anios_disponibles = sorted(df["ANO4"].unique())
-        anios = st.selectbox("Seleccione un año: ", anios_disponibles)
-        tri_disponible = sorted(df[df["ANO4"] == anios]["TRIMESTRE"].unique())
-        trimestre = st.selectbox("Seleccione un trimestre: ", tri_disponible)
+        #Valido la selección antes de continuar
+        if anios in ["Seleccione un año...", None] or trimestre in ["Seleccione un trimestre...", None]:
+            st.info("Por favor, seleccione un año y un trimestre para ver el gráfico.")
+        else:
+            # Filtro los datos según el año y trimestre seleccionados
+            df_filtrado = df[(df["ANO4"] == anios) & (df["TRIMESTRE"] == trimestre)]
 
-        #Filtro los datos segun el año y trimestre seleccionados
-        df_filtrado = df[(df["ANO4"] == anios) & (df["TRIMESTRE"] == trimestre)]
+            if df_filtrado.empty:
+                st.warning("No hay datos disponibles para ese año y trimestre.")
+            else:
+                # Creo un gráfico de barras por grupos de edad y sexo
+                grafico = ats.grafico_barras_grup_edad(df_filtrado, anios, trimestre)
 
-        if df_filtrado.empty:
-            st.warning("No hay datos disponibles para ese año y trimestre")
-            st.stop()
-
-        #Creo un grafico de barras por grupos de edad y sexo
-        grafico = ats.grafico_barras_grup_edad(df_filtrado, anios, trimestre)
-
-        if grafico is None:
-            st.error('Ocurrió un error al configurar el gráfico')
-            st.stop()
-
-        st.pyplot(grafico) #Si el grafico se creo correctamente, se muestra
+                if grafico is None:
+                    st.error("Ocurrió un error al configurar el gráfico.")
+                else:
+                    st.pyplot(grafico)
 
     # Edad promedio por aglomerado
     with st.expander("➗ Edad promedio de personas por aglomerado", expanded=False):
@@ -64,10 +62,9 @@ if mostrar_graficos:
 
         st.markdown(f'**Periodo de análisis:** {ultimo_anio}-T{ultimo_trimestre} (último disponible)')
 
-        aglomerados = cpv.obtener_nombre_aglomerados()
         df_filtrado2 = df[(df['ANO4'] == ultimo_anio) & (df['TRIMESTRE'] == ultimo_trimestre)]
         df_filtrado2 = ats.calcular_edad_promedio(df_filtrado2)
-        df_filtrado2['Nombre Aglomerado'] = df_filtrado2['AGLOMERADO'].astype(str).map(aglomerados)
+        df_filtrado2['Nombre Aglomerado'] = df_filtrado2['AGLOMERADO'].astype(str).map(NOMBRES_AGLOMERADOS)
         df_filtrado2 = df_filtrado2.sort_values(by='AGLOMERADO')
         df_filtrado2['Año'] = ultimo_anio
         df_filtrado2['Trimestre'] = ultimo_trimestre
@@ -94,7 +91,7 @@ if mostrar_graficos:
 
     # Evolución de la dependencia demográfica
     with st.expander("📈 Evolución de la dependencia demográfica", expanded=False):
-        aglomerados_opciones = [f"{codigo} - {nombre}" for codigo, nombre in aglomerados.items()]
+        aglomerados_opciones = [f"{codigo} - {nombre}" for codigo, nombre in NOMBRES_AGLOMERADOS.items()]
         seleccion = st.selectbox("Selecciona un aglomerado para analizar", aglomerados_opciones, index=0)
         seleccion_codigo = seleccion.split(" - ")[0]
         df_filtrado3 = df[df["AGLOMERADO"] == int(seleccion_codigo)]
@@ -110,7 +107,7 @@ if mostrar_graficos:
             for x, y in zip(df_dep.index, df_dep['Dependencia']):
                 ax.text(x, y + 0.07, f"{y: .2f}", ha="center", va="bottom", fontsize=9, color="black")
 
-            ax.set_title(f"Evolución de la dependencia demográfica - {aglomerados[seleccion_codigo]}", fontsize=14)
+            ax.set_title(f"Evolución de la dependencia demográfica - {NOMBRES_AGLOMERADOS[seleccion_codigo]}", fontsize=14)
             ax.set_xlabel("Período", fontsize=12)
             ax.set_ylabel("Índice de dependencia (%)", fontsize=12)
             ax.tick_params(axis='x', rotation=45)
