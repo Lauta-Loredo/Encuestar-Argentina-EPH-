@@ -28,8 +28,7 @@ TIPO_PISO = 'IV3'
 UBICACION_BANIO = "IV9"
 TIPO_TENENCIA = 'II7'
 
-# 
-# 
+
 def calcular_cantidad(df,descripcion=None):
     '''
     Calcula la cantidad ponderada de objetos que hay en el dataframe y los pondera
@@ -158,9 +157,7 @@ def informar_prop_banio_interior(proporcion_banio):
     st.dataframe(proporcion_banio.rename("Porcentaje (%)"))
 
 
-def calcular_evolucion_tenencia(df, aglomerado):
-    # Mapear nombre a código
-    cod_aglo = {v: k for k, v in NOMBRES_AGLOMERADOS.items()}.get(aglomerado)
+def calcular_evolucion_tenencia(df,cod_aglo):
     if cod_aglo is None:
         return None
 
@@ -189,10 +186,10 @@ def informar_evolucion_tenencia(df):
     
     # Selector de aglomerado en la primera columna
     with c1:
-        seleccion_aglomerado = selector_aglomerados()
-    
+        seleccion_aglomerado = selector_aglomerados('selector_aglomerados_viviendas')
+        
     # Verifica que se haya seleccionado un aglomerado válido
-    if seleccion_aglomerado == 'Seleccione un aglomerado...':
+    if seleccion_aglomerado == 'Sleccione un aglomerado...':
         st.warning('Debe seleccionar un aglomerado para ver el gráfico.')
         return
 
