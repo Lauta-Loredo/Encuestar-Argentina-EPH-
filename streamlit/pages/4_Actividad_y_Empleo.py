@@ -114,8 +114,9 @@ st.markdown(
 )
 colores = colores_aglomerado(tipo, tasas)
 mapa = graficar_mapa(coordenadas_aglomerado,colores)
-mapa.save("mapa_aglomerados.html")
-components.html(open("mapa_aglomerados.html", "r", encoding="utf-8").read(), height=600)
+MAPA_PATH = cons.UTILS_PATH / "mapa_aglomerados.html"
+mapa.save(MAPA_PATH)
+components.html(open(MAPA_PATH, "r", encoding="utf-8").read(), height=600)
 st.divider()
 # footer
 footer()
