@@ -10,7 +10,7 @@ sys.path.append(str(project_root))
 
 #Importo algunas funciones
 from src.funciones_streamlit import demografia as ats
-from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obtener los aglomerados
+from src.funciones_streamlit import funciones_en_comun as fc
 
 st.title("📊 Caracteristicas Demográficas")
 
@@ -22,10 +22,9 @@ la población argentina según la EPH.**\n
 # Distribución de la población por grupos y sexo cada 10 años
 st.divider()
 with st.expander("👩‍👦‍👦 Distribución de la población por grupos y sexo cada 10 años", expanded=False):
-    df = ats.cargo_valido_columnas() #Cargo el DF con columnas que voy a usar
+    df = ats.cargar_csv() #Cargo el DF con columnas que voy a usar
 
     if df is None:
-        st.error('Ocurrió un Error Imprevisto')
         st.stop() #Si ocurre algo detego la app
 
     #Un selectbox para la seleccion de año y trimestre
@@ -58,7 +57,7 @@ with st.expander("➗ Edad promedio de personas por aglomerado", expanded=False)
 
     st.markdown(f'**Periodo de análisis:** {ultimo_anio}-T{ultimo_trimestre} (último disponible)')
 
-    aglomerados = cpv.obtener_nombre_aglomerados()
+    aglomerados = fc.selector_aglomerados()
     df_filtrado2 = df[(df['ANO4'] == ultimo_anio) & (df['TRIMESTRE'] == ultimo_trimestre)]
     df_filtrado2 = ats.calcular_edad_promedio(df_filtrado2)
     df_filtrado2['Nombre Aglomerado'] = df_filtrado2['AGLOMERADO'].astype(str).map(aglomerados)

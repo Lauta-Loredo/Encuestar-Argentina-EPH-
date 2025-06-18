@@ -1,45 +1,29 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from pathlib import Path
+import funciones_en_comun as fc
+import streamlit as st
 
 
-def cargar_csv(ruta):
+def cargar_csv():
     """
-    Carga un DataFrame desde un archivo CSV delimitado por punto y coma,
+    Carga un DataFramea travez de una funcion donde le envio las columnas relevantes,
     seleccionando columnas relevantes y eliminando filas incompletas.
     """
-    try:
-        df = pd.read_csv(ruta, delimiter=";")
-        columnas = ["ANO4", "TRIMESTRE", "CH06", "CH04_str", "PONDERA", "AGLOMERADO"]
-        return df[columnas].dropna(subset=["PONDERA", "CH06"])
-    except FileNotFoundError:
-        print("Error: No se encontró el archivo CSV en la ruta especificada.")
-    except pd.errors.EmptyDataError:
-        print("Error: El archivo CSV está vacío.")
-    except pd.errors.ParserError:
-        print("Error: Problema al analizar el archivo CSV.")
-    except Exception as e:
-        print(f"Error inesperado al cargar el archivo CSV: {e}")
-    return None
-
-
-def cargo_valido_columnas():
-    """
-    Carga el DataFrame y verifica que contenga las columnas necesarias.
-    """
-    ruta_csv = Path(__file__).parent.parent.parent / "utils" / "IndividuosTotal.csv"
-    df = cargar_csv(ruta_csv)
-
+    archivo = "IndividuosTotal.csv"
+    columnas = ["ANO4", "TRIMESTRE", "CH06", "CH04_str", "PONDERA", "AGLOMERADO"]
+    df = fc.crear_dataframe (archivo, columnas)
     if df is None:
         return None
-
+        
+    # Validar columnas necesarias para dropna
     columnas_esperadas = {"ANO4", "TRIMESTRE", "CH06", "CH04_str", "AGLOMERADO"}
     if not columnas_esperadas.issubset(df.columns):
-        print("Error: El archivo no contiene las columnas necesarias.")
+        st.warning("⚠️ Columnas requeridas no están presentes en el DataFrame.")
         return None
 
-    return df
-
+    #Devuelvo el df eliminando filas que no tengan datos de edad o de pondera  
+    return df[columnas].dropna(subset=["PONDERA", "CH06"])
 
 def calcular_edad_promedio(df):
     """
