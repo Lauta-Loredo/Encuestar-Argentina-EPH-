@@ -12,7 +12,7 @@ sys.path.append(str(project_root))
 from src.funciones_streamlit import demografia as ats
 from src.consultas import calcular_porc_viviendas_prop as cpv #Modulo para obtener los aglomerados
 from src.funciones_streamlit import funciones_en_comun as fc
-from utils.constantes import NOMBRES_AGLOMERADOS
+from utils.constantes import (NOMBRES_AGLOMERADOS, INDIVIDUOS_CSV)
 
 st.title("📊 Caracteristicas Demográficas")
 
@@ -26,7 +26,7 @@ mostrar_graficos = st.toggle("***Visualizar Datos Demograficos***", value=False)
 
 if mostrar_graficos:
     #Creo el DataFrame
-    df = ats.cargar_csv() #Cargo el DF con columnas que voy a usar
+    df = ats.cargar_csv(INDIVIDUOS_CSV) #Cargo el DF con columnas que voy a usar
 
     if df is None:
         st.stop() #Si ocurre algo detego la app

@@ -4,14 +4,13 @@ from . import funciones_en_comun as fc
 import streamlit as st
 
 
-def cargar_csv():
+def cargar_csv(ruta):
     """
-    Carga un DataFramea travez de una funcion donde le envio las columnas relevantes,
-    seleccionando columnas relevantes y eliminando filas incompletas.
+    Carga un DataFrame a traves de una funcion donde le envio las columnas relevantes y la ruta del archivo
+    Luego verifico que se encuentren las columnas y elimino filas incompletas.
     """
-    archivo = "IndividuosTotal.csv"
     columnas = ["ANO4", "TRIMESTRE", "CH06", "CH04_str", "PONDERA", "AGLOMERADO"]
-    df = fc.crear_dataframe (archivo, columnas)
+    df = fc.crear_dataframe (ruta, columnas)
     if df is None:
         return None
         
