@@ -25,7 +25,7 @@ try:
     anio_fin, trimestre_fin = rango_fechas_ordenado[-1]
 
     st.write(
-        f"***El sistema contiene información desde el trimestre {trimestre_inicio} del año {anio_inicio} hasta trimestre {trimestre_fin} del año {anio_fin}.***"
+        f"***El sistema contiene información desde el {trimestre_inicio}° trimestre del año {anio_inicio} hasta el {trimestre_fin}° trimestre del año {anio_fin}.***"
     )
     
     periodo_esperado = []
@@ -69,6 +69,3 @@ if st.button("Actualizar datos"):
     st.cache_data.clear()  # limpia el caché global
     st.session_state["datos_actualizados"] = True  
     st.rerun()
-    
-
-footer()

@@ -176,35 +176,35 @@ def convertir_csv(df, nombre_archivo="archivo.csv", key=None, indice=True):
 
 def footer():
     """
-    Muestra un pie de página fijo con información de licencia y autores del sistema.
+    Muestra un pie de página que siempre queda al final visible de la página.
     """
     st.markdown("""
     <style>
     html, body, #root {
+        height: 100%;
         margin: 0;
         padding: 0;
-        height: 100%;
-        width: 100%;
-        overflow-x: hidden;
     }
 
-    .main > div {
-        padding-bottom: 80px; /* espacio para que el footer no tape contenido */
+    .main {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .block-container {
+        flex: 1 0 auto; /* permite que el contenido crezca pero empuje el footer al fondo */
     }
 
     .footer-wrapper {
-        position: fixed;  /* fijo en pantalla */
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100%;
         background-color: #ddd;
         border-top: 1px solid #bbb;
         padding: 10px 20px;
         font-size: 10pt;
         color: #333;
         box-sizing: border-box;
-        z-index: 9999; /* para que esté arriba de todo */
+        width: 100%;
+        flex-shrink: 0;
     }
 
     .footer-container {
@@ -223,7 +223,7 @@ def footer():
         text-align: justify;
     }
 
-    .footer-container .footer-note {
+    .footer-note {
         text-align: center;
         background-color: #ccc;
         padding: 6px;

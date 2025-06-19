@@ -138,5 +138,3 @@ if mostrar_graficos:
         mapa.save(MAPA_PATH)
         components.html(open(MAPA_PATH, "r", encoding="utf-8").read(), height=600)
     st.divider()
-# footer
-# footer()
