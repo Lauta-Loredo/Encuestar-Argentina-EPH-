@@ -7,38 +7,8 @@ import plotly.express as px
 import streamlit as st
 
 from src.funciones_streamlit.funciones_en_comun import (
-    crear_dataframe,
     convertir_csv,
 )
-
-
-# ----------------------------------------------------------------------------------------------------------------------
-# CARGA Y PREPARACIÓN DE DATOS
-# ----------------------------------------------------------------------------------------------------------------------
-
-@st.cache_data
-def carga_df():
-    """
-    Carga el DataFrame principal de individuos desde un CSV.
-
-    Optimizado con caché, carga solo las columnas necesarias.
-
-    Returns:
-        pandas.DataFrame: DataFrame con los datos cargados o un DataFrame vacío si hay errores.
-    """
-    columnas = [
-        "ANO4", "TRIMESTRE", "CH06", "NIVEL_ED",
-        "PONDERA", "CODUSU", "NRO_HOGAR", "COMPONENTE",
-    ]
-    try:
-        return crear_dataframe("IndividuosTotal.csv", columnas=columnas)
-    except FileNotFoundError as e:
-        st.error(f"No se encontró el archivo de datos: {e}")
-        return pd.DataFrame()
-    except Exception as e:
-        st.error(f"Error inesperado al cargar datos: {e}")
-        return pd.DataFrame()
-
 
 # ----------------------------------------------------------------------------------------------------------------------
 # PROCESAMIENTO DE NIVELES EDUCATIVOS
