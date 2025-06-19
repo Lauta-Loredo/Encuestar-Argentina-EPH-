@@ -8,6 +8,8 @@ import streamlit as st
 project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(project_root))
 
+from utils.constantes import INDIVIDUOS_CSV
+
 from src.consultas.consulta_leer_escribir import calcular_porcentajes_lectura
 from src.consultas.ranking5 import ranking_aglomerados_nivel_sup
 from src.funciones_streamlit import educacion as ed
@@ -15,6 +17,7 @@ from src.funciones_streamlit.funciones_en_comun import (
     selector_anios,
     selector_anio_trimestre,
     filtrar_dataframe_por_anio_y_trim,
+    crear_dataframe,
 )
 
 # ------------------------------------------------------------------------------------
@@ -33,7 +36,12 @@ if st.session_state.get("datos_actualizados", False):
     st.cache_data.clear()
     st.session_state["datos_actualizados"] = False
 
-df = ed.carga_df()
+columnas_necesarias = [
+        "ANO4", "TRIMESTRE", "CH06", "NIVEL_ED",
+        "PONDERA", "CODUSU", "NRO_HOGAR", "COMPONENTE",
+    ]
+
+df = crear_dataframe(INDIVIDUOS_CSV,columnas_necesarias)
 
 if df is None or not isinstance(df, pd.DataFrame) or df.empty:
     st.info("Los datos no están disponibles o no pudieron cargarse correctamente.")
