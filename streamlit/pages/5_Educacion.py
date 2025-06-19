@@ -1,9 +1,10 @@
 import sys
 from pathlib import Path
+
 import pandas as pd
 import streamlit as st
 
-# Ajuste de ruta de proyecto
+# Ajuste de rutas
 project_root = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(project_root))
 
@@ -11,13 +12,14 @@ from src.consultas.consulta_leer_escribir import calcular_porcentajes_lectura
 from src.consultas.ranking5 import ranking_aglomerados_nivel_sup
 from src.funciones_streamlit import educacion as ed
 from src.funciones_streamlit.funciones_en_comun import (
-    footer,
     selector_anios,
     selector_anio_trimestre,
     filtrar_dataframe_por_anio_y_trim,
 )
 
+# ------------------------------------------------------------------------------------
 # Título e información inicial
+# ------------------------------------------------------------------------------------
 st.title("🧑‍🎓📚️ Educación")
 st.info(
     """
@@ -43,19 +45,31 @@ if df is None or not isinstance(df, pd.DataFrame) or df.empty:
 st.subheader("📅 Resumen trimestral por nivel educativo")
 
 anio, trimestre = selector_anio_trimestre(df, key="selector_1_6_1")
-df_trimestral = filtrar_dataframe_por_anio_y_trim(df, anio, trimestre)
-df_trimestral, _ = ed.procesar_niveles_educativos(df_trimestral, pd.DataFrame())
 
-if not df_trimestral.empty:
-    st.write("Informa la cantidad máxima de personas que terminaron o no un nivel educativo")
-    df_trimestral = df_trimestral.set_index("Niveles Educativos")
-    st.table(df_trimestral)
+if anio in [None, "Seleccione un año..."]:
+    st.info("Por favor seleccione un año.")
+elif trimestre in [None, "Seleccione un trimestre..."]:
+    st.info("Por favor seleccione un trimestre.")
+else:
+    df_trimestral = filtrar_dataframe_por_anio_y_trim(df, anio, trimestre)
 
+    if df_trimestral is None or df_trimestral.empty:
+        st.info("No hay datos disponibles para el año/trimestre seleccionado.")
+    else:
+        df_trimestral, _ = ed.procesar_niveles_educativos(
+            df_trimestral, pd.DataFrame()
+        )
+
+        st.write(
+            "Informa la cantidad máxima de personas que terminaron o no un nivel educativo"
+        )
+        df_trimestral = df_trimestral.set_index("Niveles Educativos")
+        st.table(df_trimestral)
 
 st.divider()
 
 # ------------------------------------------------------------------------------------
-# 📌 Actividad 1.6.2 - Nivel educativo más común por grupo etario (Año completo)
+# 📌 Actividad 1.6.2 - Nivel educativo más común por grupo etario
 # ------------------------------------------------------------------------------------
 st.subheader("📆 Nivel educativo más común por grupo etario")
 
@@ -66,16 +80,22 @@ if anio_solo and anio_solo != "Seleccione un año...":
     _, df_por_anio = ed.procesar_niveles_educativos(pd.DataFrame(), df_por_anio)
 
     orden_etario = ["20-30", "30-40", "40-50", "50-60", "+60"]
+
     st.text(
         "Se informa el nivel educativo más común entre la población, "
         "separado por grupos etarios de 10 en 10 años."
     )
 
-    seleccionar_todos = st.checkbox("Seleccionar todos los grupos etarios", key="checkbox_grupos")
+    seleccionar_todos = st.checkbox(
+        "Seleccionar todos los grupos etarios", key="checkbox_grupos"
+    )
+
     if seleccionar_todos:
         seleccion = orden_etario
     else:
-        seleccion = st.multiselect("", orden_etario, placeholder="¿Qué grupo etario desea ver?")
+        seleccion = st.multiselect(
+            "", orden_etario, placeholder="¿Qué grupo etario desea ver?"
+        )
 
     if seleccion and not df_por_anio.empty:
         try:
@@ -87,7 +107,10 @@ if anio_solo and anio_solo != "Seleccione un año...":
     else:
         st.info("Por favor seleccione al menos un grupo etario.")
 else:
-    st.info("Por favor seleccione un año para activar la visualización del grupo etario y gráfico.")
+    st.info(
+        "Por favor seleccione un año para activar la visualización del grupo etario "
+        "y gráfico."
+    )
 
 st.divider()
 
@@ -105,13 +128,7 @@ st.write(
 
 try:
     data = ranking_aglomerados_nivel_sup()
-    csv = ed.exportar_csv(data)
-    st.download_button(
-        label="📄 Descargar CSV",
-        data=csv,
-        file_name="ranking_aglomerados.csv",
-        mime="text/csv",
-    )
+    df_ranking = ed.exportar_csv(data, nombre_archivo="ranking_aglomerados.csv")
 except Exception as e:
     st.error(f"Error al generar el ranking o exportar CSV: {e}")
 
@@ -125,7 +142,6 @@ st.subheader("🔤 Porcentajes de alfabetismo y analfabetismo")
 try:
     anios, porcen_sabe, porcen_nosabe = calcular_porcentajes_lectura()
 
-    # Crear columnas para mostrar datos lado a lado
     for i in range(len(anios)):
         col1, col2, col3 = st.columns(3)
         with col1:
@@ -139,9 +155,5 @@ try:
 
     chart = ed.grafica_porcentajes_lectura(anios, porcen_sabe, porcen_nosabe)
     st.altair_chart(chart, use_container_width=True, key="lectura_chart")
-
 except Exception as e:
     st.error(f"Error al generar el gráfico de lectura: {e}")
-
-
-
