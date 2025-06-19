@@ -40,7 +40,7 @@ if df is None or not isinstance(df, pd.DataFrame) or df.empty:
 # ------------------------------------------------------------------------------------
 # 📌 Actividad 1.6.1 - Resumen Trimestral por Nivel Educativo
 # ------------------------------------------------------------------------------------
-st.subheader("📅 Actividad 1.6.1 - Resumen trimestral por nivel educativo")
+st.subheader("📅 Resumen trimestral por nivel educativo")
 
 anio, trimestre = selector_anio_trimestre(df, key="selector_1_6_1")
 df_trimestral = filtrar_dataframe_por_anio_y_trim(df, anio, trimestre)
@@ -57,7 +57,7 @@ st.divider()
 # ------------------------------------------------------------------------------------
 # 📌 Actividad 1.6.2 - Nivel educativo más común por grupo etario (Año completo)
 # ------------------------------------------------------------------------------------
-st.subheader("📆 Actividad 1.6.2 - Nivel educativo más común por grupo etario")
+st.subheader("📆 Nivel educativo más común por grupo etario")
 
 anio_solo = selector_anios(df, key="selector_1_6_2")
 
@@ -94,7 +94,7 @@ st.divider()
 # ------------------------------------------------------------------------------------
 # 📌 Actividad 1.6.3 - Ranking de aglomerados
 # ------------------------------------------------------------------------------------
-st.subheader("🏙️ Actividad 1.6.3 - Ranking de aglomerados")
+st.subheader("🏙️ Ranking de aglomerados")
 
 st.write(
     """
@@ -120,7 +120,7 @@ st.divider()
 # ------------------------------------------------------------------------------------
 # 📌 Actividad 1.6.4 - Porcentajes de alfabetismo y analfabetismo
 # ------------------------------------------------------------------------------------
-st.subheader("🔤 Actividad 1.6.4 - Porcentajes de alfabetismo y analfabetismo")
+st.subheader("🔤 Porcentajes de alfabetismo y analfabetismo")
 
 try:
     anios, porcen_sabe, porcen_nosabe = calcular_porcentajes_lectura()
@@ -142,8 +142,6 @@ try:
 
 except Exception as e:
     st.error(f"Error al generar el gráfico de lectura: {e}")
-
-footer()
 
 
 
