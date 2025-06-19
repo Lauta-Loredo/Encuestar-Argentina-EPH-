@@ -6,6 +6,7 @@ DATA_PATH = UTILS_PATH / 'data' # Ruta donde se almacena los datos
 SRC_PATH = PROJECT_PATH / 'src' # Ruta de funciones
 NOTEBOOKS_PATH = PROJECT_PATH / 'notebooks' # Jupyter Notebooks
 STREAMLIT_PATH = PROJECT_PATH / 'streamlit' # App Streamlit
+MAPA_PATH = UTILS_PATH / "mapa_aglomerados.html" # Mapa interactivo
 
 #Archivos CSV
 HOGARES_CSV = UTILS_PATH / 'HogaresTotal.csv' #Archivo CSV de Hogares
