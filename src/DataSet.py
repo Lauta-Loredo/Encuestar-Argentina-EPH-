@@ -110,15 +110,3 @@ def año_trimestre():
             registro.add((año, trimestre))
     
     return registro
-
-def limpieza_dataset(data_set):
-    for d in data_set:
-        if '' in d:
-            del d['']
-        for clave, valor in d.items():
-            # si es string y está vacío o sólo espacios…
-            if isinstance(valor, str) and valor.strip() == '':
-                d[clave] = 'sin información'
-    
-    return d
-
