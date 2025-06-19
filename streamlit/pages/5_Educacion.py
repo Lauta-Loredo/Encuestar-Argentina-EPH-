@@ -11,7 +11,6 @@ from src.consultas.consulta_leer_escribir import calcular_porcentajes_lectura
 from src.consultas.ranking5 import ranking_aglomerados_nivel_sup
 from src.funciones_streamlit import educacion as ed
 from src.funciones_streamlit.funciones_en_comun import (
-    footer,
     selector_anios,
     selector_anio_trimestre,
     filtrar_dataframe_por_anio_y_trim,
@@ -105,13 +104,8 @@ st.write(
 
 try:
     data = ranking_aglomerados_nivel_sup()
-    csv = ed.exportar_csv(data)
-    st.download_button(
-        label="📄 Descargar CSV",
-        data=csv,
-        file_name="ranking_aglomerados.csv",
-        mime="text/csv",
-    )
+    df_ranking = ed.exportar_csv(data, nombre_archivo="ranking_aglomerados.csv")
+   
 except Exception as e:
     st.error(f"Error al generar el ranking o exportar CSV: {e}")
 
@@ -143,7 +137,6 @@ try:
 except Exception as e:
     st.error(f"Error al generar el gráfico de lectura: {e}")
 
-footer()
 
 
 
