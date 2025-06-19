@@ -11,8 +11,8 @@ DESAGUE = "IV11"
 def condicion_de_habitabilidad(hogares):
     
     # Inicializa puntaje
-    points = 0
     for h in hogares: 
+        points = 0
         # Condición inmediata de habitabilidad insuficiente
         # Si no hay baño o agua
         if (h[TIENE_BANIO] == '2' or h[HAY_AGUA] == '3'):
@@ -72,5 +72,5 @@ def condicion_de_habitabilidad(hogares):
                 h["CONDICION_DE_HABITABILIDAD"] = "Regular"
             elif points < 17:
                 h["CONDICION_DE_HABITABILIDAD"] = "Saludable"
-            elif points >= 17:  # points >= 15
+            elif points >= 18:  # points >= 15
                 h["CONDICION_DE_HABITABILIDAD"] = "Buena"
