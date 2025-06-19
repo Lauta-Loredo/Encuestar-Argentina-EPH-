@@ -70,7 +70,7 @@ def condicion_de_habitabilidad(hogares):
                 h["CONDICION_DE_HABITABILIDAD"] = "Insuficiente"
             elif points <= 8:
                 h["CONDICION_DE_HABITABILIDAD"] = "Regular"
-            elif points < 17:
+            elif points < 16:
                 h["CONDICION_DE_HABITABILIDAD"] = "Saludable"
-            elif points >= 18:  # points >= 15
+            else :  # points >= 16
                 h["CONDICION_DE_HABITABILIDAD"] = "Buena"
