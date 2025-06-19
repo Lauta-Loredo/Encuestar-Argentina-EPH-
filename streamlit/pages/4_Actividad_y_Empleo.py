@@ -9,19 +9,20 @@ import streamlit.components.v1 as components
 import json
 project_root = Path(__file__).parent.parent.parent
 sys.path.append(str(project_root))
-sys.path.append(str(project_root / "src"))
-ruta_csv_individuos = (
-    Path(__file__).parent.parent.parent / "utils" / "IndividuosTotal.csv"
-)
 
 from datetime import datetime as dt
 import src.funciones_streamlit.empleo as emp
-import utils.constantes as cons
+from utils.constantes import (
+    INDIVIDUOS_CSV,
+    NIVEL_EDUCATIVO,
+    NOMBRES_AGLOMERADOS,
+    DATA_PATH,
+    MAPA_PATH
+)
+
 reload(emp)
 
 from src.funciones_streamlit.empleo import (
-    definir_anio,
-    definir_trimestre,
     muestra_tasa,
     calcular_desocupados_por_nivel,
     definir_aglomerado,
@@ -63,7 +64,7 @@ st.divider()
 mostrar_graficos = st.toggle("***Visualizar Datos Sobre Actividad y Empleo***", value=False)
 if mostrar_graficos:
     # cargo datos
-    df = crear_dataframe(ruta_csv_individuos,COLUMNAS_NECESARIAS)
+    df = crear_dataframe(INDIVIDUOS_CSV,COLUMNAS_NECESARIAS)
     st.markdown(
         "<h2 style='text-align: center;'>Información de personas desocupadas segun sus estudios alcanzados.</h2>",
         unsafe_allow_html=True,
@@ -72,7 +73,7 @@ if mostrar_graficos:
     anio, trimestre = selector_anio_trimestre(df, "1.5.1T")
 
     if anio not in ["Seleccione un año...", "Todos"] and trimestre:
-        conteo = calcular_desocupados_por_nivel(df, anio, trimestre, cons.NIVEL_EDUCATIVO)
+        conteo = calcular_desocupados_por_nivel(df, anio, trimestre, NIVEL_EDUCATIVO)
         fig, ax = plt.subplots()
         ax.pie(conteo, labels=conteo.index, autopct="%1.1f%%")
         ax.set_title("Distribución de desocupados según nivel educativo")
@@ -88,7 +89,7 @@ if mostrar_graficos:
         unsafe_allow_html=True,
     )
     tipo = "desempleo"
-    aglomerado = definir_aglomerado(df, "1.5.31", cons.NOMBRES_AGLOMERADOS)
+    aglomerado = definir_aglomerado(df, "1.5.31", NOMBRES_AGLOMERADOS)
     evolucion = tasa_des_empleo(df, tipo, aglomerado)
     muestra = muestra_tasa(tipo, evolucion)
     st.divider()
@@ -99,7 +100,7 @@ if mostrar_graficos:
         unsafe_allow_html=True,
     )
     tipo = "empleo"
-    aglomerado = definir_aglomerado(df, "1.5.32", cons.NOMBRES_AGLOMERADOS)
+    aglomerado = definir_aglomerado(df, "1.5.32", NOMBRES_AGLOMERADOS)
     evolucion = tasa_des_empleo(df, tipo, aglomerado)
     muestra2 = muestra_tasa(tipo, evolucion)
     st.divider()
@@ -115,7 +116,7 @@ if mostrar_graficos:
     st.divider()
 
     # 1.5.5
-    datos_path = cons.DATA_PATH / "aglomerados_coordenadas.json"
+    datos_path = DATA_PATH / "aglomerados_coordenadas.json"
     with open(datos_path, "r", encoding="utf-8") as f:
         coordenadas_aglomerado = json.load(f)
 
@@ -137,7 +138,6 @@ if mostrar_graficos:
     if tipo:
         colores = colores_aglomerado(tipo, tasas)
         mapa = graficar_mapa(coordenadas_aglomerado,colores)
-        MAPA_PATH = cons.UTILS_PATH / "mapa_aglomerados.html"
         mapa.save(MAPA_PATH)
         components.html(open(MAPA_PATH, "r", encoding="utf-8").read(), height=600)
     st.divider()
