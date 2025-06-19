@@ -100,6 +100,3 @@ if df_hogares is not  None:
     else: 
         # Si no se seleccionó un año, se muestra una advertencia
         st.warning('Seleccione un periodo para poder trabajar con el dataframe.')
-
-# Footer de la app
-footer()

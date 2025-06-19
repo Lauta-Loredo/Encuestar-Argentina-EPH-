@@ -110,4 +110,3 @@ def año_trimestre():
             registro.add((año, trimestre))
     
     return registro
-

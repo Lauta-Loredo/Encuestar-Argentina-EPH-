@@ -18,7 +18,7 @@ st.title("📊 Caracteristicas Demográficas")
 
 st.info("""**En esta sección se visualizará información relacionada a las características demográficas de
 la población argentina según la EPH.**\n
-\n***Para continuar por favor active la opcion de Visualizar Datos Demograficos y seleccione el subtitulo de su agrado, para asi poder ver su contenido***
+\n***Para continuar por favor active el toggle Visualizar Datos Demograficos y seleccione el subtitulo de su agrado, para asi poder ver su contenido***
 """)
 
 st.divider()
@@ -33,7 +33,7 @@ if mostrar_graficos:
 
     # Distribución de la población por grupos y sexo cada 10 años
     st.divider()
-    with st.expander("👩‍👦‍👦 Distribución de la población por grupos y sexo cada 10 años", expanded=False):
+    with st.expander("**👩‍👦‍👦 Distribución de la población por grupos y sexo cada 10 años**", expanded=False):
         anios, trimestre = fc.selector_anio_trimestre(df)
 
         #Valido la selección antes de continuar
@@ -55,7 +55,7 @@ if mostrar_graficos:
                     st.pyplot(grafico)
 
     # Edad promedio por aglomerado
-    with st.expander("➗ Edad promedio de personas por aglomerado", expanded=False):
+    with st.expander("**➗ Edad promedio de personas por aglomerado**", expanded=False):
         ultimo_anio = df["ANO4"].max()
         df_ultimo_anio = df[df["ANO4"] == ultimo_anio]
         ultimo_trimestre = df_ultimo_anio["TRIMESTRE"].max()
@@ -90,7 +90,7 @@ if mostrar_graficos:
         )
 
     # Evolución de la dependencia demográfica
-    with st.expander("📈 Evolución de la dependencia demográfica", expanded=False):
+    with st.expander("**📈 Evolución de la dependencia demográfica**", expanded=False):
         #Llamo a una funcion para seleccionar un aglomerado para analizar
         seleccion = fc.selector_aglomerados()
         if str(seleccion).isnumeric():
@@ -115,7 +115,7 @@ if mostrar_graficos:
                 st.pyplot(fig)
 
     # Evolución media y mediana
-    with st.expander("📉 Evolución de la Media y la Mediana de la edad", expanded=False):
+    with st.expander("**📉 Evolución de la Media y la Mediana de la edad**", expanded=False):
         df_edad, _ = ats.evoluciones(df)
 
         if df_edad.empty:
@@ -138,6 +138,3 @@ if mostrar_graficos:
             ax.grid(True)
             plt.xticks(rotation=45)
             st.pyplot(fig)
-
-#Imprimo footer
-fc.footer()

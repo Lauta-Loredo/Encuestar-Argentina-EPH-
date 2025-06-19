@@ -9,8 +9,12 @@ def int_to_str (list_disc_indi):
     Returns:
         _type_: los devuelve ya modificados
     """
-    for i,dict in enumerate(list_disc_indi):
-        if list_disc_indi[i]['CH04'] == '1':
-                list_disc_indi[i]['CH04_str'] = 'Masculino'
+    for d in list_disc_indi:
+        valor = d.get('CH04')  # evita KeyError
+
+        if str(valor) == '1' or valor == 1:
+            d['CH04_str'] = 'Masculino'
+        elif str(valor) == '2' or valor == 2:
+            d['CH04_str'] = 'Femenino'
         else:
-            list_disc_indi[i]['CH04_str'] = 'Femenino'
+            d['CH04_str'] = 'sin información'

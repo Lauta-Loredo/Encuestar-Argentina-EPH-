@@ -1,29 +1,34 @@
 import json
 from pathlib import Path
+
 import altair as alt
 import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from src.funciones_streamlit.funciones_en_comun import crear_dataframe
+from src.funciones_streamlit.funciones_en_comun import (
+    crear_dataframe,
+    convertir_csv,
+)
 
 
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # CARGA Y PREPARACIÓN DE DATOS
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 @st.cache_data
 def carga_df():
-    """Carga el DataFrame de individuos filtrando columnas necesarias."""
+    """
+    Carga el DataFrame principal de individuos desde un CSV.
+
+    Optimizado con caché, carga solo las columnas necesarias.
+
+    Returns:
+        pandas.DataFrame: DataFrame con los datos cargados o un DataFrame vacío si hay errores.
+    """
     columnas = [
-        "ANO4",
-        "TRIMESTRE",
-        "CH06",
-        "NIVEL_ED",
-        "PONDERA",
-        "CODUSU",
-        "NRO_HOGAR",
-        "COMPONENTE",
+        "ANO4", "TRIMESTRE", "CH06", "NIVEL_ED",
+        "PONDERA", "CODUSU", "NRO_HOGAR", "COMPONENTE",
     ]
     try:
         return crear_dataframe("IndividuosTotal.csv", columnas=columnas)
@@ -35,25 +40,28 @@ def carga_df():
         return pd.DataFrame()
 
 
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # PROCESAMIENTO DE NIVELES EDUCATIVOS
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 def procesar_niveles_educativos(df_trimestral, df_por_anio):
     """
-    Mapea y renombra los niveles educativos en ambos DataFrames.
-    Devuelve:
-    - Un resumen trimestral (agrupado y ponderado) si df_trimestral no está vacío.
-    - El df_por_anio con niveles educativos renombrados.
+    Mapea y renombra los códigos de nivel educativo a descripciones legibles.
+
+    También genera un resumen trimestral de la cantidad de personas por nivel.
+
+    Args:
+        df_trimestral (pandas.DataFrame): DataFrame con datos trimestrales (columnas 'NIVEL_ED', 'PONDERA').
+        df_por_anio (pandas.DataFrame): DataFrame con datos anuales (columna 'NIVEL_ED').
+
+    Returns:
+        tuple: (pandas.DataFrame de resumen trimestral, pandas.DataFrame anual modificado).
     """
     valores_originales = [1, 2, 3, 4, 5, 6]
     nombres = [
-        "Primario incompleto",
-        "Primario completo",
-        "Secundario incompleto",
-        "Secundario completo",
-        "Superior incompleto",
-        "Superior completo",
+        "Primario incompleto", "Primario completo",
+        "Secundario incompleto", "Secundario completo",
+        "Superior incompleto", "Superior completo",
     ]
     diccionario_mapeo = dict(zip(valores_originales, nombres))
 
@@ -73,12 +81,10 @@ def procesar_niveles_educativos(df_trimestral, df_por_anio):
                 .sum()
                 .reset_index()
                 .sort_values(by="PONDERA", ascending=True)
-                .rename(
-                    columns={
-                        "NIVEL_ED": "Niveles Educativos",
-                        "PONDERA": "Cantidad Maxima",
-                    }
-                )
+                .rename(columns={
+                    "NIVEL_ED": "Niveles Educativos",
+                    "PONDERA": "Cantidad Maxima",
+                })
             )
 
     if isinstance(df_por_anio, pd.DataFrame) and not df_por_anio.empty:
@@ -93,12 +99,23 @@ def procesar_niveles_educativos(df_trimestral, df_por_anio):
     return resumen_trimestre, df_por_anio
 
 
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # FUNCIONES PUNTO 1.6.2
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 def agrupamiento(df_por_anio, opciones):
-    """Calcula el nivel educativo más común para cada grupo etario seleccionado."""
+    """
+    Calcula el nivel educativo más común por grupo etario.
+
+    Filtra por edad y agrupa para encontrar el nivel predominante en cada rango.
+
+    Args:
+        df_por_anio (pandas.DataFrame): DataFrame con datos de individuos (columnas 'ANO4', 'NIVEL_ED', 'CH06', 'PONDERA').
+        opciones (list): Lista de cadenas con rangos de edad (ej., ["20-29", "+60"]).
+
+    Returns:
+        dict: Diccionario {rango_edad: (nivel_mas_comun, conteo_ponderado)}. Vacío si no hay datos.
+    """
     if df_por_anio.empty:
         st.warning("El DataFrame para agrupamiento está vacío.")
         return {}
@@ -136,7 +153,18 @@ def agrupamiento(df_por_anio, opciones):
 
 
 def grafico_barras(resultados_por_grupos, orden_etario):
-    """Genera un gráfico de barras con el nivel educativo más común por grupo etario."""
+    """
+    Genera un gráfico de barras del nivel educativo más común por grupo etario.
+
+    Visualiza los resultados del agrupamiento de niveles educativos por edad.
+
+    Args:
+        resultados_por_grupos (dict): Diccionario {rango_edad: (nivel_comun, cantidad_ponderada)}.
+        orden_etario (list): Lista de cadenas para ordenar los grupos etarios en el eje X.
+
+    Returns:
+        plotly.graph_objects.Figure: Objeto figura de Plotly. None si no hay datos.
+    """
     if not resultados_por_grupos:
         st.warning("No hay datos para graficar.")
         return None
@@ -149,7 +177,9 @@ def grafico_barras(resultados_por_grupos, orden_etario):
     )
 
     df_grafico["Grupo Etario"] = pd.Categorical(
-        df_grafico["Grupo Etario"], categories=orden_etario, ordered=True
+        df_grafico["Grupo Etario"],
+        categories=orden_etario,
+        ordered=True,
     )
     df_grafico = df_grafico.sort_values("Grupo Etario")
 
@@ -172,17 +202,27 @@ def grafico_barras(resultados_por_grupos, orden_etario):
     return fig
 
 
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # FUNCIONES PUNTO 1.6.3
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 arc_json = (
-    Path(__file__).resolve().parent.parent.parent / "utils" / "data" / "aglomerados_coordenadas.json"
+    Path(__file__).resolve().parent.parent.parent
+    / "utils" / "data" / "aglomerados_coordenadas.json"
 )
 
 
-def exportar_csv(data):
-    """Convierte un ranking de aglomerados a CSV con nombres legibles."""
+def exportar_csv(data, nombre_archivo="ranking_aglomerados.csv"):
+    """
+    Convierte datos de ranking de aglomerados a CSV, añadiendo nombres desde un JSON.
+
+    Args:
+        data (dict): Diccionario {código_aglomerado: datos}.
+        nombre_archivo (str, optional): Nombre del archivo CSV a guardar. Por defecto es "ranking_aglomerados.csv".
+
+    Returns:
+        pandas.DataFrame: El DataFrame convertido a CSV. Cadena vacía si hay errores de archivo JSON.
+    """
     try:
         with open(arc_json, encoding="utf-8") as f:
             aglo_data = json.load(f)
@@ -194,29 +234,41 @@ def exportar_csv(data):
         return ""
 
     ranking_con_nombres = {
-        aglo_data.get(cod.zfill(2), {}).get("nombre", f"Aglomerado {cod}"): datos
+        aglo_data.get(str(cod).zfill(2), {}).get("nombre", f"Aglomerado {cod}"): datos
         for cod, datos in data.items()
     }
 
     df = pd.DataFrame.from_dict(ranking_con_nombres, orient="index")
-    return df.to_csv(index=True)
+    convertir_csv(df, nombre_archivo=nombre_archivo)
+
+    return df
 
 
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 # FUNCIONES PUNTO 1.6.4
-# ---------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------------------------
 
 def grafica_porcentajes_lectura(años, porcentajes_sabe, porcentajes_nosabe):
-    """Genera dos líneas separadas: una para personas que saben leer y otra para las que no saben leer."""
+    """
+    Genera un gráfico de línea interactivo de porcentajes de lectura por año.
+
+    Muestra la evolución de "sabe leer" y "no sabe leer" a lo largo del tiempo.
+
+    Args:
+        años (list): Lista de años.
+        porcentajes_sabe (list): Porcentajes de personas que "saben leer" por año.
+        porcentajes_nosabe (list): Porcentajes de personas que "no saben leer" por año.
+
+    Returns:
+        altair.Chart: Gráfico Altair combinado. Gráfico vacío si hay error.
+    """
     try:
         df = pd.DataFrame({
             "Año": años,
             "Sabe leer": porcentajes_sabe,
-            "No sabe leer": porcentajes_nosabe
+            "No sabe leer": porcentajes_nosabe,
         })
-
         df = df.melt(id_vars=["Año"], var_name="Lectura", value_name="Porcentaje")
-
     except Exception as e:
         st.error(f"Error al crear DataFrame para la gráfica: {e}")
         return alt.Chart(pd.DataFrame())
@@ -229,10 +281,10 @@ def grafica_porcentajes_lectura(años, porcentajes_sabe, porcentajes_nosabe):
             y=alt.Y(
                 "Porcentaje:Q",
                 title="Sabe leer (%)",
-                scale=alt.Scale(domain=[90, 100])
+                scale=alt.Scale(domain=[90, 100]),
             ),
             color=alt.value("#1f77b4"),
-            tooltip=["Año", "Lectura", "Porcentaje"]
+            tooltip=["Año", "Lectura", "Porcentaje"],
         )
         .properties(height=200)
     )
@@ -245,14 +297,12 @@ def grafica_porcentajes_lectura(años, porcentajes_sabe, porcentajes_nosabe):
             y=alt.Y(
                 "Porcentaje:Q",
                 title="No sabe leer (%)",
-                scale=alt.Scale(domain=[0, 10])
+                scale=alt.Scale(domain=[0, 10]),
             ),
             color=alt.value("#d62728"),
-            tooltip=["Año", "Lectura", "Porcentaje"]
+            tooltip=["Año", "Lectura", "Porcentaje"],
         )
         .properties(height=200)
     )
 
-    chart_final = alt.vconcat(chart_sabe, chart_nosabe).resolve_scale(x='shared')
-
-    return chart_final
+    return alt.vconcat(chart_sabe, chart_nosabe).resolve_scale(x="shared")
