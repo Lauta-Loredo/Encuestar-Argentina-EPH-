@@ -33,7 +33,7 @@ from src.funciones_streamlit.empleo import (
 )
 from src.funciones_streamlit.funciones_en_comun import (
     crear_dataframe,
-    footer
+    selector_anio_trimestre
 )
 
 
@@ -43,7 +43,9 @@ st.info(
     "En esta sección se visualizará información relacionada a la actividad y empleo según la EPH."
 )
 
-
+"""
+Forzar recarga de datos cacheados en Streamlit cuando se actualiza algo, como un archivo o fuente de datos externa.
+"""
 if st.session_state.get("datos_actualizados", False):
     st.cache_data.clear()  # fuerza recarga
     st.session_state["datos_actualizados"] = False
@@ -67,16 +69,17 @@ if mostrar_graficos:
         unsafe_allow_html=True,
     )
     # 1.5.1 Para las personas desocupadas, informar la cantidad de ellas según sus estudios alcanzados. Se debe informar para un año y trimestre elegido por el usuario
-    anio = definir_anio(df, "1.5.1A")
-    trimestre = definir_trimestre(df, anio, "1.5.1T")
-    if anio and trimestre:
+    anio, trimestre = selector_anio_trimestre(df, "1.5.1T")
+
+    if anio not in ["Seleccione un año...", "Todos"] and trimestre:
         conteo = calcular_desocupados_por_nivel(df, anio, trimestre, cons.NIVEL_EDUCATIVO)
         fig, ax = plt.subplots()
         ax.pie(conteo, labels=conteo.index, autopct="%1.1f%%")
         ax.set_title("Distribución de desocupados según nivel educativo")
         st.pyplot(fig)
     else:
-        st.warning("Por favor, elija año y trimestre")
+        st.warning("Por favor, elija año y trimestre.")
+
     st.divider()
 
     # 1.5.2 Informar la evolución del desempleo(tasa de desempleo) a lo largo del tiempo. Se debe poder filtrar por aglomerado y en caso de no elegir ninguno se debe calcular para todo el país.
@@ -138,5 +141,3 @@ if mostrar_graficos:
         mapa.save(MAPA_PATH)
         components.html(open(MAPA_PATH, "r", encoding="utf-8").read(), height=600)
     st.divider()
-# footer
-# footer()
