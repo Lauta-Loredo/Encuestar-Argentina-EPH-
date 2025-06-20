@@ -25,7 +25,6 @@ reload(emp)
 from src.funciones_streamlit.empleo import (
     muestra_tasa,
     calcular_desocupados_por_nivel,
-    definir_aglomerado,
     tasa_des_empleo,
     ocupados_por_nivel,
     tasa_aglomerado,
