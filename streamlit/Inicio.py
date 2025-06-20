@@ -26,7 +26,8 @@ with tab1:
         ("🏘️", "Características de la Vivienda", "3_Características_de_la_Vivienda.py"),
         ("💼⚙️", "Actividad y Empleo", "4_Actividad_y_Empleo.py"),
         ("🧑‍🎓📚️", "Educación", "5_Educacion.py"),
-        ("💰", "Ingresos", "6_Ingresos.py"),
+        ("📈💸", "Línea de Pobreza e Indigencia", "6_Ingresos_Pobreza.py"),
+
     ]
 
     for i, (icono, texto, archivo) in enumerate(secciones):

@@ -11,6 +11,7 @@ MAPA_PATH = UTILS_PATH / "mapa_aglomerados.html" # Mapa interactivo
 #Archivos CSV
 HOGARES_CSV = UTILS_PATH / 'HogaresTotal.csv' #Archivo CSV de Hogares
 INDIVIDUOS_CSV = UTILS_PATH / 'IndividuosTotal.csv' #Archivo CSV de Individuos
+CANASTA_BASICA_CSV = DATA_PATH / "valores-canasta-basica-alimentos-canasta-basica-total-mensual-2016.csv" # Constantes específicas para ingresos
 
 NOMBRES_AGLOMERADOS = {
     "2": "Gran La Plata",
