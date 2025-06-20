@@ -5,7 +5,7 @@ import folium
 
 ESTADO_LABORAL = "ESTADO"
 
-def definir_anio(df,clave):
+"""def definir_anio(df,clave):
     anios_disponibles = sorted(df["ANO4"].unique())
     anios_opciones = ["Seleccione un año..."] + list(map(int, anios_disponibles))
 
@@ -28,7 +28,7 @@ def definir_trimestre(df, anio_seleccionado,clave):
     if trimestre_seleccionado != "Seleccione un trimestre...":
         return trimestre_seleccionado
     else:
-        return None
+        return None"""
 
 
 def muestra_tasa(tasa, evolucion):
@@ -56,7 +56,7 @@ def calcular_desocupados_por_nivel(df, anio, trimestre, NIVEL_EDUCATIVO):
     return conteo
 
 # 1.5.2
-def definir_aglomerado(df,clave, NOMBRES_AGLOMERADOS):
+"""def definir_aglomerado(df,clave, NOMBRES_AGLOMERADOS):
     aglomerados_disponibles = sorted(df["AGLOMERADO"].unique())
     NOMBRES_AGLOMERADOS_INT = {int(key): dato for key, dato in NOMBRES_AGLOMERADOS.items()}
     # Generar las opciones tipo "2 - Gran La Plata"
@@ -73,7 +73,7 @@ def definir_aglomerado(df,clave, NOMBRES_AGLOMERADOS):
 
     # extraer solo la key (esta antes del guion)
     codigo = int(aglomerado_elegido.split(" - ")[0])
-    return codigo
+    return codigo"""
 
 
 def tasa_des_empleo(df, tipo, aglo=None):

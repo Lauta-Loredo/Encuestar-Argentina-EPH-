@@ -34,7 +34,8 @@ from src.funciones_streamlit.empleo import (
 )
 from src.funciones_streamlit.funciones_en_comun import (
     crear_dataframe,
-    selector_anio_trimestre
+    selector_anio_trimestre,
+    selector_aglomerados
 )
 
 
@@ -69,6 +70,9 @@ if mostrar_graficos:
         "<h2 style='text-align: center;'>Información de personas desocupadas segun sus estudios alcanzados.</h2>",
         unsafe_allow_html=True,
     )
+    if df is None:
+        st.error("No se pudieron cargar los datos necesarios")
+        st.stop
     # 1.5.1 Para las personas desocupadas, informar la cantidad de ellas según sus estudios alcanzados. Se debe informar para un año y trimestre elegido por el usuario
     anio, trimestre = selector_anio_trimestre(df, "1.5.1T")
 
@@ -89,7 +93,7 @@ if mostrar_graficos:
         unsafe_allow_html=True,
     )
     tipo = "desempleo"
-    aglomerado = definir_aglomerado(df, "1.5.31", NOMBRES_AGLOMERADOS)
+    aglomerado = selector_aglomerados("1.5.31")
     evolucion = tasa_des_empleo(df, tipo, aglomerado)
     muestra = muestra_tasa(tipo, evolucion)
     st.divider()
@@ -100,7 +104,7 @@ if mostrar_graficos:
         unsafe_allow_html=True,
     )
     tipo = "empleo"
-    aglomerado = definir_aglomerado(df, "1.5.32", NOMBRES_AGLOMERADOS)
+    aglomerado = selector_aglomerados("1.5.32")
     evolucion = tasa_des_empleo(df, tipo, aglomerado)
     muestra2 = muestra_tasa(tipo, evolucion)
     st.divider()
