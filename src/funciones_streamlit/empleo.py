@@ -144,18 +144,24 @@ def tasa_aglomerado(df):
 
     return tasas
 
+
 def colores_aglomerado(tipo, tasas):
     colores = {}
     for aglo, datos in tasas.items():
         if tipo not in datos:
             continue
-        inicio = datos[tipo]["inicio"]
-        fin = datos[tipo]["fin"]
+
+        inicio = datos[tipo].get("inicio")
+        fin = datos[tipo].get("fin")
+
+        if inicio is None or fin is None:
+            continue  # No se puede comparar si falta alguno
 
         if tipo == "empleo":
             colores[aglo] = "green" if fin > inicio else "red"
         elif tipo == "desempleo":
             colores[aglo] = "red" if fin > inicio else "green"
+
     return colores
 
 
@@ -180,4 +186,3 @@ def graficar_mapa(coordenadas_aglomerados, colores):
                 popup=f"{nombre}",
             ).add_to(mapa)
     return mapa 
-
