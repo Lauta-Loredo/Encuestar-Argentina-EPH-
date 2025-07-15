@@ -1,5 +1,6 @@
 # Importa los modulos necesarios para esta seccion
 from pathlib import Path
+import pandas as pd
 import sys
 import os
 import streamlit as st
@@ -57,6 +58,10 @@ columnas_necesarias = ['ANO4','TRIMESTRE','PONDERA','AGLOMERADO','CONDICION_DE_H
 
 # Crea el dataframe desde el CSV, cargando solo las columnas necesarias
 df_hogares = crear_dataframe(HOGARES_CSV,columnas_necesarias)
+columnas_a_convertir = ['IV1', 'IV3', 'IV9','IV12_3','II7', 'PONDERA', 'AGLOMERADO', 'ANO4', 'TRIMESTRE']
+if df_hogares is not None:    
+    for col in columnas_a_convertir:
+        df_hogares[col] = pd.to_numeric(df_hogares[col], errors='coerce')
 
 # Verifica que el DF no este vacio
 if df_hogares is not  None:
