@@ -29,13 +29,13 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 1. **Clonar el repositorio**:
    ```bash
    Clone con SSH
-    git clone git@gitlab.catedras.linti.unlp.edu.ar:python-2025/proyectos/grupo26/code.git
+    git clone git@github.com:Lauta-Loredo/Encuestar-Argentina-EPH-.git
    Clone con HTTPS
-    git clone https://gitlab.catedras.linti.unlp.edu.ar/python-2025/proyectos/grupo26/code.git
+    git clone https://github.com/Lauta-Loredo/Encuestar-Argentina-EPH-.git
 
 2. **Entrar a la carpeta del proyecto**:
 
-        cd INDEC
+        cd Encuestar-Argentina-EPH-
 
 3. **Crear y activar el entorno virtual**:
     **Windows**
@@ -57,7 +57,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
     3. Colocarlos en la carpeta /utils/data
         **Estructura final:**
 
-            |──INDEC
+            |──Encuestar-Argentina-EPH-
             │   ├── utils                           
             │         ├── data                 
             │               ├── data_2_2019.zip
@@ -71,7 +71,7 @@ Sigue estos pasos para configurar el entorno de desarrollo:
 
 #### 1. **Entrar a la carpeta de Streamlit**
 
-- Posicionarse en la carpeta del trabajo `CODE`.
+- Posicionarse en la carpeta del trabajo `Encuestar-Argentina-EPH-`.
 - Ingresar a la carpeta de Streamlit:
 
 ```bash
@@ -96,11 +96,11 @@ streamlit run Inicio.py
 --------------------------------------------------------------------
 ## 👥 Integrantes
 
-- Lucentini Joaquin --> Legajo 18143/6
-- Loredo Lautaro --> Legajo 18137/7
-- Rodriguez Ulises --> Legajo 18304/4
-- Morano Axel Martin --> Legajo 18212/1
-- Arrechea Diego --> Legajo 17821/7
+- Lucentini Joaquin
+- Loredo Lautaro
+- Rodriguez Ulises
+- Morano Axel Martin
+- Arrechea Diego
 
 --------------------------------------------------------------------
 ## 🌳 Estructura del Proyecto
@@ -118,7 +118,7 @@ streamlit run Inicio.py
 **Tree**
 
 ```bash
-INDEC/
+Encuestar-Argentina-EPH-/
 ├── notebooks/
 │   ├── consultas.ipynb
 │   ├── hogares.ipynb
