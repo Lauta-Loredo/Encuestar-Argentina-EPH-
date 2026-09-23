@@ -8,6 +8,7 @@
 - [Instalación](#-instalación)
 - [Utilizacion de Streamlit](#-utilizacion-de-streamlit)
 - [Integrantes](#-integrantes)
+- [Mi aporte (Lautaro Loredo)](#️-mi-aporte-lautaro-loredo)
 - [Estructura del Proyecto](#-estructura-del-proyecto)
 
 --------------------------------------------------------------------
@@ -101,6 +102,17 @@ streamlit run Inicio.py
 - Rodriguez Ulises
 - Morano Axel Martin
 - Arrechea Diego
+
+### ✍️ Mi aporte (Lautaro Loredo)
+
+Dentro del trabajo grupal, mi contribución se concentró principalmente en el dominio de **Educación**, tanto en el procesamiento de datos como en la app de Streamlit:
+
+- Autor de la lógica de negocio de educación (`src/funciones_streamlit/educacion.py`) y de la página correspondiente de la app (`streamlit/pages/5_Educacion.py`).
+- Desarrollé las consultas de alfabetización y de precariedad de materiales de vivienda (`src/consultas/consulta_leer_escribir.py`, `src/consultas/consulta_materialprecario.py`) y la función `src/funciones/materialhogares.py`.
+- Participé, junto con otros integrantes, en piezas compartidas del proyecto: la página de carga de datos (`streamlit/pages/1_Carga_de_Datos.py`) y la clase central de manejo de datasets (`src/DataSet.py`).
+- Trabajé también en los notebooks de exploración y consultas (`notebooks/consultas.ipynb`, `notebooks/individuos.ipynb`, `notebooks/hogares.ipynb`).
+
+En el historial de commits del repositorio tengo 32 de los 250 commits totales (~13%), dentro de un equipo de 5 personas.
 
 --------------------------------------------------------------------
 ## 🌳 Estructura del Proyecto
